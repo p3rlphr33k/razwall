@@ -1,0 +1,134 @@
+#!/bin/sh
+
+. /etc/rc.d/efw_lib.sh
+. ${UPLINK_SCRIPTS}/common
+
+MM_MONITOR_PID='/var/run/mm_monitor.pid'
+
+function mm_helper() {
+    local action=$1
+    local modem_identifier=$2
+    python -m endian.modemmanager.helper ${action} ${uplink} ${modem_identifier}
+}
+
+function mm_get_method() {
+    loadSettings "$UPLINK_ETC/$uplink/connection_method"
+    echo ${METHOD}
+}
+
+function mm_get_interface() {
+    loadSettings "$UPLINK_ETC/$uplink/connection_method"
+    echo ${IFACE}
+}
+
+function mm_get_modem_identifier() {
+    loadSettings "$UPLINK_ETC/$uplink/connection_method"
+    echo ${MM_MODEM}
+}
+
+
+function mm_write_peer_file() {
+    local PEERNAME="$1"
+    local INTERFACE="$2"
+    pppd_write_peer $PEERNAME || return 1
+
+    PEERFILE="$PEERSDIR/$PEERNAME"
+
+    echo $INTERFACE >>$PEERFILE
+    echo "921600" >>$PEERFILE
+    return 0
+}
+
+function mm_add_red_dev() {
+    local interface="$1"
+    echo "RED_DEV=${interface}" >>$UPLINK_ETC/$uplink/settings
+}
+
+function mm_remove_red_dev() {
+    sed -i "/^RED_DEV=/ d" $UPLINK_ETC/$uplink/settings
+}
+
+function mm_failure() {
+    # mm_remove_red_dev
+    rm -f $UPLINK_ETC/$uplink/connection_method
+    failure
+}
+
+
+
+
+
+function start() {
+    local modem_identifier=$(mm_get_modem_identifier)
+
+    mm_helper connect ${modem_identifier} || mm_failure "Could not connect modem ${modem_identifier}"
+
+    local mm_connection_method=$(mm_get_method)
+    export interface=$(mm_get_interface)
+
+    log_done "Uplink ${uplink} method ${mm_connection_method} on interface ${interface}"
+
+    case "$mm_connection_method" in 
+        'dhcp')
+            . ${UPLINK_SCRIPTS}/generic/dhcp.sh
+
+            mm_add_red_dev $interface
+            dhcp_kill $interface
+            dhcp_start  || mm_failure
+            ;;
+
+        'ppp')
+            . ${UPLINK_SCRIPTS}/generic/pppd.sh
+            mm_write_peer_file $uplink $interface || mm_failure
+            pppd_call $uplink || mm_failure
+            ;;
+
+        'static')
+            ;;
+
+        *)
+            bailout "MM Unkown method '$mm_connection_method'"
+            ;;
+    esac
+
+    mm_helper monitor ${modem_identifier}
+
+    return 0
+}
+
+function stop() {
+    local modem_identifier=$(mm_get_modem_identifier)
+
+    export interface=$(mm_get_interface)
+
+    local mm_connection_method=$(mm_get_method)
+
+    case "$mm_connection_method" in 
+        'dhcp')
+            . ${UPLINK_SCRIPTS}/generic/dhcp.sh
+            dhcp_stop
+            mm_remove_red_dev
+            ;;
+
+        'ppp')
+            . ${UPLINK_SCRIPTS}/generic/pppd.sh
+            pppd_kill $uplink
+            ;;
+
+        'static')
+            ;;
+    esac
+
+    if [ -e $MM_MONITOR_PID ]; then
+        kill -2 `cat $MM_MONITOR_PID`
+    fi
+
+    mm_helper disconnect ${modem_identifier} || mm_failure "Could not disconnect modem ${modem_identifier}"
+
+    mm_failure
+
+}
+
+switch "$1"
+
+exit 0

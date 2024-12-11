@@ -1,0 +1,63 @@
+#! /bin/bash
+# +--------------------------------------------------------------------------+
+# | Endian Firewall                                                          |
+# +--------------------------------------------------------------------------+
+# | Copyright (c) 2005-2012 Endian                                           |
+# |         Endian GmbH/Srl                                                  |
+# |         Bergweg 41 Via Monte                                             |
+# |         39057 Eppan/Appiano                                              |
+# |         ITALIEN/ITALIA                                                   |
+# |         info@endian.com                                                  |
+# |                                                                          |
+# | fix_missing_pid_file is free software: you can redistribute it and/or    |
+# | modify it under the terms of the GNU Lesser General Public License as    |
+# | published by the Free Software Foundation, either version 2.1 of the     |
+# | License, or (at your option) any later version.                          |
+# |                                                                          |
+# | fix_missing_pid_file is distributed in the hope that it will be useful,  |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of           |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            |
+# | GNU Lesser General Public License for more details.                      |
+# |                                                                          |
+# | You should have received a copy of the GNU Lesser General Public License |
+# | along with fix_missing_pid_file.                                         |
+# | If not, see <http://www.gnu.org/licenses/>.                              |
+# +--------------------------------------------------------------------------+
+#
+# If the service is started but the pid file does not exist create the pid file
+fix_missing_pid_file() {
+    local prog=$1
+	local base=${1##*/}
+	local pid
+
+    # Check if the pid file exist
+    if [ -f /var/run/${prog}.pid ]; then
+        return 0
+    fi
+
+	# Get the  if the program is running
+	pid=`pidof -o $$ -o $PPID -o %PPID -x $1 || \
+	     pidof -o $$ -o $PPID -o %PPID -x ${base}`
+	if [ ! -n "$pid" ]; then 
+	     # Not running
+	     return 0
+	fi
+	
+	# Create the pid file
+	echo "$pid" > /var/run/${prog}.pid
+	return 0
+}
+
+# Check syntax
+if [ "$#" = 0 ] ; then
+	echo "usage: fix_missing_pid_file service [command args...]"
+	echo "       If the service is started but the pid file does not exist create the pid file"
+	echo "       Before exiting exec the command passed as argument"
+	echo "       Example:"
+	echo "       fix_missing_pid_file dnsmasq /etc/init.d/dnsmasq start"
+	exit 64
+fi
+
+fix_missing_pid_file $1
+shift
+exec $@

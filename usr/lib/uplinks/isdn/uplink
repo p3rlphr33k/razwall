@@ -1,0 +1,54 @@
+#!/bin/sh
+
+. /etc/rc.d/efw_lib.sh
+. ${UPLINK_SCRIPTS}/common
+. ${UPLINK_SCRIPTS}/generic/pppd.sh
+. ${UPLINK_SCRIPTS}/generic/capi.sh
+
+
+if [ ! "$TYPE" ]; then
+    failure "no isdn type set"
+fi
+
+ISDNDIR=${UPLINK_SCRIPTS}/isdn/$TYPE
+
+if [ ! -d $ISDNDIR ]; then
+    failure "unknown isdn type '$TYPE'"
+fi
+
+
+function start() {
+
+    if [ -f "$ISDNDIR/capi.conf" ]; then
+        capiinit -c $ISDNDIR/capi.conf || failure "Could not start CAPI"
+    fi
+
+    if [ -f "$ISDNDIR/start" ]; then
+	. $ISDNDIR/start
+    fi
+
+    modprobe ppp_generic || failure "Could not load kernel modules"
+    TIMEOUT=${TIMEOUT:-0}
+    local seconds=$(echo "${TIMEOUT} 60 * p"|dc)
+
+    capi_write_peer "${uplink}" "$seconds" || failure "Could not write peer file"
+    pppd_call "${uplink}" || failure "Could not successfully call pppd"
+    return 0
+}
+
+function stop() {
+    local ret=0
+
+    pppd_kill ${uplink}
+    ret=$(($ret + $?))
+
+    if [ -f "$ISDNDIR/stop" ]; then
+	. $ISDNDIR/stop
+        ret=$(($ret + $?))
+    fi
+    return $ret
+}
+
+switch "$1"
+
+exit 0

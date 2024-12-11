@@ -1,0 +1,572 @@
+#!/usr/bin/python
+import os
+import sys
+import re
+from time import sleep
+import string
+import stat
+from glob import glob
+from shutil import copy
+from socket import gethostname
+from optparse import OptionParser
+from endian.core.settingsfile import SettingsFile
+from endian.core.logger import *
+from endian.data.ds import *
+import signal
+from endian.core.runner import Runner
+from endian.system import proc
+
+from endian.core import i18n
+
+if os.path.exists("/etc/release"):
+    SYSPATH = "/sys"
+    DEVMODE = False
+else:
+    SYSPATH = "./sys"
+    DEVMODE = True
+
+MOUNTPOINT = "/mnt/usbstick"
+MOUNTPOINT_RE = '/mnt/usbstick.*'
+BACKUPDIR = "efw-backups"
+VMBACKUPDIR = "vm-backups"
+VMSNAPSHOTDIR = "/var/lib/virtualization/backups"
+DEFAULT_BACKUP_ARGS = "--settings --logs --logarchives --dbdumps "
+BACKUPCMD = "/usr/local/bin/backup-create.sh %s %s --message \"USB-Stick Backup: %s\" 2> /dev/null"
+BACKUPREPODIR = "/var/backups"
+GENERATIONS = 3
+SETTINGS = "/var/efw/backup/settings"
+
+def quit(signal, frame):
+    exit(-signal)
+signal.signal(signal.SIGHUP, quit)
+signal.signal(signal.SIGQUIT, quit)
+signal.signal(signal.SIGTERM, quit)
+signal.signal(signal.SIGINT, quit)
+
+def exit(code):
+    end_notifications()
+    sys.exit(code)
+
+def mountDevice(device):
+    info(_("Mounting USB device '%s'...") % device)
+    
+    mounts = open("/proc/mounts").read()
+
+    for i in range(0, 100):
+        mountpoint = MOUNTPOINT + (i and "-%s" % (i+1) or "")
+        debug("Trying mountpoint: %s" % mountpoint)
+        if mounts.find("%s " % mountpoint) == -1:
+            break
+
+    debug("Mountpoint: %s" % mountpoint)
+    if not os.path.exists(mountpoint):
+        os.makedirs(mountpoint)
+
+    # find the first mountable partition
+    for i in ["", "1", "2", "3", "4", "5", "6", "7"]:
+        dev = "%s%s" % (device, i)
+        cmd = "mount %s %s" % (dev, mountpoint)
+        cmd_fat = "mount -t vfat %s %s" % (dev, mountpoint)
+        debug(cmd)
+
+        if mounts.find("%s " % dev) != -1:
+            # already mounted, continue...
+            continue
+
+        if DEVMODE:
+            return dev, mountpoint
+        else:
+            res = os.system("%s 2> /dev/null" % cmd)
+        # try to mount to mount it as a FAT partition
+        if res != 0:
+            res = os.system("%s 2> /dev/null" % cmd_fat)
+
+        debug("res: %s" % res)
+        if res == 0:
+            # create backupdir if it doesn't exist
+            backupdir = os.path.join(mountpoint, BACKUPDIR)
+            if not os.path.exists(backupdir):
+                try:
+                    debug("Creating backup dir: %s" % backupdir)
+                    os.makedirs(backupdir)
+                except:
+                    error(_("Could not create backup directory '%s'") % backupdir)
+            else:
+                debug("Found backup directory: %s" % backupdir)
+            return dev, mountpoint
+    return None, None
+
+
+def addMountPoint(device,vendor=None,product=None):
+    debug("Adding mountpoint of device '%s'" % device)
+
+    if not device:
+        error(_("No USB device found"))
+        exit(1)
+
+    count = 5
+    while count > 0:
+        sleep(1)
+        mountdev, mountpoint = mountDevice(device)
+        if mountpoint:
+            break
+        count -= 1
+
+    info(_("Mounted %s on %s") % (mountdev, mountpoint))
+
+    if not mountpoint:
+        error(_("No mountable partition on USB device '%s' found") % device)
+        return None
+
+
+def removeMountPoint(device):
+    debug("Removing mountpoint for device: %s" % device)
+
+    mountpoints = proc.getMountpoints(deviceRE='%s.*' % device)
+    if not mountpoints:
+        warn("No mountpoints found")
+        exit(1)
+
+    mountpoint = mountpoints[0][1]
+
+    info(_("Unmounting '%s'...") % mountpoint)
+    cmd = "umount %s" % mountpoint
+    if DEVMODE:
+        debug(cmd)
+    else:
+        os.system(cmd)
+
+
+def freeDevice(device):
+    error('--free argument is deprecated')
+
+
+def help():
+    print "Usage: %s --runbackup" % sys.argv[0]
+
+def doBackup(message, opt):
+    info(_("Creating USB backup..."))
+    mountpoints = proc.getMountpoints(mountpointRE=MOUNTPOINT_RE)
+    if not mountpoints:
+        error(_("No mountpoints found"))
+        return
+
+    args = ""
+    if opt.settings:
+        args += "--settings "
+    if opt.logs:
+        args += "--logs "
+    if opt.logarchives:
+        args += "--logarchives "
+    if opt.hwdata:
+        args += "--hwdata "
+    if opt.cron:
+        args += "--cron "
+    if opt.dbdumps:
+        args += "--dbdumps "
+    if args in ("", "--cron "):
+        args = DEFAULT_BACKUP_ARGS
+        if opt.cron:
+            args += "--cron "
+
+    encrypt = ""
+    if opt.gpgkey:
+        encrypt = "--gpgkey=%s" % opt.gpgkey
+
+    debug("Call purge-backup-archives")
+    os.system('purge-backup-archives -e')
+    backupcmd = BACKUPCMD % (args, encrypt, message)
+    debug("Call backup with %s" % backupcmd)
+    fd = os.popen(backupcmd)
+    backupfile = fd.read().strip()
+    res = fd.close()
+
+    if res:
+        error(_("Running backup command failed"))
+        return None
+
+    debug("MOUNTPOINTS - %s" % str(mountpoints))
+    debug("HOSTNAME - %s" % gethostname())
+    if backupfile:
+        backupsize = int(os.stat(backupfile)[stat.ST_SIZE])
+        debug("BACKUP - %s" % os.path.basename(backupfile))
+        debug("BACKUP SIZE - %sMB" % (backupsize / 1024 / 1024))
+        
+        for mountpoint in mountpoints:
+            backupdir = os.path.join(mountpoint[1], BACKUPDIR)
+
+            # rotate old backups
+            info(_("Rotating old USB backups..."))
+            oldbackups = sorted(glob("%s/*-%s-*.tar.gz" % (backupdir, gethostname())))
+            if len(oldbackups) < GENERATIONS:
+                oldbackups = []
+            else:
+                oldbackups = oldbackups[:(1-GENERATIONS)]
+            debug("Old backup count: %s" % len(oldbackups))
+            debug("Old backups: %s" % oldbackups)
+
+            info(_("Removing %s old backups from %s") % (len(oldbackups), backupdir))
+            for oldbackup in oldbackups:
+                debug("Removing: %s" % oldbackup)
+                try:
+                    os.unlink(oldbackup)
+                    os.unlink(oldbackup + ".meta")
+                except:
+                    debug("Could not remove old backup '%s'." % oldbackup)
+            
+            debug("backup directory: %s" % backupdir)
+            
+            info(_("Retrieving free space on USB device..."))
+            try:
+                freespace = int(os.popen("df %s -B 1" % backupdir).read().split("\n")[1].split()[3])
+            except:
+                error(_("Could not get free space of backup directory"))
+                continue
+            
+            debug("FREE SPACE [%s] - %sMB" % (backupdir, freespace / 1024 / 1024))
+
+            if backupsize > freespace:
+                error(_("Not enough free space on USB device"))
+                continue
+
+            # copy new archive
+            for backup in glob("%s*" % backupfile):
+                destfile = os.path.join(backupdir, os.path.basename(backup))
+                if backup == backupfile:
+                    if os.path.exists("%s.gpg" % backupfile):
+                        info(_("Skipping plain backup '%s' since there is an encrypted backup.") % os.path.basename(backupfile))
+                        continue
+                if not os.path.exists(destfile):
+                    copy(backup, destfile)
+                    info(_("Copying backup '%s'...") % os.path.basename(backup))
+                    os.system("chown nobody.nogroup %s/*" % backupdir)
+                else:
+                    info(_("Backup '%s' already exists. Skipping...") % os.path.basename(backup))
+        debug("Removing backup '%s'..." % os.path.basename(backupfile))
+        try:
+            for backup in glob("%s*" % backupfile):
+                os.unlink(backup)
+        except:
+            info(_("Could not remove backup '%s'.") % os.path.basename(backupfile))
+        
+        updateSymlinks()
+
+    if not opt.virtualmachines:
+        info("Synching disks...")
+        os.system("sync")
+        return
+    
+    info(_("Synching virtual machine backups..."))
+    
+    ds = DataSource('virtualization').config
+    for domain in ds:
+        for snapshot in domain.get('snapshots', []):
+            for disk in snapshot['disks']:
+                metapath = "%s.meta" % disk['file']
+                if os.path.exists(metapath):
+                    continue
+                metafile = SettingsFile(metapath)
+                metafile['name'] = domain['name']
+                metafile['timestamp'] = snapshot['timestamp']
+                metafile['remark'] = snapshot['remark']
+                for key, value in disk.iteritems():
+                    metafile[key] = value
+                metafile.write()
+    
+    for mountpoint in mountpoints:
+        backupdir = os.path.join(mountpoint[1], VMBACKUPDIR)
+        if not os.path.exists(backupdir):
+            try:
+                debug("Creating vm backup dir: %s" % backupdir)
+                os.makedirs(backupdir)
+            except:
+                error(_("Could not create 'vm-backup' directory"))
+                continue
+        else:
+            debug("Found vm backup directory: %s" % backupdir)
+        
+        try:
+            freespace = int(os.popen("df %s -B 1" % backupdir).read().split("\n")[1].split()[3])
+        except:
+            error(_("Could not get free space of 'vm-backup' directory") % backupdir)
+            continue
+        debug("FREE SPACE [%s] - %sMB" % (backupdir, freespace / 1024 / 1024))
+        
+        cmd = "rsync --dry-run --whole-file --size-only --stats %s/*.gz* %s" % (VMSNAPSHOTDIR, backupdir)
+        r = Runner()
+        r.run(cmd)
+        
+        if r.returncode != 0:
+            error(_("Synching virtual machine backups failed"))
+            debug(r.stderr)
+            continue
+        
+        re_tot = re.compile(r'^Total transferred file size: (.*)', re.M)
+        size = re_tot.findall(r.stdout)
+        if len(size) <= 0:
+            error(_("Could not get space needed by virtual machine backups"))
+            continue
+        backupsize = float(size[0].split(" ")[0])
+        
+        debug("BACKUP SIZE - %s" % size[0])
+        
+        if backupsize > freespace:
+            error(_("Not enough free space on USB device"))
+            continue
+        
+        cmd = "rsync --whole-file --size-only --stats %s/*.gz* %s" % (VMSNAPSHOTDIR, backupdir)
+        r = Runner()
+        r.run(cmd)
+        debug(r.stdout)
+        if r.returncode != 0:
+            error(_("Synching virtual machine backups failed"))
+    
+    info(_("Synching disks..."))
+    os.system("sync")
+
+def updateSymlinks():
+    # wait a bit...
+    sleep(1)
+
+    info(_("Updating symlinks..."))
+
+    # remove non existent links
+    for entry in glob("%s/*" % BACKUPREPODIR):
+        if os.path.islink(entry):
+            if not os.path.exists(entry):
+                try:
+                    os.unlink(entry)
+                    debug("Removing broken link: %s" % entry)
+                except:
+                    error(_("Could not remove link '%s'") % entry)
+
+    # create missing links
+    for mountpoint in proc.getMountpoints(mountpointRE=MOUNTPOINT_RE):
+        backupdir = os.path.join(mountpoint[1], BACKUPDIR)
+
+        for entry in glob("%s/*" % backupdir):
+            symlink = os.path.join(BACKUPREPODIR, os.path.basename(entry))
+            if not os.path.exists(symlink):
+                debug("Creating symlink from: %s to: %s" % (entry, symlink))
+                try:
+                    os.symlink(entry, symlink)
+                except:
+                    error(_("Could not create symlink from '%s' to '%s'") % (entry, symlink))
+
+
+def check_virtualization(usb_vendor, usb_product):
+    if not usb_vendor:
+        return
+    if not usb_product:
+        return
+    virtualization = DataSource('virtualization')
+    if not virtualization:
+        return
+    if not virtualization.config:
+        return
+    for domain in virtualization.config:
+        if 'usb' in domain:
+            for usb in domain['usb']:
+                # if we find the device has been assigned to a VM - DO NOT MOUNT
+                if (usb['vendor'] == usb_vendor and
+                    usb['product'] == usb_product):
+                    error(_("Device %s:%s has been assigned to VM %s - NOT mounting.") % (
+                            usb_vendor,usb_product,domain['name']))
+                    exit(0)
+
+def is_var(filename):
+    try:
+        f = open(filename, "r")
+        for line in f:
+            token = line.split()
+            if len(token) < 2:
+                continue
+            if token[1] == "/var":
+                f.close()
+                return True
+        f.close()
+    except IOError:
+        return False
+    return False
+
+def wait_until_var_mounted():
+    if not is_var("/etc/fstab"):
+        return
+    if is_var("/proc/mounts"):
+        return
+    debug("Wait until /var partition is mounted")
+    while True:
+        if is_var("/proc/mounts"):
+            return
+        sleep(3)
+
+def udev_called():
+    device = os.environ.get("DEVNAME")
+    info(_("Checking device '%s'...") % device)
+
+    pf = None
+    if DEVMODE:
+        addMountPoint(device)
+        removeMountPoint(device)
+    else:
+        action = os.environ.get("ACTION")
+        if not device or not action:
+            help()
+            error("no device '%s' or no action '%s' found" % device, action)
+            exit(1)
+        info("action: %s" % action)
+
+    if action == "add":
+        usb_vendor = None
+        usb_product = None
+
+        # Called by hotplug
+        if device == None:
+            product = os.environ.get('PRODUCT')
+            if product == None or product.strip() == "":
+                help()
+                exit(1)
+            product = product.split('/')
+            product = map(lambda x: x.zfill(4), product)
+            if len(product) > 1:
+                usb_vendor = product[0]
+                usb_product = product[1]
+
+        # Called by udev
+        else:
+            if 'PHYSDEVPATH' in os.environ:
+                pf = os.environ["PHYSDEVPATH"]
+            if pf:
+                pf = pf[pf.find('usb'):]
+                parts = pf.split('/')
+                f2 = open("/sys/bus/usb/devices/%s/%s/idVendor"%(parts[0],parts[1]),'r')
+                usb_vendor = f2.read().strip()
+                f2.close()
+                f2 = open('/sys/bus/usb/devices/%s/%s/idProduct'%(parts[0],parts[1]),'r')
+                usb_product = f2.read().strip()
+                f2.close()
+
+        check_virtualization(usb_vendor, usb_product)
+
+        wait_until_var_mounted()
+
+        #  os.system("ln -s %s %s" % (sys.argv[0], remover))
+        if usb_vendor and usb_product:
+            addMountPoint(device,usb_vendor,usb_product)
+        else:
+            addMountPoint(device)
+        updateSymlinks()
+    elif action == "remove":
+        removeMountPoint(device)
+        updateSymlinks()
+
+
+def removeBackup(backup_file):
+    """Remove backups and associated files on a USB stick."""
+    if backup_file.endswith('.gpg'):
+        backup_file = backup_file[:-4]
+    for extension in ('', '.gpg', '.meta', '.mailerror', '.gpg..mailerror'):
+        try:
+            os.unlink('%s%s' % (backup_file, extension))
+        except OSError:
+            continue
+
+
+def opthandler():
+    parser = OptionParser()
+    parser.add_option("-b", "--runbackup",
+                      dest="runbackup",
+                      action="store_true",
+                      help="Run backup on USB-Stick",
+                      )
+    parser.add_option("-r", "--removebackup",
+                      dest="removebackup",
+                      action="store",
+                      type="string",
+                      help="Remove backup from USB-Stick",
+                      )
+    parser.add_option("-g", "--gpgkey",
+                      dest="gpgkey",
+                      action="store",
+                      type="string",
+                      help="Use the given GPG Key to sign the backup",
+                      )
+    parser.add_option("-m", "--message",
+                      dest="message",
+                      metavar="MESSAGE",
+                      default=gethostname(),
+                      help="Backup description/message",
+                      )
+    parser.add_option("-f", "--free",
+                      dest="free",
+                      action="store_true",
+                      help="Unmount a mounted filesystem by providing the USB vendor"
+                      "and product ids as shown in lsusb (e.g. 090c:1024).")
+    parser.add_option("-u", "--udev",
+                      dest="udev",
+                      action="store_true",
+                      help="Start from udev",
+                      )
+    parser.add_option("-s", "--settings",
+                      dest="settings",
+                      action="store_true",
+                      help="includes all settings files uses '/var/backups/include.system'"
+                      "listing, but excludes database dumps"
+                      "listed in '/var/backups/include.dumps'",
+                      )
+    parser.add_option("-l", "--logs",
+                      dest="logs",
+                      action="store_true",
+                      help="includes all log files within backups."
+                      "uses '/var/backups/include.logs' listing, "
+                      "but excludes log archives listed in '/var/backups/include.logarchives'",
+                      )
+    parser.add_option("-a", "--logarchives",
+                      dest="logarchives",
+                      action="store_true",
+                      help="includes also (does not exclude) log archives, listed"
+                      "in '/var/backups/include.logarchives'",
+                      )
+    parser.add_option("-H", "--hwdata",
+                      dest="hwdata",
+                      action="store_true",
+                      help="includes all hardware data files within backups."
+                      "uses '/var/backups/include.hwdata' listing",
+                      )
+    parser.add_option("-c", "--cron",
+                      dest="cron",
+                      action="store_true",
+                      help="Mark it as a scheduled backup"
+                      )
+    parser.add_option("-d", "--dbdumps",
+                      dest="dbdumps",
+                      action="store_true",
+                      help="includes (does not exclude) database dumps listed in"
+                      "'/var/backups/include.dumps'",
+                      )
+    parser.add_option("-v", "--virtualmachines",
+                      dest="virtualmachines",
+                      action="store_true",
+                      help="Backup virtual machine snapshots on USB disk",
+                      )
+    (options, args) = parser.parse_args()
+    return (options, args)
+
+def do():
+    (options, args) = opthandler()
+    if options.udev:
+        udev_called()
+        return
+    if options.free:
+        freeDevice(options.free)
+    if options.removebackup:
+        removeBackup(options.removebackup)
+        return
+    elif options.runbackup:
+        doBackup(options.message, options)
+        return
+
+if __name__ == '__main__':
+    enable_notifications("backup")
+    do()
+    end_notifications()

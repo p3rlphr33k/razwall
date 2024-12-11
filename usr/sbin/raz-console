@@ -1,0 +1,754 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# +--------------------------------------------------------------------------+
+# | Endian Firewall                                                          |
+# +--------------------------------------------------------------------------+
+# | Copyright (c) 2004-2016 S.p.A. <info@endian.com>                         |
+# |         Endian S.p.A.                                                    |
+# |         via Pillhof 47                                                   |
+# |         39057 Appiano (BZ)                                               |
+# |         Italy                                                            |
+# |                                                                          |
+# | This program is free software; you can redistribute it and/or modify     |
+# | it under the terms of the GNU General Public License as published by     |
+# | the Free Software Foundation; either version 2 of the License, or        |
+# | (at your option) any later version.                                      |
+# |                                                                          |
+# | This program is distributed in the hope that it will be useful,          |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of           |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            |
+# | GNU General Public License for more details.                             |
+# |                                                                          |
+# | You should have received a copy of the GNU General Public License along  |
+# | with this program; if not, write to the Free Software Foundation, Inc.,  |
+# | 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.              |
+# +--------------------------------------------------------------------------+
+
+#
+# /etc/inittab example:
+#
+# id:3:initdefault:
+#
+# l0:0:wait:/etc/rc.d/rc.halt halt
+# l6:6:wait:/etc/rc.d/rc.halt reboot
+#
+# si::sysinit:/etc/rc.d/rc.sysinit
+#
+# # Trap CTRL-ALT-DELETE
+# ca::ctrlaltdel:/sbin/shutdown -r now
+#
+# # Run efw-console instead of mingetty in standard runlevels
+# 1:2345:respawn: /usr/sbin/efw-console tty1
+# 2:2345:respawn: /usr/sbin/efw-console tty2
+# 3:2345:respawn: /usr/sbin/efw-console tty3
+# 4:2345:respawn: /usr/sbin/efw-console tty4
+# 5:2345:respawn: /usr/sbin/efw-console tty5
+# 6:2345:respawn: /usr/sbin/efw-console tty6
+# s0:2345:respawn: /usr/sbin/efw-console ttyS0 115200 vt100
+#
+
+import math
+import subprocess
+import termios
+import sys
+import os
+import glob
+import getpass
+import signal
+import fcntl
+import time
+import cStringIO as StringIO
+from endian.data import DataSource
+from endian.core import ansi
+
+SHELL_PATH = "/usr/local/bin/efw-shell-restricted"
+
+# Defaults for line-editing etc. characters
+
+DEF_ERASE  = 127         # default erase character (del)
+DEF_INTR   = 3           # default interrupt character (ctrl+c)
+DEF_QUIT   = 28          # default quit char (ctrl+\)
+DEF_KILL   = 21          # default kill char (ctrl+u)
+DEF_EOF    = 4           # default EOF char (ctrl+d)
+DEF_EOL    = 0
+DEF_SWITCH = 0           # default switch char
+DEF_NEXT   = 22
+
+ANSI = dict([ (x, getattr(ansi, x)) for x in [
+    'BBLACK', 'BBLUE', 'BCYAN', 'BGREEN', 'BLACK', 'BLUE', 'BLINK',
+    'BMAGENTA', 'BOLD', 'BRED', 'BWHITE', 'BYELLOW', 'CLEAR',
+    'CLEAR_LINE', 'CURSOR_TOP', 'CYAN', 'GREEN', 'INVERSE', 'MAGENTA',
+    'RED', 'RESET', 'RESTORE_POSITION', 'SAVE_POSITION',
+    'UNDERLINE', 'WHITE', 'YELLOW']])
+
+def update_utmp_console():
+    """ Update our utmp entry - Set user logged off """
+    try:
+        from endian.core import utmp
+        utmp.update_utmp(type=utmp.LOGIN_PROCESS, user="LOGIN")
+    except:
+        pass
+
+def update_utmp_shell(pid=None):
+    """ Update our utmp entry - Set user logged in """
+    try:
+        from endian.core import utmp
+        utmp.update_utmp(type=utmp.USER_PROCESS, user="no login", pid=pid)
+    except:
+        pass
+
+#
+# ACTIONS
+#
+
+
+class ActionShell(object):
+    description = "Shell"
+
+    @staticmethod
+    def run(console):
+        try:
+            signal.signal(signal.SIGUSR1, signal.SIG_IGN)
+            signal.signal(signal.SIGINT, signal.SIG_IGN) # ctrl-c
+            signal.signal(signal.SIGTSTP, signal.SIG_IGN) # ctrl-z
+            env = dict(os.environ)
+            for var in ["PREVLEVEL", "RUNLEVEL", "INIT_VERSION", "CONSOLE", "PWD", "OLDPWD"]:
+                if var in env:
+                    del env[var]
+            popen = subprocess.Popen([SHELL_PATH], env=env, cwd="/", shell=False, close_fds=True)
+            update_utmp_shell(popen.pid)
+            popen.wait()
+        except:
+            pass
+        console.set_signals()
+        update_utmp_console()
+        # Set the terminal to a sane state
+        console.termio_init(console.baud)
+
+
+class ActionAdminPassword(object):
+    description = "Change Admin Password"
+
+    @staticmethod
+    def run(console):
+        if not console.check_root_password():
+            return
+
+        password = getpass.getpass("New Password: ")
+        confirm = getpass.getpass("Confirm Password: ")
+
+        if password != confirm:
+            sys.stdout.write("Passwords do not match!\n")
+            return
+
+        if len(password) < 8:
+            sys.stdout.write("Password should be at least 8 characters long\n")
+            return
+
+        subprocess.call(["/usr/bin/htpasswd", "-c", "-m", "-b", "/var/efw/auth/users", "admin", password], shell=False)
+        sys.stdout.write("Password Changed!\n")
+
+
+class ActionRootPassword(object):
+    description = "Change Root Password"
+
+    @staticmethod
+    def run(console):
+        if not console.check_root_password():
+            return
+
+        password = getpass.getpass("New Password: ")
+        confirm = getpass.getpass("Confirm Password: ")
+
+        if password != confirm:
+            sys.stdout.write("Passwords do not match!\n")
+            return
+
+        if len(password) < 8:
+            sys.stdout.write("Password should be at least 8 characters long\n")
+            return
+
+        p = subprocess.Popen("/usr/sbin/chpasswd", shell=False, stdin=subprocess.PIPE)
+        p.communicate('%s:%s\n' % ("root", password))
+        if p.wait() == 0:
+            sys.stdout.write("Password Changed!\n")
+
+class ActionFactoryDefaults(object):
+    description = "Restore Factory Defaults"
+
+    @staticmethod
+    def run(console):
+        sys.stdout.write("*** WARNING: This will destroy all your current settings ***\n\n")
+
+        if console.getkey("Are you *REALLY* sure that you want to ? [y/N] ", echo=True, newline=True).lower() == "y":
+            console.reset_signals()
+            sys.stdout.write("\033[H\033[J")
+            sys.stdout.write("Restoring Factory Defaults (system will reboot)...\n")
+            subprocess.call(["/usr/local/bin/factory-default.sh"], shell=False)
+
+class ActionReboot(object):
+    description = "Reboot"
+
+    @staticmethod
+    def run(console):
+        if console.getkey("Are you sure that you want to reboot? [y/N] ", echo=True, newline=True).lower() == "y":
+            console.reset_signals()
+            sys.stdout.write("\033[H\033[J")
+            sys.stdout.write("Rebooting...\n")
+            subprocess.call(["/sbin/reboot"])
+            time.sleep(10000) # Sleep waiting for reboot...
+        else:
+            sys.stdout.write("Aborting...\n")
+
+class ActionNetWizard(object):
+    description = "Network Configuration Wizard"
+
+    @staticmethod
+    def run(console):
+        if not console.check_root_password():
+            return
+        print
+        subprocess.call(["/usr/local/bin/netwizard"], shell=False)
+
+class ActionCascade(object):
+    description = ""
+
+    @staticmethod
+    def run(console):
+        menu = console.display_menu().split('\n')
+        width, height = get_terminal_size()
+        if width < 1 or height < 1:
+            return True
+        sm = [[h < len(menu) and x < len(menu[h]) and menu[h][x] or ' ' for x in range(0, width)] for h in range(0, height-1)]
+        p = [[0 for x in range(0, width)] for y in range(0, height-1)]
+
+        # Save the terminal settings
+        fd = sys.stdin.fileno()
+        new_term = termios.tcgetattr(fd)
+        old_term = termios.tcgetattr(fd)
+        # New terminal setting unbuffered
+        new_term[3] = (new_term[3] & ~termios.ICANON & ~termios.ECHO)
+        termios.tcsetattr(fd, termios.TCSAFLUSH, new_term)
+        while True:
+            import random
+            y = len(sm) - 2
+            i = 0
+            xr = range(0, width)
+            random.shuffle(xr)
+            x = xr[i]
+            # select a character to be moved
+            while y >= 0:
+                if sm[y][x] != ' ' and p[y][x] == 0:
+                    break
+                if i >= width-2:
+                    i = 0
+                    xr = range(0, width)
+                    random.shuffle(xr)
+                    x = xr[i]
+                    y = y -1
+                else:
+                    i = i + 1
+                    x = xr[i]
+            if y < 0:
+                break
+            # move down
+            xd = x
+            while y < len(sm) - 1:
+                xd = x
+                r = random.random()
+                if r < 0.05 and xd > 0 and sm[y+1][xd-1] == ' ':
+                    xd = xd - 1
+                elif r >= 0.95 and xd < width-1 and sm[y+1][xd+1] == ' ':
+                    xd = xd + 1
+                if sm[y+1][xd] != ' ':
+                    p[y][x] = 1
+                    break
+                sys.stdout.write("\033[%d;%dH" % (y+2, x+1))
+                sys.stdout.write(" ")
+                sys.stdout.write("\033[%d;%dH" % (y+3, xd+1))
+                sys.stdout.write(sm[y][x])
+                sys.stdout.flush()
+                sm[y+1][xd] = sm[y][x]
+                sm[y][x] = " "
+                y = y + 1
+                if console.kbhit():
+                    break
+                x = xd
+                time.sleep(0.1)
+            if console.kbhit():
+                break
+        # Resets to normal terminal
+        termios.tcsetattr(fd, termios.TCSAFLUSH, old_term)
+        return True
+#
+# END ACTIONS
+#
+
+ACTIONS = { '0': ActionShell,
+            '1': ActionReboot,
+            '2': ActionRootPassword,
+            '3': ActionAdminPassword,
+            '4': ActionFactoryDefaults,
+            '5': ActionNetWizard,
+            '9': ActionCascade
+          }
+
+
+class EFWConsole(object):
+
+    tty = None
+    baud = None
+    term = None
+    test = None
+
+    def __init__(self, tty=None, baud=None, term="linux", test=False):
+        self.tty = tty
+        self.baud = baud
+        self.term = term
+        self.test = test
+        self.running = True
+        # Open the tty
+        if tty:
+            self.open_tty(tty)
+        # Set tty attributes
+        self.termio_init(baud)
+        os.putenv("TERM", term)
+        # Create a new session
+        try:
+            os.setsid()
+        except:
+            pass
+        # Register signal handlers
+        self.set_signals()
+        self.header = self.read_file_content("/etc/endian/console")
+        self.actions = ACTIONS
+        os.chdir("/")
+        # Update utmp
+        update_utmp_console()
+        # Set the process title
+        try:
+            from endian.core.procutils import set_process_name
+            set_process_name("efw-console %s " % os.path.basename(os.ttyname(0)))
+        except:
+            pass
+
+    def is_enabled(self):
+        try:
+            ds = DataSource("console").settings
+            if ds.get("ENABLED", "off") == "on":
+                return True
+            return False
+        except:
+            return True
+
+    def run(self):
+        while self.running:
+            self.display_menu()
+            action = self.prompt_action()
+            self.run_action(action)
+
+    def display_menu(self):
+        output = StringIO.StringIO()
+        width, height = get_terminal_size()
+        try:
+            hostname = self.get_hostname()
+            product = self.get_product()
+            release = self.get_release()
+            lan = self.get_lan()
+            uplinks = self.get_uplinks()
+
+            if self.header:
+                output.write('%s\n' % self.header)
+            else:
+                output.write('\n')
+            if release:
+                output.write('Release: {release}\n'.format(release=release, **ANSI))
+            #if product:
+            #    output.write('Product: {product}\n'.format(product=product, **ANSI))
+            if hostname:
+                output.write('Hostname: {hostname}\n'.format(hostname=hostname, **ANSI))
+            output.write('\n')
+            output.write('{BOLD}{GREEN}LAN Zone {dhcp}{RESET}\n'.format(dhcp=lan.get('LAN_DHCP_SERVER', False) and '[DHCP SERVER ENABLED]' or '', **ANSI))
+            if lan.get('URL'):
+                output.write('Management URL: {url}\n'.format(url=lan.get('URL', ''), **ANSI))
+            output.write('IPs: {ips}\n'.format(ips=lan.get('LAN_IPS', ''), **ANSI))
+            output.write('Devices: {interfaces}\n'.format(interfaces=' '.join(lan.get('INTERFACES', [])), **ANSI))
+            output.write('\n')
+            for uplink in uplinks[0:2]: # Show only 2 uplinks
+                output.write('{BOLD}{RED}Uplink - {name} {active}{RESET}\n'.format(name=uplink.get('NAME', ''),active=(uplink.get('ACTIVE', '') and '[ACTIVE]' or ''), **ANSI))
+                output.write('IPs: {ips} [{red_type}]\n'.format(ips=uplink.get('IPS', ''), red_type=uplink.get('WAN_TYPE',''), **ANSI))
+                output.write('Device: {interface}\n'.format(interface=self.format_interface(uplink.get('INTERFACE', '')), **ANSI))
+                output.write('\n')
+            output.write('\n')
+        except Exception, ex:
+            print ex
+
+        # empty lines
+        lines = height - len(output.getvalue().split('\n')) - 4
+        for i in range (0, min(lines,20)):
+            output.write('\n')
+
+        # menu
+        try:
+            actions = [(k,v) for k,v in sorted(self.actions.iteritems()) if v.description]
+            rows = int(math.ceil(len(actions) / 2.0))
+            for i in range(0, rows):
+                left = "{BOLD}{GREEN}{n}{RESET} {GREEN}{description:38s}{RESET}".format(n=actions[i][0], description=actions[i][1].description, **ANSI)
+                if i + rows < len(actions):
+                    right = "{BOLD}{GREEN}{n}{RESET} {GREEN}{description}{RESET}".format(n=actions[i+rows][0], description=actions[i+rows][1].description, **ANSI)
+                else:
+                    right = ""
+                output.write(left + right + '\n')
+        except Exception, ex:
+            output.write('%s\n' % ex)
+        menu = output.getvalue()
+        output.close()
+        sys.stdout.write("\033[H\033[J" + menu)
+        return menu
+
+    def prompt_action(self):
+        if self.test == 'quit':
+            self.running = False
+            return None
+        try:
+            value = self.getkey("\nChoice: ", echo=True, newline=True)
+            if value == '\n':
+                return None
+            if self.test and value == 'q':
+                self.running = False
+                return None
+            return value != None and self.actions.get(value) or None
+        except Exception, ex:
+            print ex
+            return None
+
+    def run_action(self, action):
+        if action:
+            try:
+                if not self.is_enabled():
+                    sys.stdout.write("Console access disabled...\n")
+                    time.sleep(3)
+                else:
+                    if not action.run(self):
+                        self.wait_enter("\nPress ENTER")
+            except Exception, ex:
+                print ex
+
+    def set_signals(self):
+        # When a console receives the SIGUSR1 signal, it redisplays the menu
+        try:
+            signal.signal(signal.SIGINT, signal.SIG_IGN) # ctrl-c
+            signal.signal(signal.SIGTSTP, signal.SIG_IGN) # ctrl-z
+            signal.signal(signal.SIGTERM, signal.SIG_IGN)
+            signal.signal(signal.SIGTTIN, signal.SIG_IGN)
+            signal.signal(signal.SIGTTOU, signal.SIG_IGN)
+            signal.signal(signal.SIGQUIT, signal.SIG_IGN)
+            signal.signal(signal.SIGUSR1, self.signal_received)
+        except:
+            pass
+
+    def reset_signals(self):
+        try:
+            signal.signal(signal.SIGINT, signal.SIG_DFL)
+            signal.signal(signal.SIGTSTP, signal.SIG_DFL)
+            signal.signal(signal.SIGTERM, signal.SIG_DFL)
+            signal.signal(signal.SIGTTIN, signal.SIG_DFL)
+            signal.signal(signal.SIGTTOU, signal.SIG_DFL)
+            signal.signal(signal.SIGQUIT, signal.SIG_DFL)
+        except:
+            pass
+
+    def signal_received(self, signum, stack):
+        pass
+
+    def wait_enter(self, prompt):
+        sys.stdout.write(prompt)
+        sys.stdout.flush()
+        while self.getkey() != '\n':
+            pass
+
+    def getkey(self, prompt=None, echo=False, newline=False):
+        if prompt:
+            sys.stdout.write(prompt)
+            sys.stdout.flush()
+        fd = sys.stdin.fileno()
+        old = termios.tcgetattr(fd)
+        new = termios.tcgetattr(fd)
+        new[3] = new[3] & ~termios.ICANON & ~termios.ECHO
+        new[6][termios.VMIN] = 1
+        new[6][termios.VTIME] = 0
+        termios.tcsetattr(fd, termios.TCSANOW, new)
+        c = None
+        try:
+            try:
+                c = os.read(fd, 1)
+            except:
+                c = None
+        finally:
+            termios.tcsetattr(fd, termios.TCSAFLUSH, old)
+        if echo:
+            if c != None:
+                sys.stdout.write(c)
+            sys.stdout.flush()
+        if newline:
+            sys.stdout.write("\n")
+        return c
+
+    def kbhit(self):
+        from select import select
+        dr,dw,de = select([sys.stdin], [], [], 0)
+        return dr != []
+
+    def check_root_password(self):
+        " Ask and check the root password "
+        import crypt
+        rootpwd = getpass.getpass("Enter Root Password: ")
+        f = open("/etc/shadow")
+        for line in f.xreadlines():
+            items = line.split(":")
+            if items[0] == "root":
+                f.close()
+                res = crypt.crypt(rootpwd, items[1]) == items[1]
+                if not res:
+                    sys.stdout.write("Wrong password\n")
+                return res
+        f.close()
+        return False
+
+    def get_uplinks(self):
+        " Get uplinks informations, return a list of dict "
+        uplinks = DataSource("uplinks")
+        result = []
+        for f in glob.glob("/var/efw/uplinks/*/data"):
+            try:
+                name = os.path.basename(os.path.dirname(f))
+                uplink = uplinks[name].data
+                t = {
+                    'NAME': name,
+                    'IPS': uplink.ips,
+                    'INTERFACE': uplink.interface,
+                    'WAN_TYPE': uplink.red_type,
+                    'ACTIVE': os.path.exists(os.path.join(os.path.dirname(f), "active"))
+                }
+                result.append(t)
+            except:
+                pass
+        return result
+
+    def get_lan(self):
+        result = {}
+        try:
+            settings = DataSource("ethernet").settings
+            lan_dev = result['LAN_DEV'] = settings.get("LAN_DEV")
+            result['LAN_IPS'] = settings.get("LAN_IPS")
+
+            # get the interfaces
+            result['INTERFACES'] = sorted([self.format_interface(os.path.basename(x)) for x in glob.glob('/sys/class/net/%s/brif/eth*' % lan_dev)])
+
+            # try to get the current lan ip from "ip addr"
+            lan_ip = settings.get("LAN_ADDRESS")
+            output = subprocess.Popen(["/sbin/ip", "addr", "show", lan_dev], shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0]
+            ip = None
+            for line in output.split("\n"):
+                if line.strip().startswith("inet "): # use "inet " avoid matching with "inet6"
+                    if ip:
+                        # ip already found, this is a second ip, return the one from settings
+                        ip = lan_ip
+                        break
+                    else:
+                        ip = line.strip().split()[1]
+            lan_ip = ip or lan_ip
+            if lan_ip:
+                result['URL'] = "https://%s:10443" % (lan_ip.split("/")[0])
+
+            result['LAN_DHCP_SERVER'] = DataSource("dhcp").settings.ENABLE_LAN == 'on'
+            return result
+        except:
+            return result
+
+    def format_interface(self, interface):
+        " If the interface is UP, return 'interface [UP]' else return 'interface "
+        if not interface:
+            return ''
+        else:
+            active = self.get_interface_status(interface)
+            return '%s %s' % (interface, active and '[UP]' or '')
+
+    def get_interface_status(self, interface):
+        " Return True if an interface (e.g. eth0) is UP "
+        data = self.read_file_content('/sys/class/net/%s' % interface)
+        return data != '0'
+
+    def get_release(self):
+        " Return the release "
+        return self.read_file_content("/etc/issue").strip()
+
+    def get_product(self):
+        " Return the product description "
+        try:
+            settings = DataSource("product").settings
+            return settings.get('PRODUCT_NAME', '')
+        except:
+            return ""
+
+    def get_hostname(self):
+        " Return the hostname "
+        try:
+            settings = DataSource("host").settings
+            return settings.get('HOSTNAME', '')
+        except:
+            return ""
+
+    def read_file_content(self, filename):
+        " Read the content of a file, return '' in case of errors "
+        try:
+            with open(filename, 'r') as f:
+                return f.read()
+        except Exception:
+            return ""
+
+    def open_tty(self, tty):
+        " Replacement for mingetty/agetty "
+
+        try:
+            os.chown(tty, 0, 0)
+        except Exception, ex:
+            print ex
+
+        try:
+            os.chmod(tty, 0600)
+        except Exception, ex:
+            print ex
+
+        try:
+            signal.signal(signal.SIGHUP, signal.SIG_IGN)
+        except:
+            pass
+
+        try:
+            fd = os.open(tty, os.O_RDWR)
+        except OSError, ex:
+            print "%s: cannot open tty: %s" % (tty, str(ex))
+            sys.exit(1)
+
+        try:
+            fcntl.ioctl(fd, termios.TIOCSCTTY, 1)
+        except OSError, ex:
+            print "%s: no controlling tty: %s" % (tty, str(ex))
+        except IOError, ex:
+            print "%s: no controlling tty: %s" % (tty, str(ex))
+
+        if not os.isatty(fd):
+            print "%s: not a tty" % tty
+            sys.exit(1)
+
+        # Set up stdin/stdout/stderr
+        try:
+            os.dup2(fd, 0)
+            os.dup2(fd, 1)
+            os.dup2(fd, 2)
+            if fd > 2:
+                os.close(fd)
+        except Exception, ex:
+            print "%s: dup2(): %s" % (tty, str(ex))
+            sys.exit(0)
+
+        # Clear the terminal
+        sys.stdout.write('\033[H\033[J')
+        sys.stdout.flush()
+
+    def termio_init(self, baud):
+        " Set tty attributes "
+        def get_termios_attributes(attrs):
+            result = 0
+            for attr in attrs:
+                result |= getattr(termios, attr, 0)
+            return result
+
+        try:
+            fd = sys.stdin
+            (iflag, oflag, cflag, lflag, ispeed, ospeed, cc) = termios.tcgetattr(fd)
+            # iflag
+            iflag = get_termios_attributes(['IXON','IXOFF','ICRNL'])
+            # oflag
+            oflag = get_termios_attributes(['OPOST','ONLCR'])
+            # cflag
+            cflag = get_termios_attributes(['CS8','HUPCL','CREAD','CLOCAL'])
+            # baud
+            if baud:
+                ispeed = baud
+                ospeed = baud
+            # lflag
+            lflag = get_termios_attributes(['ICANON','ISIG','ECHO','ECHOE','ECHOK','ECHOKE'])
+            # cc (list of the tty special character)
+            cc[termios.VMIN] = 1
+            cc[termios.VTIME] = 0
+            cc[termios.VINTR] = DEF_INTR   # default interrupt
+            cc[termios.VQUIT] = DEF_QUIT   # default quit
+            cc[termios.VEOF] = DEF_EOF     # default EOF character
+            cc[termios.VEOL] = DEF_EOL     # default EOL character
+            cc[termios.VERASE] = DEF_ERASE # set erase character
+            cc[termios.VKILL] = DEF_KILL   # set kill character
+            cc[termios.VLNEXT] = DEF_NEXT
+            if hasattr(termios, 'VSWTC'):
+                cc[termios.VSWTC] = DEF_SWITCH # default switch character
+            # make the new settings effective
+            termios.tcsetattr(fd, termios.TCSANOW, [iflag, oflag, cflag, lflag, ispeed, ospeed, cc])
+        except Exception, ex:
+            print "error setting tty attributes: %s" % str(ex)
+
+def get_terminal_size():
+    env = os.environ
+    def ioctl_GWINSZ(fd):
+        try:
+            import struct
+            cr = struct.unpack('hh', fcntl.ioctl(fd, termios.TIOCGWINSZ, '1234'))
+        except:
+            return
+        return cr
+    cr = ioctl_GWINSZ(0) or ioctl_GWINSZ(1) or ioctl_GWINSZ(2)
+    if not cr:
+        try:
+            fd = os.open(os.ctermid(), os.O_RDONLY)
+            cr = ioctl_GWINSZ(fd)
+            os.close(fd)
+        except:
+            pass
+    if not cr or cr[0] == 0:
+        cr = (env.get('LINES', 25), env.get('COLUMNS', 80))
+    return int(cr[1]), int(cr[0])
+
+def main():
+    # Parse args
+    tty = None
+    baud = None
+    term = "linux"
+    argv = sys.argv[1:]
+    test = False
+    for arg in argv:
+        if arg in ['-h', '-help', '--help', '?', '-?']:
+            # Help
+            sys.stderr.write("Usage: efw-console [TTY] [BAUD] [TERM]\n")
+            sys.exit(2)
+        elif arg == "-t": # Test mode - exit pressing 'q'
+            test = True
+        elif arg == "-T": # Test mode - quit after start
+            test = 'quit'
+        elif not arg.startswith("-"): # Ignore options
+            if not baud:
+                # Convert speed string to speed code
+                baud = getattr(termios, 'B%s' % arg, None)
+                if baud:
+                    continue
+            if not tty:
+                tty = arg
+                if not tty.startswith('/'):
+                    tty = "/dev/%s" % tty
+            else:
+                term = arg
+    # Start the console
+    console = EFWConsole(tty=tty, baud=baud, term=term, test=test)
+    console.run()
+
+if __name__ == '__main__':
+    main()

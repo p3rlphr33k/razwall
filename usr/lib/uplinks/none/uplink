@@ -1,0 +1,32 @@
+#!/bin/sh
+. /etc/rc.d/efw_lib.sh
+. ${UPLINK_SCRIPTS}/common
+. ${UPLINK_SCRIPTS}/generic/hookery.sh
+. ${UPLINK_SCRIPTS}/generic/route.sh
+
+function stop() {
+    route_stop
+    return $?
+}
+
+function start() {
+    # forge interface with the zones ones
+    local val=$(getnetbygw $new_gateway 2>/dev/null)
+    if [ $? -ne 0 ] || [ -z "${val}" ]; then
+        failure "Could not get local routing entries for gateway '$new_gateway'"
+        return 1
+    fi
+
+    new_network_number=$(echo $val | awk '{ print $2 }')
+    new_cidr=$(echo $val | awk '{ print $3 }')
+    interface=$(echo $val | awk '{ print $4 }')
+    new_ip_address=$(echo $val | awk '{ print $5 }')
+
+    route_start
+    set_active "$uplink"
+    return $?
+}
+
+switch "$1"
+
+exit 0

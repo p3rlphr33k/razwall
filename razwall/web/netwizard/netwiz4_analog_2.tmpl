@@ -1,0 +1,129 @@
+<TMPL_VAR NAME=NW_VAL_title>
+<br>
+<TMPL_VAR NAME=NW_VAL_subtitle>
+<br>
+<TMPL_IF EXPR="NW_VAL_error_message ne ''">
+  <font color="red"><TMPL_VAR NAME=NW_VAL_error_message></font>
+</TMPL_IF>
+<br>
+<br>
+
+<table border="0">
+<form action="<TMPL_VAR NAME=NW_VAL_self>" method="post">
+  <input type="hidden" name="session_id" value="<TMPL_VAR NAME=NW_VAL_session_id>">
+  <input type="hidden" name="step" value="<TMPL_VAR NAME=NW_VAL_step>">
+  <input type="hidden" name="substep" value="<TMPL_VAR NAME=NW_VAL_substep>">
+  <input type="hidden" name="lever" value="<TMPL_VAR NAME=NW_VAL_lever>">
+
+  <tr>
+    <td width="25%"><TMPL_VAR NAME=nw_speed>:</td>
+    <td>
+      <select name="SPEED">
+   <TMPL_LOOP NAME=NW_VAL_CONF_SPEED_LOOP >
+        <option value="<TMPL_VAR NAME=CONF_SPEED_LOOP_NAME>" <TMPL_VAR NAME=CONF_SPEED_LOOP_SELECTED>><TMPL_VAR NAME=CONF_SPEED_LOOP_CAPTION></option>
+   </TMPL_LOOP>
+      </select>
+    </td>
+  </tr>
+
+<TMPL_IF EXPR="NW_VAL_MODEMTYPE eq 'modem'">
+  <tr>
+    <td width="25%"><TMPL_VAR NAME=nw_dial_telephone>:</td>
+    <td>
+      <input type="text" name="TELEPHONE" value="<TMPL_VAR NAME=NW_VAL_TELEPHONE>" size="15">
+    </td>
+  </tr>
+</TMPL_IF>
+
+<TMPL_IF EXPR="NW_VAL_MODEMTYPE eq 'hsdpa'">
+  <tr>
+    <td width="25%"><TMPL_VAR NAME=nw_apn>:</td>
+    <td>
+      <input type="text" name="APN" value="<TMPL_VAR NAME=NW_VAL_APN>" size="15">
+    </td>
+  </tr>
+</TMPL_IF>
+
+  <tr>
+    <td width="25%"><TMPL_VAR NAME=username>:&nbsp;<img src='/images/blob.png' alt='*' /></td>
+    <td>
+      <input type="text" name="USERNAME" value="<TMPL_VAR NAME=NW_VAL_USERNAME>" size="15">
+    </td>
+  </tr>
+
+  <tr>
+    <td width="25%"><TMPL_VAR NAME=password>:&nbsp;<img src='/images/blob.png' alt='*' /></td>
+    <td>
+      <input type="text" name="PASSWORD" value="<TMPL_VAR NAME=NW_VAL_PASSWORD>" size="15">
+    </td>
+  </tr>
+
+  <tr>
+    <td width="25%"><TMPL_VAR NAME=nw_auth_method>:</td>
+    <td>
+      <select name="AUTH_N">
+        <option value="0" <TMPL_IF EXPR="NW_VAL_AUTH_N == 0">selected</TMPL_IF>><TMPL_VAR NAME=nw_papchap></option>
+        <option value="1" <TMPL_IF EXPR="NW_VAL_AUTH_N == 1">selected</TMPL_IF>><TMPL_VAR NAME=nw_pap></option>
+        <option value="2" <TMPL_IF EXPR="NW_VAL_AUTH_N == 2">selected</TMPL_IF>><TMPL_VAR NAME=nw_chap></option>
+      </select>
+    </td>
+  </tr>
+
+  <tr>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td colspan="2"><TMPL_VAR NAME=nw_additionalips>:</td>
+  </tr>
+  <tr colspan="2">
+    <td>
+      <textarea cols="30" rows="3" name="DISPLAY_WAN_ADDITIONAL"><TMPL_VAR NAME=NW_VAL_DISPLAY_WAN_ADDITIONAL></textarea>
+    </td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td width="25%"><TMPL_VAR NAME=nw_mtu>:&nbsp;<img src='/images/blob.png' alt='*' /></td>
+    <td>
+      <input type="text" name="MTU" value="<TMPL_VAR NAME=NW_VAL_MTU>" size="15">
+    </td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td width="25%"><TMPL_VAR NAME=nw_dns_quest>:</td>
+    <td>
+      <input type="radio" name="DNS_N" value="0" <TMPL_VAR NAME=NW_VAL_DNS_SELECTED_0>/><TMPL_VAR NAME=nw_automatic>&nbsp;
+      <input type="radio" name="DNS_N" value="1" <TMPL_VAR NAME=NW_VAL_DNS_SELECTED_1>/><TMPL_VAR NAME=nw_manual>
+    </td>
+  </tr>
+
+  <tr>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+  </tr>
+
+  <tr>
+    <td class='base' width='50%'>
+      <img src='/images/blob.png' alt ='*' align='top' />&nbsp;
+      <font class='base'><TMPL_VAR NAME=nw_field_blank></font>
+    </td>
+    <td>&nbsp;</td>
+  </tr>
+
+</table>
+
+<br>
+<br>
+<input type="submit" name="prev" value="<TMPL_VAR NAME=nw_prev>">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="submit" name="cancel" value="<TMPL_VAR NAME=nw_cancel>">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="submit" name="next" value="<TMPL_VAR NAME=nw_next>">
+</form>

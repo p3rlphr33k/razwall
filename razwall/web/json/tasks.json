@@ -1,0 +1,24 @@
+{
+	"tasks": [
+		{
+			"description": "Backup of this server.",
+			"name": "System Backup",
+			"hour": "2",
+			"minute": "0",
+			"dom": "*",
+			"script": "/razdc/scripts/samba_backup",
+			"month": "*",
+			"dow": "*"
+		},
+		{
+            "description": "Replication of SYSVOL files scross DCs.",
+            "name": "File Replication",
+            "hour": "*",
+            "minute": "*/15",
+            "dom": "*",
+            "script": "/razdc/scripts/repl.sh",
+            "month": "*",
+            "dow": "*"
+        }
+	]
+}

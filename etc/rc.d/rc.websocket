@@ -1,0 +1,91 @@
+#!/bin/bash
+# chkconfig: 2345 95 20
+# description: RazWall WebSocket Service
+# processname: websocket
+
+binary="/razwall/web/cgi-bin/socket.pl"
+lockfile="/var/lock/subsys/WebSocket"
+pidfile="/var/run/WebSocket.pid"
+
+echo "Debug: Script started"
+
+[ -x $binary ] || { echo "Debug: $binary is not executable"; exit 0; }
+
+RETVAL=0
+
+start() {
+    echo "Debug: Starting RazWall WebSocket"
+    nohup /usr/bin/perl $binary > /dev/null 2>&1 &
+    PID=$!
+    RETVAL=$?
+    if [ $RETVAL -eq 0 ]; then
+        echo "Process started with PID $PID"
+        echo $PID > $pidfile
+        touch $lockfile
+    else
+        echo "Failed to start process"
+        RETVAL=1
+    fi
+}
+
+stop() {
+    echo "Debug: Stopping RazWall WebSocket"
+    if [ -f $pidfile ]; then
+        PID=$(cat $pidfile)
+        kill $PID
+        RETVAL=$?
+        if [ $RETVAL -eq 0 ]; then
+            rm -f $lockfile
+            rm -f $pidfile
+            echo "Stopped"
+        else
+            echo "Failed to stop"
+        fi
+    else
+        echo "Service not running (PID file not found)"
+    fi
+}
+
+status() {
+    echo "Debug: Checking status"
+    if [ -f $pidfile ]; then
+        PID=$(cat $pidfile)
+        if ps -p $PID > /dev/null 2>&1; then
+            echo "RazWall WebSocket is running with PID $PID"
+            RETVAL=0
+        else
+            echo "RazWall WebSocket is not running, but PID file exists"
+            RETVAL=1
+        fi
+    else
+        echo "RazWall WebSocket is not running"
+        RETVAL=3
+    fi
+}
+
+restart() {
+    echo "Debug: Restarting RazWall WebSocket"
+    stop
+    sleep 2
+    start
+}
+
+case "$1" in
+    start)
+        start
+    ;;
+    stop)
+        stop
+    ;;
+    restart)
+        restart
+    ;;
+    status)
+        status
+    ;;
+    *)
+        echo "Usage: $0 {start|stop|restart|status}"
+    ;;
+esac
+
+exit $RETVAL

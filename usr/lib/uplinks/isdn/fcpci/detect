@@ -1,0 +1,10 @@
+#!/bin/sh
+
+. /etc/rc.d/efw_lib.sh
+. ${UPLINK_SCRIPTS}/generic/detect.sh
+
+detect_pci 1244 0a00
+detect_pci 1244 0e00
+
+detect_show
+

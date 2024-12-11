@@ -1,0 +1,49 @@
+<TMPL_VAR NAME=NW_VAL_title>
+<br>
+<TMPL_VAR NAME=NW_VAL_subtitle>
+<br>
+<TMPL_IF EXPR="NW_VAL_error_message ne ''">
+  <font color="red"><TMPL_VAR NAME=NW_VAL_error_message></font>
+</TMPL_IF>
+<br>
+<br>
+
+<table border="0">
+<form action="<TMPL_VAR NAME=NW_VAL_self>" method="post">
+  <input type="hidden" name="session_id" value="<TMPL_VAR NAME=NW_VAL_session_id>">
+  <input type="hidden" name="step" value="<TMPL_VAR NAME=NW_VAL_step>">
+  <input type="hidden" name="substep" value="<TMPL_VAR NAME=NW_VAL_substep>">
+
+  <tr>
+    <td width="25%"><TMPL_VAR NAME=nw_comport>:</td>
+    <td>
+      <select name="COMPORT" <TMPL_VAR NAME=NW_VAL_MODEM_SELECTION>>
+   <TMPL_LOOP NAME=NW_VAL_CONF_MODEMS_LOOP >
+        <option value="<TMPL_VAR NAME=CONF_MODEMS_LOOP_NAME>" <TMPL_VAR NAME=CONF_MODEMS_LOOP_SELECTED>><TMPL_VAR NAME=CONF_MODEMS_LOOP_CAPTION></option>
+   </TMPL_LOOP>
+      </select>
+      </td>
+  </tr>
+
+  <tr>
+    <td width="25%"><TMPL_VAR NAME=nw_modemtype>:</td>
+    <td>
+      <select name="MODEMTYPE">
+        <option value="modem" <TMPL_IF EXPR="NW_VAL_MODEMTYPE eq 'modem'">selected</TMPL_IF>><TMPL_VAR NAME=nw_analog_modem></option>
+        <option value="hsdpa" <TMPL_IF EXPR="NW_VAL_MODEMTYPE eq 'hsdpa'">selected</TMPL_IF>><TMPL_VAR NAME=nw_hsdpa_modem></option>
+        <option value="cdma" <TMPL_IF EXPR="NW_VAL_MODEMTYPE eq 'cdma'">selected</TMPL_IF>><TMPL_VAR NAME=nw_cdma_modem></option>
+      </select>
+    </td>
+  </tr>
+
+</table>
+
+<br>
+<br>
+<input type="submit" name="prev" value="<TMPL_VAR NAME=nw_prev>">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="submit" name="cancel" value="<TMPL_VAR NAME=nw_cancel>">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="submit" name="next" value="<TMPL_VAR NAME=nw_next>">
+
+</form>

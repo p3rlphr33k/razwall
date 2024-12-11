@@ -1,0 +1,17 @@
+#if $PROXY_ENABLED == 'on'
+<IfModule mod_proxy.c>
+    ProxyRequests off
+    ProxyAddHeaders on
+
+    ProxyPass /proxy.pac http://127.0.0.1:3131/manage/commands/commands.proxy.proxypac?filename=proxy.pac
+    ProxyPass /proxy.pa http://127.0.0.1:3131/manage/commands/commands.proxy.proxypac?filename=proxy.pa
+    ProxyPass /wpad.dat http://127.0.0.1:3131/manage/commands/commands.proxy.proxypac?filename=wpad.dat
+    <LocationMatch /(proxy\.pac|proxy\.pa|wpad\.dat)>
+        Order Allow,Deny
+#if $DENY_PROXYPAC_FROM
+	Deny from $DENY_PROXYPAC_FROM
+#end if
+        Allow from all
+    </LocationMatch>
+</IfModule>
+#end if

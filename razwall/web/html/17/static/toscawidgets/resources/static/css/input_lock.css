@@ -1,0 +1,13 @@
+.input_lock_locked {
+    background-color: black;
+    opacity: 0.5;
+}
+
+.input_lock_locked:hover {
+    cursor: pointer;
+}
+
+// hide if tab is not selected
+.pane[display=none] .input_lock_locked {
+    display: none;
+}

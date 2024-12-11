@@ -1,0 +1,48 @@
+<TMPL_VAR NAME=NW_VAL_title>
+<br>
+<TMPL_IF EXPR="NW_VAL_error_message ne ''">
+  <font color="red"><TMPL_VAR NAME=NW_VAL_error_message></font>
+</TMPL_IF>
+<br>
+
+<table border="0">
+<form action="<TMPL_VAR NAME=NW_VAL_self>" method="post">
+  <input type="hidden" name="session_id" value="<TMPL_VAR NAME=NW_VAL_session_id>">
+  <input type="hidden" name="step" value="<TMPL_VAR NAME=NW_VAL_step>">
+
+  <tr>
+    <td width="25%"><TMPL_VAR NAME=nw_admin_mail>:&nbsp;<img src='/images/blob.png' alt='*' /></td>
+    <td>
+      <input type="text" name="MAIN_ADMINMAIL" value="<TMPL_VAR NAME=NW_VAL_MAIN_ADMINMAIL>" size="15">
+    </td>
+  </tr>
+  <tr>
+    <td width="25%"><TMPL_VAR NAME=nw_mail_from>:&nbsp;<img src='/images/blob.png' alt='*' /></td>
+    <td>
+      <input type="text" name="MAIN_MAILFROM" value="<TMPL_VAR NAME=NW_VAL_MAIN_MAILFROM>" size="15">
+    </td>
+  </tr>
+  <tr>
+    <td width="25%"><TMPL_VAR NAME=nw_mail_smarthost>:&nbsp;<img src='/images/blob.png' alt='*' /></td>
+    <td>
+      <input type="text" name="MAIN_SMARTHOST" value="<TMPL_VAR NAME=NW_VAL_MAIN_SMARTHOST>" size="15">
+    </td>
+  </tr>
+
+  <tr>
+    <td class='base' colspan="5">
+      <img src='/images/blob.png' alt ='*' align='top' />&nbsp;
+      <font class='base'><TMPL_VAR NAME=nw_field_blank></font>
+    </td>
+  </tr>
+
+</table>
+
+<br>
+<br>
+<input type="submit" name="prev" value="<TMPL_VAR NAME=nw_prev>">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="submit" name="cancel" value="<TMPL_VAR NAME=nw_cancel>">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="submit" name="next" value="<TMPL_VAR NAME=nw_next>">
+</form>

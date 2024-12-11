@@ -1,0 +1,9 @@
+{
+   "MAC" : "/sys/class/net/enp0s3/address",
+   "CPU" : "/proc/cpuinfo",
+   "name" : "RazDC",
+   "serial" : "",
+   "macaddr" : "",
+   "version" : "4.0",
+   "_comment" : "RAZDC SERVER JSON CONFIG - 09/23/2022"
+}

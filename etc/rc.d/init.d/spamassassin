@@ -1,0 +1,79 @@
+#!/bin/sh
+#
+# spamassassin This script starts and stops the spamd daemon
+#
+# chkconfig: - 80 30
+# processname: spamd
+# description: spamd is a daemon process which uses SpamAssassin to check \
+#              email messages for SPAM.  It is normally called by spamc \
+#	       from a MDA.
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+# Set default spamd configuration.
+SPAMDOPTIONS="-d -c -m5 -H"
+SPAMD_PID=/var/run/spamd/spamd.pid
+
+# Source spamd configuration.
+if [ -f /etc/sysconfig/spamassassin ] ; then
+	. /etc/sysconfig/spamassassin
+fi
+
+[ -f /usr/bin/spamd -o -f /usr/local/bin/spamd ] || exit 0
+PATH=$PATH:/usr/bin:/usr/local/bin
+
+# By default it's all good
+RETVAL=0
+
+# See how we were called.
+case "$1" in
+  start)
+	# Start daemon.
+	echo -n "Starting spamd: "
+	daemon spamd $SPAMDOPTIONS -r $SPAMD_PID
+	RETVAL=$?
+        echo
+	if [ $RETVAL = 0 ]; then
+		touch /var/lock/subsys/spamassassin
+	fi
+        ;;
+  stop)
+        # Stop daemons.
+        echo -n "Shutting down spamd: "
+        killproc spamd
+        RETVAL=$?
+        echo
+	if [ $RETVAL = 0 ]; then
+		rm -f /var/lock/subsys/spamassassin
+		rm -f $SPAMD_PID
+	fi
+        ;;
+  condstart)
+        if [ -f $SPAMD_PID ]; then
+            checkpid `cat $SPAMD_PID` || $0 start
+        else
+            $0 start
+        fi
+        ;;
+  restart)
+        $0 stop
+        $0 start
+        ;;
+  condrestart)
+       status spamd &>/dev/null && $0 restart || :
+       ;;
+  condstop)
+       status spamd &>/dev/null && $0 stop || :
+       ;;
+  status)
+	status spamd
+	RETVAL=$?
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart|status|condrestart|condstop|condstart}"
+	RETVAL=1
+	;;
+esac
+
+exit $RETVAL

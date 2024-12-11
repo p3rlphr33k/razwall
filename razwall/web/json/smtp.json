@@ -1,0 +1,31 @@
+{
+  "smtp" : [
+      {
+         "mailto" : "",
+         "mailfrom" : "",
+         "mailserver" : "",
+		 "mailport" : "25";
+         "mailtoname" : "",
+      },
+      {
+         "name" : "backup",
+		 "subject" : "RazDC Backup",
+         "body" : "RazDC has completed a system backup.\n File: [!BACLUP_FILE!]"
+      },
+      {
+         "name" : "cloud",
+		 "subject" : "RazDC Cloud Transfer",
+         "body" : "RazDC has completed a backup upload.\n File: [!CLOUD_FILE!]"
+      },
+      {
+         "name" : "resources",
+		 "subject" : "RazDC System Resources",
+         "body" : "RazDC is approaching resource limits.\nLogin and check CPU, Memory, and disk space.\n[!RES_REPORT!]"
+      },
+	  {
+         "name" : "diagnostics",
+		 "subject" : "RazDC Self Diagnostic",
+         "body" : "RazDC has completed a self diagnostic. [!DIAG_RESULT!]"
+      },
+   ]
+}

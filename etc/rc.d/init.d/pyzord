@@ -1,0 +1,76 @@
+#!/bin/bash
+#
+
+# Source function library.
+. /etc/init.d/functions
+
+[ -x /usr/bin/pyzord ] || exit 0
+
+RETVAL=0
+
+#
+# See how we were called.
+#
+
+start() {
+	# Check if it is already running
+        echo -n $"Starting pyzor: "
+	daemon /usr/bin/pyzord --homedir /var/lib/pyzor/
+	RETVAL=$?
+	[ $RETVAL -eq 0 ] && touch /var/lock/subsys/pyzord
+	echo
+	return $RETVAL
+}
+
+stop() {
+	echo -n $"Stopping pyzor: "
+	killproc pyzord
+	RETVAL=$?
+	[ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/pyzord
+	echo
+        return $RETVAL
+}
+
+
+restart() {
+	stop
+	start
+}	
+
+reload() {
+        echo -n $"Reloading pyzor: "
+        killproc pyzord -HUP
+        RETVAL=$?
+        echo
+        return $RETVAL
+}
+
+case "$1" in
+start)
+	start
+	;;
+stop)
+	stop
+	;;
+reload)
+	reload
+	;;
+restart)
+	restart
+	;;
+condrestart)
+       status pyzord &>/dev/null && $0 restart || :
+       ;;
+condstop)
+       status pyzord &>/dev/null && $0 stop || :
+       ;;
+status)
+       status pyzord
+       RETVAL=$?
+       ;;
+*)
+	echo $"Usage: $0 {start|stop|status|restart|condrestart|condstop|reload}"
+	exit 1
+esac
+
+exit $RETVAL

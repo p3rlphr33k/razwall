@@ -1,0 +1,69 @@
+#!/bin/sh
+#
+# frox
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+RETVAL=0
+prog="frox"
+
+lock=/var/lock/subsys/frox
+
+start() {
+	# Start daemons.
+	echo -n $"Starting $prog: "
+	daemon /usr/sbin/frox 2>/dev/null
+	RETVAL=$?
+	echo
+	[ $RETVAL -eq 0 ] && touch $lock
+	return $RETVAL
+}
+
+stop() {
+
+	# Stop daemons.
+	echo -n $"Shutting down $prog: "
+	killproc frox
+	RETVAL=$?
+	echo
+	[ $RETVAL -eq 0 ] && rm -f $lock
+	return $RETVAL
+}
+
+restart() {
+        stop
+        start
+}
+
+
+# See how we were called.
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  restart|reload)
+	stop
+	start
+	RETVAL=$?
+	;;
+  condrestart)
+        status frox &>/dev/null && restart || :
+	;;
+  condstop)
+        status frox &>/dev/null && stop || :
+	;;
+  status)
+	status frox
+	RETVAL=$?
+	;;
+  *)
+	echo $"Usage: $0 {start|stop|restart|condrestart|condstop|status}"
+	exit 1
+esac
+
+exit $RETVAL
+

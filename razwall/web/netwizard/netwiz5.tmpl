@@ -1,0 +1,45 @@
+<TMPL_VAR NAME=NW_VAL_title>
+<br>
+<TMPL_IF EXPR="NW_VAL_error_message ne ''">
+  <font color="red"><TMPL_VAR NAME=NW_VAL_error_message></font>
+</TMPL_IF>
+<br>
+
+<table border="0">
+<form action="<TMPL_VAR NAME=NW_VAL_self>" method="post">
+  <input type="hidden" name="session_id" value="<TMPL_VAR NAME=NW_VAL_session_id>">
+  <input type="hidden" name="step" value="<TMPL_VAR NAME=NW_VAL_step>">
+
+<TMPL_IF NAME=NW_VAL_DNS_MANUAL>
+  <tr>
+    <td colspan="2"><TMPL_VAR NAME=nw_dns_manual>:</td>
+  </tr>
+  <tr>
+    <td width="25%"><TMPL_VAR NAME=nw_dns1>:</td>
+    <td>
+      <input type="text" name="DNS1" value="<TMPL_VAR NAME=NW_VAL_DNS1>" size="15">
+    </td>
+  </tr>
+  <tr>
+    <td width="25%"><TMPL_VAR NAME=nw_dns2>:</td>
+    <td>
+      <input type="text" name="DNS2" value="<TMPL_VAR NAME=NW_VAL_DNS2>" size="15">
+    </td>
+  </tr>
+<TMPL_ELSE>
+  <tr>
+    <td width="25%"><TMPL_VAR NAME=nw_dns_quest>:</td>
+    <td><TMPL_VAR NAME=NW_VAL_DNS_CAPTION></td>
+  </tr>
+</TMPL_IF>
+
+</table>
+
+<br>
+<br>
+<input type="submit" name="prev" value="<TMPL_VAR NAME=nw_prev>">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="submit" name="cancel" value="<TMPL_VAR NAME=nw_cancel>">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="submit" name="next" value="<TMPL_VAR NAME=nw_next>">
+</form>

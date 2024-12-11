@@ -1,0 +1,39 @@
+{
+   "services" : [
+      {
+         "name" : "Active Directory",
+         "daemon" : "smb.service",
+		 "description" : "Controls the samba service for active directory."
+      },
+	  {
+         "name" : "DNS Service",
+         "daemon" : "named.service",
+		 "description" : "Controls Bind9 DNS service."
+      },
+      {
+         "name" : "Web Interface",
+         "daemon" : "httpd.service",
+		 "description" : "Enables/Disables RazDC web interface."
+      },
+      {
+         "name" : "DHCP Server",
+         "daemon" : "dhcpd.service",
+		 "description" : "Enables/Disables services that give out IP addresses to hosts."
+      },
+      {
+         "name" : "Time Service",
+         "daemon" : "chronyd.service",
+		 "description" : "Enables/Disables time services."
+      },
+      {
+         "name" : "SSH Terminal",
+         "daemon" : "sshd.service",
+		 "description" : "Enable SSH (remote shell) access."
+      },
+	  {
+         "name" : "WebSocket Service",
+         "daemon" : "websocket.service",
+		 "description" : "Enables realtime updates to web GUI, RazDC Chat, and sub-systems."
+      }
+   ]
+}

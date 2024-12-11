@@ -1,0 +1,97 @@
+<TMPL_VAR NAME=NW_VAL_title>
+<br>
+<TMPL_IF EXPR="NW_VAL_error_message ne ''">
+  <font color="red"><TMPL_VAR NAME=NW_VAL_error_message></font>
+</TMPL_IF>
+<br>
+
+<form action="<TMPL_VAR NAME=NW_VAL_self>" method="post">
+  <input type="hidden" name="session_id" value="<TMPL_VAR NAME=NW_VAL_session_id>">
+  <input type="hidden" name="step" value="<TMPL_VAR NAME=NW_VAL_step>">
+  <input type="hidden" name="substep" value="<TMPL_VAR NAME=NW_VAL_substep>">
+  <input type="hidden" name="lever" value="<TMPL_VAR NAME=NW_VAL_lever>">
+
+  <table border="0" class="none" columns="5">
+
+  
+    <tr>
+      <td colspan="5"><b><font color="red"><TMPL_VAR NAME=nw_wan_stealth></font></b> <font color="#666666">(<TMPL_VAR NAME=nw_wan_descr>)</font>:</td>
+    </tr>
+
+    <tr>
+      <td><TMPL_VAR NAME=nw_interface>:</td>
+      <td colspan="4">&nbsp;</td>
+    </tr>
+    <tr>
+      <td colspan="5">
+        <table>
+          <tr>
+            <td>&nbsp;</td>
+            <td align="center"><b><TMPL_VAR NAME=nw_port></b></td>
+            <td align="center"><b><TMPL_VAR NAME=nw_link></b></td>
+            <td align="center"><b><TMPL_VAR NAME=nw_description></b></td>
+            <td align="center"><b><TMPL_VAR NAME=nw_mac></b></td>
+            <td align="center"><b><TMPL_VAR NAME=nw_device></b></td>
+          </tr>
+
+  <TMPL_LOOP NAME=NW_VAL_IFACE_WAN_LOOP>
+          <tr class="<TMPL_VAR NAME=DEV_LOOP_BGCOLOR>">
+            <td bgcolor="<TMPL_VAR NAME=DEV_LOOP_ZONECOLOR>">
+
+            <TMPL_IF EXPR="(DEV_LOOP_CHECKED eq 'checked') and (DEV_LOOP_DISABLED eq 'disabled')">
+                <input name="WAN_DEVICES" type="hidden" value="<TMPL_VAR NAME=DEV_LOOP_NAME>">
+            </TMPL_IF>
+            <TMPL_IF EXPR="DEV_LOOP_HIDE eq 'hide'">
+              &nbsp;
+            <TMPL_ELSE>
+              <input name="WAN_DEVICES" type="radio" value="<TMPL_VAR NAME=DEV_LOOP_NAME>" <TMPL_VAR NAME=DEV_LOOP_CHECKED> <TMPL_VAR NAME=DEV_LOOP_DISABLED>>
+            </TMPL_IF>
+            </td>
+            <td align="center"><TMPL_VAR NAME=DEV_LOOP_PORT></td>
+            <td>
+                <img src="/images/<TMPL_VAR NAME=DEV_LOOP_LINKICON>.png" title="<TMPL_VAR NAME=DEV_LOOP_LINKCAPTION>" alt="<TMPL_VAR NAME=DEV_LOOP_LINKCAPTION>">
+            </td>
+            <td><TMPL_VAR NAME=DEV_LOOP_SHORT_DESC>
+                <a href="javascript:void(0);" onmouseover="return overlib('<TMPL_VAR NAME=DEV_LOOP_DESCRIPTION>', STICKY, MOUSEOFF);" onmouseout="return nd();">?</a>
+            </td>
+
+            <td><TMPL_VAR NAME=DEV_LOOP_MAC></td>
+            <td><TMPL_VAR NAME=DEV_LOOP_DEVICE></td>
+          </tr>
+  </TMPL_LOOP>
+        </table>
+      </td>
+    </tr>
+
+    <tr>
+      <td>&nbsp;</td>
+      <td colspan="4">&nbsp;</td>
+    </tr>
+
+    <tr>
+      <td><TMPL_VAR NAME=nw_gateway>:</td>
+      <td colspan="4">
+        <input type="text" name="DEFAULT_GATEWAY" value="<TMPL_VAR NAME=NW_VAL_DEFAULT_GATEWAY>" size="15">
+      </td>
+    </tr>
+
+    <tr>
+      <td colspan="5"><br></td>
+    </tr>
+
+    <tr>
+      <td class='base' colspan="5">
+        <img src='/images/blob.png' alt ='*' align='top' />&nbsp;
+        <font class='base'><TMPL_VAR NAME=nw_field_blank></font>
+      </td>
+    </tr>
+
+  </table>
+  <br><br>
+
+  <input type="submit" name="prev" value="<TMPL_VAR NAME=nw_prev>">
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <input type="submit" name="cancel" value="<TMPL_VAR NAME=nw_cancel>">
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <input type="submit" name="next" value="<TMPL_VAR NAME=nw_next>">
+</form>

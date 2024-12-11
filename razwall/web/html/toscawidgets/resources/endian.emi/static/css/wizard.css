@@ -1,0 +1,230 @@
+.wizard {
+    height: 100%;
+    width: 780px;
+    margin: 0px;
+    overflow:hidden;
+    position: absolute;
+    display: block;
+    float: left;
+}
+
+.wizard.hasmenu {
+    width: 610px;
+}
+
+.wizard .plugins {
+    width:20000em;
+    clear:both;
+    position:absolute;
+}
+
+.wizard .page {	
+    padding:0px;
+    margin:0px;
+    width:780px;
+    height:100%; 
+    min-height: 461px;
+    float:left;	
+}
+
+.wizard.hasmenu .page{
+    width: 610px;
+}
+
+.wizard .page .plugin-content {
+    width:780px;
+    height: 90%;
+    min-height: 400px;
+    overflow: auto;
+}
+
+.wizard.hasmenu .page .plugin-content {
+    width: 610px;
+}
+
+.wizard .page .plugin-control {
+    width:780px;
+    height: 10%;
+    min-height: 61px;
+}
+
+.wizard.hasmenu .plugin-control{
+    width: 610px;
+}
+
+.wizard .page .plugin-control .right_side{
+    float:right;
+}
+
+.wizard .page .plugin-control button {
+    background-repeat: no-repeat;
+    background-color: transparent;
+    width: 124px;
+    height: 31px;
+    margin: 0px;
+    padding: 0;
+    border: 0;
+    font-weight: bold;
+    color: white;
+    margin: 15px 30px;
+}
+
+.wizard .page .plugin-control .save_spinner {
+    background-image: url("/toscawidgets/resources/endian.emi/static/images/loading.gif");
+    background-repeat: no-repeat;
+    background-color: transparent;
+    float:left;
+    padding-left: 20px;
+    height: 16px;
+    margin: 0;
+    margin-top: 22px;
+    display: none;
+    font-weight: bold;
+    color: black;
+}
+
+.wizard .page .plugin-control .prev_style{
+    background-image: url("/toscawidgets/resources/endian.emi/static/images/wizard_button_go_back_off.png");
+}
+.wizard .page .plugin-control .prev_style:hover,
+.wizard .page .plugin-control .prev_style:active,
+.wizard .page .plugin-control .prev_style:focus {
+    background-image: url("/toscawidgets/resources/endian.emi/static/images/wizard_button_go_back_on.png");
+}
+
+.wizard .page .plugin-control .next_style{
+    background-image: url("/toscawidgets/resources/endian.emi/static/images/wizard_button_continue_off.png");
+    margin-left: 10px;
+}
+.wizard .page .plugin-control .next_style:hover,
+.wizard .page .plugin-control .next_style:active,
+.wizard .page .plugin-control .next_style:focus {
+    background-image: url("/toscawidgets/resources/endian.emi/static/images/wizard_button_continue_on.png");
+}
+
+.wizard .page .plugin-control .leave_wizard_style{
+    background-image: url("/toscawidgets/resources/endian.emi/static/images/wizard_button_continue_off.png");
+    margin-left: 10px;
+}
+.wizard .page .plugin-control .leave_wizard_style:hover,
+.wizard .page .plugin-control .leave_wizard_style:active,
+.wizard .page .plugin-control .leave_wizard_style:focus {
+    background-image: url("/toscawidgets/resources/endian.emi/static/images/wizard_button_continue_on.png");
+}
+
+.wizard-popup {
+    /* must be initially hidden */
+    display:none;
+    /* place overlay on top of other elements */
+    z-index:10000;
+    
+    background-image: url("/toscawidgets/resources/endian.emi/static/images/wizard_popup_bg.png");
+    background-repeat: no-repeat;
+    height: 430;
+    width: 624;
+    margin: 0px;
+}
+
+.wizard-popup .popup-content {
+    width:614px;
+    height:359px;
+    margin:5px;
+    overflow: auto;
+}
+
+.wizard-popup .popup-control {
+    width:624px;
+    height:61px;
+    margin:0px;
+}
+
+.wizard-popup .popup-control .right_side{
+    float:right;
+}
+
+.wizard-popup .popup-control .save_spinner {
+    background-image: url("/toscawidgets/resources/endian.emi/static/images/loading.gif");
+    background-repeat: no-repeat;
+    background-color: transparent;
+    float:left;
+    padding-left: 20px;
+    height: 16px;
+    margin: 0;
+    margin-top: 22px;
+    display: none;
+    font-weight: bold;
+    color: white;
+}
+
+.wizard-popup .popup-control button {
+    background-image: url("/toscawidgets/resources/endian.emi/static/images/wizard_popup_button_continue_off.png");
+    background-repeat: no-repeat;
+    background-color: transparent;
+    width: 124px;
+    height: 31px;
+    padding: 0px;
+    border: 0px;
+    font-weight: bold;
+    color: white;
+    margin: 15px 30px;
+    margin-left: 10px;
+}
+.wizard-popup .popup-control button:hover,
+.wizard-popup .popup-control button:active,
+.wizard-popup .popup-control button:focus {
+    background-image: url("/toscawidgets/resources/endian.emi/static/images/wizard_button_continue_on.png");
+}
+
+.wizard-menu{
+    display: block;
+    float: right;
+    width:182px;
+    margin: 0px;
+    padding: 0px;
+    border: 0px;
+}
+
+.wizard-menu .menu-top,
+.wizard-menu .menu-bottom,
+.wizard-menu .menu-item{
+    background-repeat: no-repeat;
+    background-color: transparent;
+    width:182px;
+    margin: 0px;
+    padding: 0px;
+    border: 0px;
+    font-weight: bold;
+    color: white
+}
+
+.wizard-menu .menu-top{
+    background-image: url("/toscawidgets/resources/endian.emi/static/images/wizard_menu_top.png");
+    height: 14px;
+}
+
+.wizard-menu .menu-bottom{
+    background-image: url("/toscawidgets/resources/endian.emi/static/images/wizard_menu_bottom.png");
+    height: 14px;
+}
+
+.wizard-menu .menu-item{
+    background-image: url("/toscawidgets/resources/endian.emi/static/images/wizard_menu_item_off.png");
+    background-repeat: repeat-y;
+    height: 30px;
+}
+
+.wizard-menu .menu-item:hover {
+    cursor: pointer;
+}
+
+.wizard-menu .menu-item:hover,
+.wizard-menu .menu-item:active,
+.wizard-menu .menu-item:focus,
+.wizard-menu .menu-item.active{
+    background-image: url("/toscawidgets/resources/endian.emi/static/images/wizard_menu_item_on.png");
+    background-repeat: no-repeat;
+}
+
+.wizard button:hover {
+    cursor: pointer;
+}

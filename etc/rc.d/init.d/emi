@@ -1,0 +1,126 @@
+#! /bin/bash
+# +--------------------------------------------------------------------------+
+# | Endian Firewall                                                          |
+# +--------------------------------------------------------------------------+
+# | Copyright (c) 2004-2016 S.p.A. <info@endian.com>                         |
+# |         Endian S.p.A.                                                    |
+# |         via Pillhof 47                                                   |
+# |         39057 Appiano (BZ)                                               |
+# |         Italy                                                            |
+# |                                                                          |
+# | This program is free software; you can redistribute it and/or modify     |
+# | it under the terms of the GNU General Public License as published by     |
+# | the Free Software Foundation; either version 2 of the License, or        |
+# | (at your option) any later version.                                      |
+# |                                                                          |
+# | This program is distributed in the hope that it will be useful,          |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of           |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            |
+# | GNU General Public License for more details.                             |
+# |                                                                          |
+# | You should have received a copy of the GNU General Public License along  |
+# | with this program; if not, write to the Free Software Foundation, Inc.,  |
+# | 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.              |
+# +--------------------------------------------------------------------------+
+
+# Source function library.
+. /etc/init.d/functions
+
+RETVAL=0
+
+# See how we were called.
+
+prog="emi"
+progdir="/usr/bin"
+desc="Endian Management Interface"
+emi_port="3131"
+
+# Source configuration
+if [ -f /etc/sysconfig/$prog ] ; then
+    . /etc/sysconfig/$prog
+fi
+
+start() {
+    echo -n $"Starting $prog: "
+    ulimit -S -c 0 >/dev/null 2>&1
+    # kill old emi instances (if any)
+    local emi_pids=$(pidof emi -o $$)
+    /bin/kill -9 $emi_pids >/dev/null 2>&1
+    # kill a process using the emi port (if any)
+    /usr/bin/fuser -k -9 ${emi_port}/tcp >/dev/null
+    sleep 0.5
+    /bin/chown -f nobody.nogroup /tmp/visits.emi /var/efw/access/rsa* /var/efw/access/rsa.pub /var/cache/var* /var/run/access_basic_auth_cache /var/run/lock/access_basic_auth_cache &>/dev/null
+    daemon $progdir/emi -D "$OPTS"
+    RETVAL=$?
+
+    # give cherrypy time to bind
+    sleep 1
+
+    [ $RETVAL -eq 0 ] && touch /var/lock/subsys/emi
+    [ $RETVAL -eq 0 ] && echo_success
+    [ $RETVAL -ne 0 ] && echo_failure
+    echo
+    return $RETVAL
+}
+
+stop() {
+    echo -n $"Shutting down $desc ($prog): "
+    killproc $prog
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/emi
+    #sleep 1
+    #pidof $prog | xargs kill -9 >/dev/null 2>&1
+    return $RETVAL
+}
+
+rhstatus() {
+    status emi
+}
+
+restart() {
+    stop
+    start
+}
+
+
+reload()
+{
+    echo -n $"Reloading $prog:"
+    if [ -n "`pidfileofproc $progdir/emi`" ] ; then
+        killproc $progdir/emi -HUP
+    else
+        failure $"Reloading $prog"
+    fi
+    RETVAL=$?
+    echo
+}
+
+case "$1" in
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  restart)
+    restart
+    ;;
+  reload)
+    reload
+    ;;
+  status)
+    rhstatus
+    ;;
+  condrestart)
+    status emi &>/dev/null && restart || :
+    ;;
+  condstop)
+    status emi &>/dev/null && stop || :
+    ;;
+  *)
+    echo $"Usage: $0 {start|stop|status|reload|restart|condrestart|condstop}"
+    exit 1
+esac
+
+exit $?

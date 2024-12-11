@@ -1,0 +1,51 @@
+.indentmenu ul {
+margin: 0px;
+padding: 0px;
+float: left;
+ }
+
+.indentmenu ul li {
+margin-right:1px;
+display: inline; }
+
+.indentmenu ul li a {
+font: bold 11px/16px arial, helvetica, sans-serif;
+height:40px;
+width:35px;
+margin-top:0px;
+float: left;
+color: #000;
+padding: 4px 11px;
+text-decoration: none;
+background: transparent;
+border-top: 1px #CCC solid;
+border-left: 1px #ccc solid;
+border-right: 1px #000 solid;
+border-bottom: 0px #000 solid; }
+
+.indentmenu ul li a:visited {
+color: #000; }
+
+.indentmenu ul li a.selected {
+margin-top:0px;
+color: #FFF !important;
+background: #FFF; }
+
+.tabcontentstyle { 
+border-top: 2px #000 solid;
+position:absolute;
+left:10px;
+right:10px;
+margin-bottom: 0em;
+padding: 0px;
+}
+
+.tabcontent {
+display:none;
+}
+
+@media print {
+.tabcontent {
+display:block !important;
+}
+}

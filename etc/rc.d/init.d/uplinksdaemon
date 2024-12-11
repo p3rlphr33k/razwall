@@ -1,0 +1,146 @@
+#! /bin/bash
+#
+# uplinksdaemon   Start/Stop the uplinks daemon.
+#
+# chkconfig: 2345 70 41
+# description: uplinksdaemon is a daemon which keeps online your uplink.
+# processname: uplinksdaemon
+
+# Source function library.
+. /etc/init.d/functions
+
+RETVAL=0
+
+# See how we were called.
+
+prog="uplinksdaemon"
+progdir="/usr/bin"
+
+OPTS=""
+
+# Source configuration
+if [ -f /etc/sysconfig/$prog ] ; then
+	. /etc/sysconfig/$prog
+fi
+
+PIDFILE=/var/run/uplinksdaemon.pid
+
+start() {
+	echo -n $"Starting $prog: "
+	$progdir/$prog $OPTS &>/dev/null
+	RETVAL=$?
+	[ $RETVAL -eq 0 ] && touch /var/lock/subsys/uplinksdaemon
+	[ $RETVAL -eq 0 ] && echo_success
+	[ $RETVAL -ne 0 ] && echo_failure
+	echo
+	return $RETVAL
+}
+
+boot() {
+	echo -n $"Starting $prog at boot time: "
+	$progdir/$prog $OPTS --boot &>/dev/null
+	RETVAL=$?
+	[ $RETVAL -eq 0 ] && touch /var/lock/subsys/uplinksdaemon
+	[ $RETVAL -eq 0 ] && echo_success
+	[ $RETVAL -ne 0 ] && echo_failure
+	echo
+	return $RETVAL
+}
+
+stop() {
+	echo -n $"Stopping $prog: "
+	# Would be better to send QUIT first, then killproc if that fails
+	pid=$(cat $PIDFILE 2>/dev/null)
+	RETVAL=1
+	if [ -n "$pid" ] && checkpid $pid &>/dev/null; then
+	    if checkpid $pid 2>&1; then
+                # TERM first, then KILL if not dead
+		kill -TERM $pid
+		usleep 100000
+		if checkpid $pid && sleep 1 &&
+		    checkpid $pid && sleep 3 &&
+		    checkpid $pid ; then
+		    kill -KILL $pid
+		    usleep 100000
+		fi
+	    fi
+	    checkpid $pid
+	    RC=$?
+	    RETVAL=$((! $RC))
+	fi
+	[ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/uplinksdaemon
+	[ $RETVAL -eq 0 ] && echo_success
+	[ $RETVAL -ne 0 ] && echo_failure
+	echo
+	return $RETVAL
+}
+
+rhstatus() {
+	status uplinksdaemon
+}
+
+restart() {
+	stop
+	start
+}
+
+reload() {
+        echo -n $"Reloading uplinks daemon configuration: "
+	RETVAL=1
+        if status uplinksdaemon &>/dev/null && [ -e $PIDFILE ]; then
+	    kill -HUP $(cat $PIDFILE)
+	    RETVAL=$?
+        fi
+	[ $RETVAL -eq 0 ] && echo_success
+	[ $RETVAL -ne 0 ] && echo_failure
+	echo
+	return $RETVAL
+}
+
+notify() {
+	echo -n $"Notify uplinks daemon: "
+	RETVAL=1
+        if status uplinksdaemon &>/dev/null && [ -e $PIDFILE ]; then
+	    kill -USR1 $(cat $PIDFILE)
+	    RETVAL=$?
+        fi
+	[ $RETVAL -eq 0 ] && echo_success
+	[ $RETVAL -ne 0 ] && echo_failure
+	echo
+	return $RETVAL
+}
+
+case "$1" in
+  start)
+	start
+	;;
+  boot)
+	boot
+	;;
+  stop)
+	stop
+	;;
+  restart)
+	restart
+	;;
+  reload)
+	reload
+	;;
+  notify)
+	notify
+	;;
+  status)
+	rhstatus
+	;;
+  condrestart)
+	status uplinksdaemon &>/dev/null && restart || :
+	;;
+  condstop)
+	status uplinksdaemon &>/dev/null && stop || :
+	;;
+  *)
+	echo $"Usage: $0 {start|boot|stop|status|reload|restart|condrestart|condstop|notify}"
+	exit 1
+esac
+
+exit $?

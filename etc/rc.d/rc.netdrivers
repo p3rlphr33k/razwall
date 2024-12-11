@@ -1,0 +1,53 @@
+#!/bin/sh
+#
+#        +-----------------------------------------------------------------------------+
+#        | RazWall Firewall - 2024                                                     |
+#        | www.RazWall.com		                                                       |
+#        +-----------------------------------------------------------------------------+
+#
+
+. /etc/rc.d/raz_lib.sh
+
+/etc/rc.d/efw-network-rc6_rc7.sh
+/etc/rc.d/efw-network-2.1-2.2.sh
+
+echo "Setting up loopback"
+ifconfig lo localhost up
+
+echo "Loading OpenBSD Cryptographic Framework"
+modprobe cryptodev
+modprobe cryptosoft
+
+echo "Loading MASQ helper modules"
+modprobe iptable_nat
+modprobe iptable_filter
+modprobe ip_conntrack
+modprobe ip_conntrack_amanda
+modprobe ip_nat_amanda
+modprobe ip_conntrack_ftp
+modprobe ip_nat_ftp
+modprobe ip_conntrack_h323
+modprobe ip_nat_h323
+modprobe ip_conntrack_irc
+modprobe ip_nat_irc
+modprobe ip_conntrack_tftp
+modprobe ip_nat_tftp
+modprobe ip_conntrack_pptp
+modprobe ip_nat_pptp
+modprobe nf_nat_proto_gre
+modprobe nf_conntrack_proto_gre
+modprobe nf_nat_sip
+modprobe ip_conntrack_sip
+modprobe ip_nat_snmp_basic
+modprobe nf_conntrack_netbios_ns
+#modprobe ebt_ulog
+
+# Remove possible leftover files
+rm -f ${CONFIG_ROOT}/red/{active,device,dial-on-demand,dns1,dns2,local-ipaddress,remote-ipaddress,resolv.conf}
+rm -f ${CONFIG_ROOT}/uplinks/*/{active,DEAD,device,dial-on-demand,dns1,dns2,local-ipaddress,remote-ipaddress,resolv.conf}
+
+# This won't actually do anything unless a PCMCIA controller was
+# detected at install time, because /etc/pcmcia.conf won't exist.
+test -x /etc/rc.d/rc.pcmcia && /etc/rc.d/rc.pcmcia start
+# Now, just in case we found a PCMCIA USB controller, we'll need to reload
+# the USB here.

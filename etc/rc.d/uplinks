@@ -1,0 +1,15 @@
+#!/bin/sh
+
+#
+#        +-----------------------------------------------------------------------------+
+#        | RazWall Firewall - 2024                                                     |
+#        | www.RazWall.com		                                                       |
+#        +-----------------------------------------------------------------------------+
+#
+
+export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin
+
+. /etc/rc.d/raz_lib.sh
+nohup ${UPLINK_SCRIPTS}/uplinks $* &>/dev/null
+
+exit 0

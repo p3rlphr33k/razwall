@@ -1,0 +1,33 @@
+#!/usr/bin/perl
+
+#
+#        +-----------------------------------------------------------------------------+
+#        | RazWall Firewall - 2024                                                     |
+#        | www.RazWall.com		                                                       |
+#        +-----------------------------------------------------------------------------+
+#
+
+use strict;
+use warnings;
+
+# Simulated function for sending commands to the engine
+sub send_cmd_to_engine {
+    my ($cmd) = @_;
+    print "Command sent to engine: $cmd\n";
+}
+
+# Main logic
+if (@ARGV > 0 && $ARGV[0] eq 'REBUILDCERT') {
+    my @files_to_delete = (
+        '/etc/httpd/server.crt',
+        '/etc/httpd/server.csr',
+    );
+
+    foreach my $file (@files_to_delete) {
+        if (-e $file) {
+            unlink $file or warn "Could not delete $file: $!\n";
+        }
+    }
+}
+
+send_cmd_to_engine("emit event(msg:updatewizard)");

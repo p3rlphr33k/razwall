@@ -1,0 +1,106 @@
+#!/bin/sh
+#
+# chkconfig: 2345 40 60
+# description: fcron is a scheduler especially useful for people \
+#              who are not running their system all the time.
+# processname: fcron
+# pidfile: /var/run/fcron.pid
+# config: /var/spool/fcron/*
+# $Id: sysVinit-launcher,v 1.10 2006/01/11 00:54:44 thib Exp thib $
+
+export PATH="/sbin:/usr/sbin:/bin:/usr/bin"
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+[ -f /usr/sbin/fcron ] || exit 0
+[ -f /etc/fcron.conf ] || exit 0
+
+
+RETVAL=0
+prog="fcron"
+
+prog_args=""
+ARCH="`uname -m`"
+# On mini-ARM system, the start of the cron jobs are delayed of some minutes.
+if [ "$ARCH" = "armv5tel" ] ; then
+	prog_args="--firstsleep 480"
+fi
+
+start() {
+	installcrontab
+        # Start daemons.
+	echo -n $"Starting $prog:"
+	daemon /usr/sbin/fcron $prog_args -c /etc/fcron.conf
+	RETVAL=$?
+	echo
+        [ $RETVAL -eq 0 ] && touch /var/lock/subsys/fcron
+	return $RETVAL
+}
+
+stop() {
+	echo -n $"Shutting down $prog"
+	killproc fcron
+	RETVAL=$?
+	echo
+        [ $RETVAL = 0 ] && rm -f /var/lock/subsys/fcron /var/run/fcron.pid
+	return $RETVAL
+}
+condstop() {
+    status fcron &>/dev/null && stop
+}
+
+restart() {
+    stop
+    start
+}
+
+installcrontab() {
+        echo -n $"Installing crontab"
+        rm -f /var/spool/cron/root 2>/dev/null
+        TMPFILE=$(mktemp /tmp/crontab.XXXXXXXXXX) || return 1
+	cat /etc/crontab > $TMPFILE 2>/dev/null || return 1
+	cat /etc/cron.d/* >> $TMPFILE  2>/dev/null 
+	fcrontab -u root $TMPFILE &>/dev/null
+        echo
+	condstop
+}
+
+#  See how we were called.
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  condstop)
+        condstop
+        ;;
+  condrestart)
+	status fcron &>/dev/null && restart
+        RETVAL=$?
+        ;;
+  status)
+	status fcron
+	RETVAL=$?
+	;;
+  restart)
+	restart
+	RETVAL=$?
+	;;
+  installcrontab)
+	installcrontab
+	start
+	RETVAL=$?
+	;;
+  reload)
+	killall -HUP fcron
+	RETVAL=$?
+	;;
+  *)
+	echo "Usage: fcron {start|stop|status|restart|condrestart|condstop|installcrontab}"
+	exit 1
+esac
+
+exit $RETVAL

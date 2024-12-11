@@ -1,0 +1,50 @@
+.grideditor {
+    padding: 12px;
+    margin: 0;
+    border: 1px solid;
+}
+
+.grideditor table td {
+    padding: 5px;
+}
+
+.grideditor textarea {
+    height: 80px;
+    width: 300px;
+}
+
+.grideditor .editortitle {
+    font-weight: bold;
+    border-bottom: 1px solid;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+}
+
+.grideditor .formerror {
+    margin-bottom: 12px;
+    padding: 4px;
+}
+
+.grideditor .formerror span {
+    float: left;
+    margin-right: 4px;
+}
+
+.grideditor .editorsubmit {
+    border: none;
+    padding-top: 10px;
+    padding:0;
+    text-align:left;
+}
+
+.grideditor .editorsubmit>div {
+    padding-top: 10px;
+}
+
+.grideditor .editorsubmit>div>span {
+    margin-top: -10px;
+}
+
+.grideditor span.required {
+    float: left;
+}

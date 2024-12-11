@@ -1,0 +1,4 @@
+#! /usr/bin/python
+
+import endian.webshell.shell
+endian.webshell.shell.main()

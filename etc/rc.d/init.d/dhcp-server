@@ -1,0 +1,110 @@
+#!/bin/sh
+#
+# dhcpd         This shell script takes care of starting and stopping
+#               dhcpd.
+#
+# chkconfig: - 65 35
+# description: dhcpd provide access to Dynamic Host Control Protocol.
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+# Source networking configuration.
+. /etc/sysconfig/dhcpd
+
+[ -f /usr/sbin/dhcpd ] || exit 0
+cfOption()
+{ let i=0; 
+  for a in $*; 
+  do ((++i)); 
+     if [ $a = -cf ]; then 
+      ((++i)); 
+       eval 'echo $'$i;
+     elif [[ $a = -cf* ]]; then 
+      echo ${a#-cf}; 
+     fi; 
+  done; 
+}
+
+CF=`cfOption $DHCPDARGS`
+if [ -z "$CF" ]; then
+   CF='/etc/dhcpd.conf';
+fi
+
+[ -f "$CF" ] || exit 0
+if [ ! -f /var/lib/dhcp/dhcpd.leases ] ; then
+   mkdir -p /var/lib/dhcp
+   touch /var/lib/dhcp/dhcpd.leases
+   [ -x /sbin/restorecon ] && [ -d /selinux ] && /sbin/restorecon /var/lib/dhcp/dhcpd.leases >/dev/null 2>&1
+fi
+RETVAL=0
+prog="dhcpd"
+
+lock=/var/lock/subsys/dhcpd
+
+configtest()
+{        
+	 /usr/sbin/dhcpd -q -t -cf $CF
+	 return $?
+}
+
+start() {
+	# Start daemons.
+	echo -n $"Starting $prog: "
+	daemon /usr/sbin/dhcpd -cf ${CF} ${DHCPDARGS} 2>/dev/null
+	RETVAL=$?
+	echo
+	[ $RETVAL -eq 0 ] && touch $lock
+	return $RETVAL
+}
+
+stop() {
+       # Stop daemons.
+       echo -n $"Shutting down $prog: "
+       killproc dhcpd
+       RETVAL=$?
+       echo
+       [ $RETVAL -eq 0 ] && rm -f $lock
+       return $RETVAL
+}
+
+restart() {
+    configtest || exit $?
+    stop
+    start
+}
+
+# See how we were called.
+case "$1" in
+  start)
+  start
+  ;;
+  stop)
+  stop
+  ;;
+  restart|reload)
+  restart
+  RETVAL=$?
+  ;;
+  condrestart)
+        status dhcpd &>/dev/null && restart || :
+	RETVAL=$?
+	;;
+  condstop)
+        status dhcpd &>/dev/null && stop || :
+	RETVAL=$?
+	;;
+  configtest|check|testconfig|test)
+  configtest
+  RETVAL=$?
+  ;;
+  status)
+  status dhcpd
+  RETVAL=$?
+  ;;
+  *)
+  echo $"Usage: $0 {start|stop|restart|condrestart|condstop|configtest|status}"
+  exit 1
+esac
+
+exit $RETVAL

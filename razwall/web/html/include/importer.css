@@ -1,0 +1,158 @@
+#accounts {
+    width: 600px;
+}
+
+#accounts tr#head-row td,#accounts tr#head-row td.first {
+    border: #B2B47E 1px solid;
+    border-bottom-style: solid;
+    border-left-width: 1px;
+    padding: 3px;
+    padding-left: 5px;
+    height: 30px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: bold;
+    background-color: #D2DC90;
+    color: #655C3D;
+    border-bottom: #B2B47E 1px solid;
+}
+#accounts tr#head-row td.first {
+    border-left-width: 1px;
+}
+#accounts tr.data-row td, #accounts tr.data-row td.first {
+    border-left-width: 0px;
+    padding: 3px;
+    padding-left: 5px;
+    width: 100px; padding: 5px; 
+    border-left: #B2B47E 1px solid;
+    border-bottom: #D2DC8A 1px solid; border-right:#B2B47E 1px solid;
+}
+
+#accounts tr.data-row td.first {
+    border-left-width: 1px;
+}
+#accounts tr.data-row td.even {
+    background-color: #ffffff;
+}
+#accounts tr.data-row td.odd {
+    background-color: #E9F3AC;
+}
+#accounts tr#head-row td.hover, #accounts tr.data-row td.hover {
+    background-color: #ACA202;
+    color: #ffffff;
+}
+
+#fields {
+    border-right: #aaaaaa 2px solid;
+    padding: 5px;
+    padding-right: 10px;
+    padding-bottom: 0px;
+    padding-top: 0px;
+    text-align: center;
+    width: auto;
+    height: auto;
+}
+
+.field {
+    margin-bottom: 5px;
+}
+.field.ondrag {
+    background-color: red;
+    padding: 3px;
+    padding-left: 10px;
+}
+.cb { clear: both; }
+
+div.title {
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding-left: 10px;
+    height: 21px;
+    background: url(../images/field_bg.png) left top no-repeat;
+    behavior: url(../include/iepngfix.htc);
+    color: #333333;
+    font-weight: bold;
+    float: left;
+    padding-right: 10px;
+    width: 150px;
+}
+div.row { 
+    width: 700px;
+    margin-top: 4px;
+}
+div.title.hover, div.title.occupied {
+    color: #ffffff;
+}
+div.value {
+    border: #dddb1e 1px solid;
+    border-left: 0px;
+    width: 120px;
+    float: left;
+    padding-left: 10px;
+    line-height: 18px;
+    height: 18px;
+}
+div.row.occupied div.value {
+    border-left-color: #2dbe1a;
+    border-right-color: #2dbe1a;
+    border-top-color: #2dbe1a;
+    border-bottom-color: #2dbe1a;
+}
+.active { color: red; }
+.oc
+.hover { background-color: blue; }
+.value {  }
+dl, dt, dd { /* suppression of all margins */
+    margin: 0;
+    padding: 0;
+}
+dl.rounded {
+    
+}
+dl.rounded dt {
+    height: 20px;
+    background: url(../images/field_bg_green.png) left top no-repeat;
+    behavior: url(../include/iepngfix.htc);
+    text-align: center;
+    font-weight: bold;
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    line-height: 20px;
+    padding-left: 9px;
+    float: left;
+    min-width: 110px;
+}
+dl.rounded dd {
+    background: url(../images/field_corner_right_green.png) left top no-repeat;
+    behavior: url(../include/iepngfix.htc);
+    float:left;
+}
+dl.rounded.used dt {
+    background: url(../images/field_bg_red.png) left top no-repeat;
+    behavior: url(../include/iepngfix.htc);
+}
+dl.rounded.used dd {
+    background: url(../images/field_corner_right_red.png) left top no-repeat;
+    behavior: url(../include/iepngfix.htc);
+}
+div.title.occupied, div.title.hover {
+    background: url(../images/field_bg_green.png) left top no-repeat;
+    behavior: url(../include/iepngfix.htc);
+}
+table th { min-width: 110px;}
+
+table.fancy { background-color:#CDCDCD; }
+table.fancy tr th { 
+    background-color: #FFFFFF; 
+    padding: 4px; 
+    border:1px solid #FFFFFF;
+    font-size: 9px; 
+    letter-spacing: 1px; 
+    text-transform: uppercase; 
+}
+table.fancy tr th.even { background-color:#E6EEEE; }
+table.fancy tr th.odd { background-color:#FFFFFF; }
+table.fancy tr td { padding: 4px; }
+table.fancy tr.even td { background-color:#FFFFFF; }
+table.fancy tr.odd td { background-color:#F0F0F6; }

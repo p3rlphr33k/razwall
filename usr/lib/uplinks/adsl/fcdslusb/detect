@@ -1,0 +1,7 @@
+#!/bin/sh
+
+. /etc/rc.d/efw_lib.sh
+. ${UPLINK_SCRIPTS}/generic/detect.sh
+		
+detect_usb 057c 2300
+detect_show

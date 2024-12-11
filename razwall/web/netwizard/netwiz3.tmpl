@@ -1,0 +1,305 @@
+<TMPL_VAR NAME=NW_VAL_title>
+<br>
+
+<TMPL_IF EXPR="NW_VAL_error_message ne ''">
+  <font color="red"><TMPL_VAR NAME=NW_VAL_error_message></font>
+</TMPL_IF>
+<TMPL_IF EXPR="NW_VAL_warning_message ne ''">
+  <br>
+  <font color="red"><TMPL_VAR NAME=NW_VAL_warning_message></font>
+</TMPL_IF>
+<br>
+
+<form action="<TMPL_VAR NAME=NW_VAL_self>" method="post">
+  <input type="hidden" name="session_id" value="<TMPL_VAR NAME=NW_VAL_session_id>">
+  <input type="hidden" name="step" value="<TMPL_VAR NAME=NW_VAL_step>">
+
+  <table border="0" class="none" columns="5">
+    <tr>
+      <td colspan="3"><b><font color="green"><TMPL_VAR NAME=nw_lan></font></b> <font color="#666666">(<TMPL_VAR NAME=nw_lan_descr>)</font>:
+      </td>
+    <tr>
+    <tr>
+      <td colspan="2">
+          <input name="DHCP_ENABLE_LAN" type="checkbox" value="on" style="vertical-align: middle; position: relative;" <TMPL_VAR NAME=NW_VAL_DHCP_ENABLE_LAN> />
+           <TMPL_VAR NAME=nw_dhcp_enable>
+      </td>
+    <tr>
+
+    <tr>
+      <td style="width: 100px;"><TMPL_VAR NAME=nw_ip>:</td>
+      <td style="width: 150px;">
+        <input type="text" name="DISPLAY_LAN_ADDRESS" value="<TMPL_VAR NAME=NW_VAL_DISPLAY_LAN_ADDRESS>" size="15">
+      </td>
+      <td style="width: 10px;">&nbsp;</td>
+      <td style="width: 100px;"><TMPL_VAR NAME=nw_mask>:</td>
+      <td>
+        <select name="DISPLAY_LAN_NETMASK">
+  <TMPL_LOOP NAME=NW_VAL_DISPLAY_LAN_NETMASK_LOOP>
+          <option value="<TMPL_VAR NAME=MASK_LOOP_VALUE>" <TMPL_VAR NAME=MASK_LOOP_SELECTED>><TMPL_VAR NAME=MASK_LOOP_CAPTION></option>
+  </TMPL_LOOP>
+        </select>
+      </td>
+    </tr>
+
+    <tr>
+      <td colspan="5"><TMPL_VAR NAME=nw_additionalips>:</td>
+    </tr>
+    <tr>
+      <td colspan="5">
+        <textarea cols="30" rows="3" name="DISPLAY_LAN_ADDITIONAL"><TMPL_VAR NAME=NW_VAL_DISPLAY_LAN_ADDITIONAL></textarea>
+      </td>
+    </tr>
+
+    <tr>
+      <td colspan="5">&nbsp;</td>
+    </tr>
+
+    <tr>
+      <td><TMPL_VAR NAME=nw_interface>:</td>
+      <td colspan="4">&nbsp;</td>
+    </tr>
+    <tr>
+      <td colspan="5">
+        <table>
+          <tr>
+            <td>&nbsp;</td>
+            <td align="center"><b><TMPL_VAR NAME=nw_port></b></td>
+            <td align="center"><b><TMPL_VAR NAME=nw_link></b></td>
+            <td align="center"><b><TMPL_VAR NAME=nw_description></b></td>
+            <td align="center"><b><TMPL_VAR NAME=nw_mac></b></td>
+            <td align="center"><b><TMPL_VAR NAME=nw_device></b></td>
+          </tr>
+
+  <TMPL_LOOP NAME=NW_VAL_IFACE_LAN_LOOP>
+          <tr class="<TMPL_VAR NAME=DEV_LOOP_BGCOLOR>">
+            <td bgcolor="<TMPL_VAR NAME=DEV_LOOP_ZONECOLOR>">
+            <TMPL_IF EXPR="(DEV_LOOP_CHECKED eq 'checked') and (DEV_LOOP_DISABLED eq 'disabled')">
+                <input name="LAN_DEVICES" type="hidden" value="<TMPL_VAR NAME=DEV_LOOP_NAME>">
+            </TMPL_IF>
+            <TMPL_IF EXPR="DEV_LOOP_HIDE eq 'hide'">
+              &nbsp;
+            <TMPL_ELSE>
+              <input name="LAN_DEVICES" type="checkbox" value="<TMPL_VAR NAME=DEV_LOOP_NAME>" <TMPL_VAR NAME=DEV_LOOP_CHECKED> <TMPL_VAR NAME=DEV_LOOP_DISABLED>>
+            </TMPL_IF>
+            </td>
+            <td align="center"><TMPL_VAR NAME=DEV_LOOP_PORT></td>
+            <td>
+                <img src="/images/<TMPL_VAR NAME=DEV_LOOP_LINKICON>.png" title="<TMPL_VAR NAME=DEV_LOOP_LINKCAPTION>" alt="<TMPL_VAR NAME=DEV_LOOP_LINKCAPTION>">
+            </td>
+            <td><TMPL_VAR NAME=DEV_LOOP_SHORT_DESC>
+                <a href="javascript:void(0);" onmouseover="return overlib('<TMPL_VAR NAME=DEV_LOOP_DESCRIPTION>', STICKY, MOUSEOFF);" onmouseout="return nd();">?</a>
+            </td>
+
+            <td><TMPL_VAR NAME=DEV_LOOP_MAC></td>
+            <td><TMPL_VAR NAME=DEV_LOOP_DEVICE></td>
+          </tr>
+  </TMPL_LOOP>
+        </table>
+      </td>
+    </tr>
+
+  <tr>
+    <td colspan="5">&nbsp;</td>
+  </tr>
+  <tr>
+    <td colspan="5">&nbsp;</td>
+  </tr>
+
+  <TMPL_IF NW_VAL_HAVE_DMZ>
+    <tr>
+      <td colspan="5"><b><font color="orange"><TMPL_VAR NAME=nw_dmz></font></b> <font color="#666666">(<TMPL_VAR NAME=nw_dmz_descr>)</font>:</td>
+    </tr>
+
+    <tr>
+      <td><TMPL_VAR NAME=nw_ip>:</td>
+      <td>
+        <input type="text" name="DISPLAY_DMZ_ADDRESS" value="<TMPL_VAR NAME=NW_VAL_DMZ_ADDRESS>" size="15">
+      </td>
+      <td>&nbsp;</td>
+      <td><TMPL_VAR NAME=nw_mask>:</td>
+      <td>
+        <select name="DISPLAY_DMZ_NETMASK">
+  <TMPL_LOOP NAME=NW_VAL_DISPLAY_DMZ_NETMASK_LOOP>
+          <option value="<TMPL_VAR NAME=MASK_LOOP_VALUE>" <TMPL_VAR NAME=MASK_LOOP_SELECTED>><TMPL_VAR NAME=MASK_LOOP_CAPTION></option>
+  </TMPL_LOOP>
+        </select>
+      </td>
+    </tr>
+
+    <tr>
+      <td colspan="5"><TMPL_VAR NAME=nw_additionalips>:</td>
+    </tr>
+    <tr>
+      <td colspan="5">
+        <textarea cols="30" rows="3" name="DISPLAY_DMZ_ADDITIONAL"><TMPL_VAR NAME=NW_VAL_DISPLAY_DMZ_ADDITIONAL></textarea>
+      </td>
+    </tr>
+
+    <tr>
+      <td colspan="5">&nbsp;</td>
+    </tr>
+
+    <tr>
+      <td><TMPL_VAR NAME=nw_interface>:</td>
+      <td colspan="4">&nbsp;</td>
+    </tr>
+    <tr>
+      <td colspan="5">
+        <table>
+          <tr>
+            <td>&nbsp;</td>
+            <td align="center"><b><TMPL_VAR NAME=nw_port></b></td>
+            <td align="center"><b><TMPL_VAR NAME=nw_link></b></td>
+            <td align="center"><b><TMPL_VAR NAME=nw_description></b></td>
+            <td align="center"><b><TMPL_VAR NAME=nw_mac></b></td>
+            <td align="center"><b><TMPL_VAR NAME=nw_device></b></td>
+          </tr>
+
+  <TMPL_LOOP NAME=NW_VAL_IFACE_DMZ_LOOP>
+          <tr class="<TMPL_VAR NAME=DEV_LOOP_BGCOLOR>">
+            <td bgcolor="<TMPL_VAR NAME=DEV_LOOP_ZONECOLOR>">
+            <TMPL_IF EXPR="(DEV_LOOP_CHECKED eq 'checked') and (DEV_LOOP_DISABLED eq 'disabled')">
+                <input name="DMZ_DEVICES" type="hidden" value="<TMPL_VAR NAME=DEV_LOOP_NAME>">
+            </TMPL_IF>
+            <TMPL_IF EXPR="DEV_LOOP_HIDE eq 'hide'">
+              &nbsp;
+            <TMPL_ELSE>
+              <input name="DMZ_DEVICES" type="checkbox" value="<TMPL_VAR NAME=DEV_LOOP_NAME>" <TMPL_VAR NAME=DEV_LOOP_CHECKED> <TMPL_VAR NAME=DEV_LOOP_DISABLED>>
+            </TMPL_IF>
+            </td>
+            <td align="center"><TMPL_VAR NAME=DEV_LOOP_PORT></td>
+            <td>
+                <img src="/images/<TMPL_VAR NAME=DEV_LOOP_LINKICON>.png" title="<TMPL_VAR NAME=DEV_LOOP_LINKCAPTION>" alt="<TMPL_VAR NAME=DEV_LOOP_LINKCAPTION>">
+            </td>
+            <td><TMPL_VAR NAME=DEV_LOOP_SHORT_DESC>
+                <a href="javascript:void(0);" onmouseover="return overlib('<TMPL_VAR NAME=DEV_LOOP_DESCRIPTION>', STICKY, MOUSEOFF);" onmouseout="return nd();">?</a>
+            </td>
+
+            <td><TMPL_VAR NAME=DEV_LOOP_MAC></td>
+            <td><TMPL_VAR NAME=DEV_LOOP_DEVICE></td>
+          </tr>
+  </TMPL_LOOP>
+        </table>
+      </td>
+    </tr>
+
+  <tr>
+    <td colspan="5">&nbsp;</td>
+  </tr>
+  <tr>
+    <td colspan="5">&nbsp;</td>
+  </tr>
+  </TMPL_IF>
+
+  <TMPL_IF NAME=NW_VAL_HAVE_LAN2>
+    <tr>
+      <td colspan="5"><b><font color="blue"><TMPL_VAR NAME=nw_lan2></font></b> <font color="#666666">(<TMPL_VAR NAME=nw_lan2_descr>)</font>:</td>
+    </tr>
+
+    <tr>
+      <td><TMPL_VAR NAME=nw_ip>:</td>
+      <td>
+        <input type="text" name="DISPLAY_LAN2_ADDRESS" value="<TMPL_VAR NAME=NW_VAL_LAN2_ADDRESS>" size="15">
+      </td>
+      <td>&nbsp;</td>
+      <td><TMPL_VAR NAME=nw_mask>:</td>
+      <td>
+        <select name="DISPLAY_LAN2_NETMASK">
+  <TMPL_LOOP NAME=NW_VAL_DISPLAY_LAN2_NETMASK_LOOP>
+          <option value="<TMPL_VAR NAME=MASK_LOOP_VALUE>" <TMPL_VAR NAME=MASK_LOOP_SELECTED>><TMPL_VAR NAME=MASK_LOOP_CAPTION></option>
+  </TMPL_LOOP>
+        </select>
+      </td>
+    </tr>
+
+    <tr>
+      <td colspan="5"><TMPL_VAR NAME=nw_additionalips>:</td>
+    </tr>
+    <tr>
+      <td colspan="5">
+        <textarea cols="30" rows="3" name="DISPLAY_LAN2_ADDITIONAL"><TMPL_VAR NAME=NW_VAL_DISPLAY_LAN2_ADDITIONAL></textarea>
+      </td>
+    </tr>
+
+    <tr>
+      <td colspan="5">&nbsp;</td>
+    </tr>
+
+    <tr>
+      <td><TMPL_VAR NAME=nw_interface>:</td>
+      <td colspan="4">&nbsp;</td>
+    </tr>
+    <tr>
+      <td colspan="5">
+        <table>
+          <tr>
+            <td>&nbsp;</td>
+            <td align="center"><b><TMPL_VAR NAME=nw_port></b></td>
+            <td align="center"><b><TMPL_VAR NAME=nw_link></b></td>
+            <td align="center"><b><TMPL_VAR NAME=nw_description></b></td>
+            <td align="center"><b><TMPL_VAR NAME=nw_mac></b></td>
+            <td align="center"><b><TMPL_VAR NAME=nw_device></b></td>
+          </tr>
+
+  <TMPL_LOOP NAME=NW_VAL_IFACE_LAN2_LOOP>
+          <tr class="<TMPL_VAR NAME=DEV_LOOP_BGCOLOR>">
+            <td bgcolor="<TMPL_VAR NAME=DEV_LOOP_ZONECOLOR>">
+            <TMPL_IF EXPR="(DEV_LOOP_CHECKED eq 'checked') and (DEV_LOOP_DISABLED eq 'disabled')">
+                <input name="LAN2_DEVICES" type="hidden" value="<TMPL_VAR NAME=DEV_LOOP_NAME>">
+            </TMPL_IF>
+            <TMPL_IF EXPR="DEV_LOOP_HIDE eq 'hide'">
+              &nbsp;
+            <TMPL_ELSE>
+              <input name="LAN2_DEVICES" type="checkbox" value="<TMPL_VAR NAME=DEV_LOOP_NAME>" <TMPL_VAR NAME=DEV_LOOP_CHECKED> <TMPL_VAR NAME=DEV_LOOP_DISABLED>>
+            </TMPL_IF>
+            </td>
+            <td align="center"><TMPL_VAR NAME=DEV_LOOP_PORT></td>
+            <td>
+                <img src="/images/<TMPL_VAR NAME=DEV_LOOP_LINKICON>.png" title="<TMPL_VAR NAME=DEV_LOOP_LINKCAPTION>" alt="<TMPL_VAR NAME=DEV_LOOP_LINKCAPTION>">
+            </td>
+            <td><TMPL_VAR NAME=DEV_LOOP_SHORT_DESC>
+                <a href="javascript:void(0);" onmouseover="return overlib('<TMPL_VAR NAME=DEV_LOOP_DESCRIPTION>', STICKY, MOUSEOFF);" onmouseout="return nd();">?</a>
+            </td>
+
+            <td><TMPL_VAR NAME=DEV_LOOP_MAC></td>
+            <td><TMPL_VAR NAME=DEV_LOOP_DEVICE></td>
+          </tr>
+  </TMPL_LOOP>
+        </table>
+      </td>
+    </tr>
+
+  <tr>
+    <td colspan="5">&nbsp;</td>
+  </tr>
+  <tr>
+    <td colspan="5">&nbsp;</td>
+  </tr>
+  </TMPL_IF>
+
+    <tr>
+      <td><TMPL_VAR NAME=nw_hostname>:</td>
+      <td colspan="4">
+        <input type="text" name="HOSTNAME" value="<TMPL_VAR NAME=NW_VAL_HOSTNAME>" size="15">
+      </td>
+    </tr>
+
+    <tr>
+      <td><TMPL_VAR NAME=nw_domainname>:</td>
+      <td colspan="4">
+        <input type="text" name="DOMAINNAME" value="<TMPL_VAR NAME=NW_VAL_DOMAINNAME>" size="15">
+      </td>
+    </tr>
+
+  </table>
+  <br><br><br>
+
+  <input type="submit" name="prev" value="<TMPL_VAR NAME=nw_prev>">
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <input type="submit" name="cancel" value="<TMPL_VAR NAME=nw_cancel>">
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <input type="submit" name="next" value="<TMPL_VAR NAME=nw_next>">
+
+
+</form>

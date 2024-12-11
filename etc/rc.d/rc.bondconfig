@@ -1,0 +1,119 @@
+#!/bin/sh
+#
+#        +-----------------------------------------------------------------------------+
+#        | RazWall Firewall - 2024                                                     |
+#        | www.RazWall.com		                                                       |
+#        +-----------------------------------------------------------------------------+
+#
+
+. /etc/rc.d/efw_lib.sh
+. /etc/rc.d/init.d/functions
+
+
+ETHERNET_DIR=/var/efw/ethernet/
+
+VALID_MODES=("0" "balance-rr" "1" "active-backup" "2" "balance-xor" "3" "broadcast" "4" "802.3ad" "5" "balance-tlb" "6" "balance-alb")
+DEFAULT_MODE="balance-xor"
+
+
+function isContained() {
+    local e
+    for e in "${@:2}"; do [[ "$e" == "$1" ]] && return 0; done
+    return 1
+}
+
+
+function create_bond() {
+    local IF="$1"
+    if [ ! -e "$ETHERNET_DIR/$IF" ]; then
+	return
+    fi
+
+    ip link set dev ${IF} up &>/dev/null || {
+	echo -n "ERROR: Could not set up bond device '${IF}'."
+	echo_failure
+	echo
+	return
+    }
+
+    while read DEV; do
+	[ -z "$DEV" ] && continue
+	ip link set $DEV down
+	ip link set $DEV master $IF
+	ip link set $DEV up
+    done < "$ETHERNET_DIR/$IF"
+}
+
+
+function flush_bonds() {
+    ip -o link show | grep "bond[0-9]*:" | cut -d ':' -f 2 | \
+	while read DEV; do
+	ip addr flush dev ${DEV} 2>/dev/null
+	ip link set ${DEV} down
+	[ ! -e /proc/net/bond/$DEV ] && continue
+	cat /proc/net/bond/$DEV | grep "Slave" | awk '{ print $3 }' | xargs -i ip link set {} nomaster;
+    done
+    if lsmod | grep -q bonding; then
+	rmmod bonding
+    fi
+}
+
+function start() {
+    local BONDCOUNT=$(ls -1 $ETHERNET_DIR/bond* 2>/dev/null | wc -l)
+    loadSettings "${ETHERNET_DIR}/settings"
+
+    if [ "$BONDCOUNT" == 0 ]; then
+	return
+    fi
+    if [ -z "$BONDING_MODE" ] ; then
+	    BONDING_MODE=$DEFAULT_MODE
+    fi
+    isContained "$BONDING_MODE" "${VALID_MODES[@]}"
+    if [ $? -ne 0 ] ; then
+	    msg="Invalid bonding mode: $BONDING_MODE ; falling back to $DEFAULT_MODE"
+	    logger -p daemon.error "$msg"
+	    echo "$msg" >&2
+	    BONDING_MODE=$DEFAULT_MODE
+    fi
+    echo -n "Creating bonding devices"
+    modprobe bonding mode=$BONDING_MODE miimon=100 downdelay=2000 updelay=5000 max_bonds=$BONDCOUNT
+    echo modprobe bonding mode=$BONDING_MODE miimon=100 downdelay=2000 updelay=5000 max_bonds=$BONDCOUNT
+
+    ls -1 $ETHERNET_DIR/bond* 2>/dev/null |  \
+	while read IFFILE; do
+	    IF=$(basename $IFFILE)
+	    create_bond "${IF}"
+    done
+    RETVAL=$?
+    [ $RETVAL -eq 0 ] && echo_success
+    [ $RETVAL -ne 0 ] && echo_failure
+    echo
+}
+
+function stop() {
+    echo -n "Stopping bonding devices"
+    flush_bonds
+    RETVAL=$?
+    [ $RETVAL -eq 0 ] && echo_success
+    [ $RETVAL -ne 0 ] && echo_failure
+    echo
+}
+
+case "$1" in
+  start)
+        start
+        ;;
+  stop)
+        stop
+        ;;
+  restart)
+        $0 stop
+        $0 start
+        ;;
+  *)
+        echo $"Usage: $0 {start|stop|restart}"
+        exit 1
+esac
+
+
+exit 0

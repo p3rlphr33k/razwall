@@ -1,0 +1,135 @@
+body {
+    background-color: #ffffff;
+    font-size: 11px;
+    padding: 10px;
+    min-width: 600px;
+}
+
+u {
+    font-size: 11px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.header_smtp,
+.header_system,
+.header_dansguardian,
+.header_commtouchweb,
+.header_squid,
+.header_snort,
+.header_firewall,
+.header_clamav,
+.header_panda,
+.header_openvpn,
+.header_httpd {
+    display: table-cell;
+    width: 70px;
+    font-size: 11px;
+    font-weight: bold;
+    border-bottom: 1px solid #cccccc;
+    padding: 2px;
+}
+
+.date_smtp,
+.date_system,
+.date_dansguardian,
+.date_commtouchweb,
+.date_squid,
+.date_snort,
+.date_firewall,
+.date_clamav,
+.date_panda,
+.date_openvpn,
+.date_httpd {
+    display: table-cell;
+    width: 130px;
+    font-size: 11px;
+    border-bottom: 1px solid #cccccc;
+    padding: 2px;
+}
+
+.text_smtp,
+.text_system,
+.text_dansguardian,
+.text_commtouchweb,
+.text_squid,
+.text_snort,
+.text_firewall,
+.text_clamav,
+.text_panda .text_openvpn,
+.text_httpd {
+    display: table-cell;
+    font-size: 11px;
+    border-bottom: 1px solid #cccccc;
+    margin-right: 5px;
+    padding: 2px;
+}
+
+.log_maindiv {
+    padding: 0px;
+    margin: 0px;
+    spacing: 0px;
+    display: table;
+    table-layout: fixed;
+    width: 100%;
+}
+
+#td_system,
+#td_firewall,
+#td_squid,
+#td_dansguardian,
+#td_commtouchweb,
+#td_snort,
+#td_openvpn,
+#td_clamav,
+#td_panda,
+#td_smtp,
+#td_httpd {
+    font-weight: bold;
+    vertical-align: top;
+    font-size: 11px;
+}
+
+
+
+button {
+    font-family: sans-serif;
+    font-size: 100%;
+    border: 1px solid #cccccc;
+}
+
+#actual {
+    font-weight: bold;
+    border: solid 1px #cccccc;
+    display: block;
+    width: 130px;
+    position: relative;
+    right: 20px;
+    float: right;
+}
+
+#optionstable {
+    width: 600px;
+    float: left;
+    clear: none;
+}
+
+#fulloptions {
+    width: 600px;
+    spacing: 1px;
+    width: 600px;
+    float: left;
+    clear: none;
+}
+
+#page_container {
+    width: 100%;
+    clear: both;
+}
+
+#resize_buttons {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    float: right;
+    margin-right: 10px;
+} 

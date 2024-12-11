@@ -1,0 +1,101 @@
+#!/bin/sh
+#
+#
+# chkconfig: 2345 79 31
+# description: Postfix Greylisting Policy Server
+#
+# processname: postgrey
+# pidfile: /var/spool/postfix/pid/postgrey.pid
+#
+
+# Endian function library
+. /etc/rc.d/efw_lib.sh
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+# Source networking configuration.
+#. /etc/sysconfig/network
+
+# Check that networking is up.
+#[ ${NETWORKING} = "no" ] && exit 0
+
+prog=postgrey
+postgrey=/usr/sbin/$prog
+DBPATH=/var/spool/postfix/postgrey
+SOCKET=$DBPATH/socket
+OPTIONS="--inet=127.0.0.1:10030 --pidfile=/var/spool/postfix/pid/postgrey.pid"
+
+# Source an auxiliary options file if we have one, and pick up OPTIONS,
+if [ -r /etc/sysconfig/$prog ] ; then
+        . /etc/sysconfig/$prog
+fi
+
+[ -x $postgrey ] || exit 0
+[ -d $DBPATH ] || exit 0
+
+#[ -f /etc/postfix/postgrey_whitelist_clients ] || exit 0
+#[ -f /etc/postfix/postgrey_whitelist_recipients ] || exit 0
+
+RETVAL=0
+
+start() {
+        echo -n $"Starting $prog: "
+        daemon $postgrey -d $OPTIONS
+        RETVAL=$?
+        echo
+        [ $RETVAL = 0 ] && touch /var/lock/subsys/$prog
+        return $RETVAL
+}
+stop() {
+        echo -n $"Stopping $prog: "
+        killproc $postgrey
+        RETVAL=$?
+        echo
+        [ $RETVAL = 0 ] && rm -f /var/lock/subsys/$prog /var/run/$prog.pid
+}
+
+restart() {
+	stop
+	start
+}
+
+reload() {
+	echo -n $"Reloading $prog: "
+	killproc $prog -HUP
+	RETVAL=$?
+	echo
+	return $RETVAL
+}
+ 
+# See how we were called.
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  condstop)
+	status $prog &>/dev/null && stop
+	RETVAL=$?
+	;;
+  restart)
+	restart
+	;;
+  condrestart)
+	status $prog &>/dev/null && restart
+	RETVAL=$?
+	;;
+  reload)
+	reload
+	;;
+  status)
+  	status $prog
+	;;
+  *)
+	echo "Usage: $prog {start|stop|restart|reload|status|condstop|condrestart}"
+	exit 1
+esac
+
+exit $?

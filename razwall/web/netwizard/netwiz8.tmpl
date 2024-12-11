@@ -1,0 +1,16 @@
+<TMPL_VAR NAME=NW_VAL_title>
+<br>
+<TMPL_IF EXPR="NW_VAL_error_message ne ''">
+  <font color="red"><TMPL_VAR NAME=NW_VAL_error_message></font>
+</TMPL_IF>
+<br>
+<TMPL_VAR NAME=nw_end_msg>
+<br><br>
+<TMPL_IF NW_VAL_lan_changed>
+  <TMPL_VAR NAME=nw_lan_changed_explain>
+  <A HREF="<TMPL_VAR NAME=NW_VAL_LAN_LINK>"><TMPL_VAR NAME=nw_lan_changed_link></A>
+  <BR>
+</TMPL_IF>
+<BR>
+<TMPL_VAR NAME=nw_lan_changed_proxy>
+

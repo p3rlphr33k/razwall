@@ -1,0 +1,91 @@
+#!/bin/sh
+
+#
+#        +-----------------------------------------------------------------------------+
+#        | Endian Firewall                                                             |
+#        +-----------------------------------------------------------------------------+
+#        | Copyright (c) 2005-2006 Endian                                              |
+#        |         Endian GmbH/Srl                                                     |
+#        |         Bergweg 41 Via Monte                                                |
+#        |         39057 Eppan/Appiano                                                 |
+#        |         ITALIEN/ITALIA                                                      |
+#        |         info@endian.it                                                      |
+#        |                                                                             |
+#        | This program is free software; you can redistribute it and/or               |
+#        | modify it under the terms of the GNU General Public License                 |
+#        | as published by the Free Software Foundation; either version 2              |
+#        | of the License, or (at your option) any later version.                      |
+#        |                                                                             |
+#        | This program is distributed in the hope that it will be useful,             |
+#        | but WITHOUT ANY WARRANTY; without even the implied warranty of              |
+#        | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               |
+#        | GNU General Public License for more details.                                |
+#        |                                                                             |
+#        | You should have received a copy of the GNU General Public License           |
+#        | along with this program; if not, write to the Free Software                 |
+#        | Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA. |
+#        | http://www.fsf.org/                                                         |
+#        +-----------------------------------------------------------------------------+
+#
+
+. /etc/rc.d/efw_lib.sh
+. ${UPLINK_SCRIPTS}/generic/pppd.sh
+
+case "$ADSL_METHOD" in
+    'pppoa')
+	# PPPoA
+	. ${UPLINK_SCRIPTS}/generic/pppoa.sh
+	pppoa_init
+	pppoa_write_peer $uplink || failure
+        pppd_call $uplink || failure
+	;;
+
+    'pppoe')
+	# PPPoE
+	. ${UPLINK_SCRIPTS}/generic/rfc1483.sh
+	. ${UPLINK_SCRIPTS}/generic/pppoe.sh
+	pppoe_init || failure
+	rfc1483_if_start || failure
+       
+	if [ "$interface" == "error" ]; then
+           failure "pppoe could not start bridge"
+        fi
+
+	pppoe_write_peer $uplink $interface
+        if [ $? -ne 0 ]; then
+            rfc1483_if_stop
+            failure
+        fi
+	pppoe_call $uplink $interface
+        if [ $? -ne 0 ]; then
+            pppoe_stop
+            rfc1483_if_stop
+            failure
+        fi
+	;;
+    'dhcp')
+	. ${UPLINK_SCRIPTS}/generic/rfc1483.sh
+	. ${UPLINK_SCRIPTS}/generic/dhcp.sh
+	rfc1483_if_start || failure
+	dhcp_start
+        if [ $? -ne 0 ]; then
+            rfc1483_if_stop
+            failure
+        fi
+	;;
+    'static')
+	. ${UPLINK_SCRIPTS}/generic/rfc1483.sh
+	. ${UPLINK_SCRIPTS}/generic/static.sh
+	rfc1483_if_start || failure
+	route_start
+        if [ $? -ne 0 ]; then
+            rfc1483_if_stop
+            failure
+        fi
+
+	;;
+    *)
+	bailout "unknown method '$ADSL_METHOD'"
+	;;
+
+esac

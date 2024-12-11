@@ -1,0 +1,163 @@
+#! /bin/bash
+#
+# openvpnclient   Start/Stop openvpn clients.
+#
+# chkconfig: 2345 70 41
+# description: openvpn is a Virtual Private Network daemon
+# processname: openvpn
+# config: /etc/openvpn/openvpn.server.*.conf
+# pidfile: /var/lock/subsys/openvpn
+
+# Source function library.
+. /etc/init.d/functions
+
+RETVAL=0
+
+# See how we were called.
+
+prog="openvpn"
+progdir="/usr/sbin"
+
+OPENVPNCLIENT_FACILITY=LOCAL3
+OPENVPNCLIENT_CHATFILE=/etc/openvpn/chatfile
+
+client_nr=$2
+
+# Source configuration
+if [ -f /etc/sysconfig/${prog}client ] ; then
+	. /etc/sysconfig/${prog}client
+fi
+if [ -f /etc/sysconfig/${prog}client-instance.${client_nr} ] ; then
+	. /etc/sysconfig/${prog}client-instance.${client_nr}
+fi
+
+client="$NAME"
+
+# Lockfile
+lock="/var/lock/subsys/openvpnclient_${client}"
+
+# PID directory
+piddir="/var/run/openvpn"
+
+# Our working directory
+work=/etc/openvpn
+
+STARTER="stslog -d -c $OPENVPNCLIENT_CHATFILE -f $OPENVPNCLIENT_FACILITY -i $OPENVPNCLIENT_DEFINES "
+
+start() {
+	echo -n $"Starting openvpn client '$client': "
+	$STARTER -D NAME=$client -n $client \
+		openvpn --config /etc/openvpn/openvpnclient_${client}.conf --writepid ${piddir}/client_${client_nr}.pid &
+	RETVAL=$?
+	[ $RETVAL -eq 0 ] && touch ${lock}
+        [ $RETVAL -eq 0 ] && echo_success
+        [ $RETVAL -ne 0 ] && echo_failure
+	echo
+	return $RETVAL
+}
+
+stop() {
+	echo -n $"Stopping openvpn client '$client': "
+	pidf=${piddir}/client_${client_nr}.pid
+	if [ -s $pidf ]; then
+            local pid=$(cat $pidf)
+            kill $pid >/dev/null 2>&1
+            if checkpid $pid 2>&1; then
+                # TERM first, then KILL if not dead
+                kill -TERM $pid
+                for i in `seq 1 40`; do
+                    usleep 100000
+                    if checkpid $pid ; then
+                        break
+                    fi
+                done
+                if checkpid $pid ; then
+                    kill -KILL $pid
+                    usleep 100000
+                fi
+            fi
+        fi
+        checkpid $pid
+        RC=$?
+        RETVAL=$((! $RC))
+
+	[ $RETVAL -eq 0 ] && rm -f $lock
+	[ $RETVAL -eq 0 ] && rm -f $pidf
+        [ $RETVAL -eq 0 ] && echo_success
+        [ $RETVAL -ne 0 ] && echo_failure
+	echo
+	return $RETVAL
+}
+
+rhstatus() {
+	pidf=${piddir}/client_${client_nr}.pid
+	if ! [ -s $pidf ]; then
+            echo "openvpn client '$client' is stopped"
+	    return 1
+        fi
+        pid=$(cat $pidf)
+        kill -USR2 $pid >/dev/null 2>&1
+	RETVAL=$?
+	if [ $RETVAL -eq 0 ]; then
+            echo "openvpn client '$client' (pid $pid) is running..."
+        else
+            echo "openvpn client '$client' is stopped"
+	fi
+	return $RETVAL
+}
+
+restart() {
+	stop
+	start
+}
+
+reload() {
+	echo -n $"Reloading openvpn client '$client' configuration: "
+	pidf=${piddir}/client_${client_nr}.pid
+	if ! [ -s $pidf ]; then
+            echo "openvpn client '$client' is stopped"
+	    return 1
+        fi
+        pid=$(cat $pidf)
+        kill -HUP $pid >/dev/null 2>&1
+	RETVAL=$?
+	echo
+	return $RETVAL
+}
+
+action="$1"
+if [ -z "$2" ]; then
+    action="none"
+fi
+
+case "$action" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  restart)
+	restart
+	;;
+  reload)
+	reload
+	;;
+  status)
+	rhstatus
+	;;
+  condrestart)
+	rhstatus &>/dev/null && restart || :
+	;;
+  condstop)
+	rhstatus &>/dev/null && stop || :
+	;;
+  condstart)
+	rhstatus &>/dev/null || start
+        ;;
+  *)
+	echo $"Usage: $0 {start|stop|status|reload|restart|condrestart|condstop|condstart} <clientname>"
+	exit 1
+esac
+
+exit $?

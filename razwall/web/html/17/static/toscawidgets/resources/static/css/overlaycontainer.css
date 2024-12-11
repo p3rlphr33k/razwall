@@ -1,0 +1,29 @@
+
+/* the overlayed element */
+.overlaycontainer {
+    /* must be initially hidden */
+    display:none;
+    z-index:10000;
+    width:675px;	
+    min-height:200px;
+    border:1px solid;
+    
+    -moz-box-shadow:0 0 90px 5px #6fad02;
+    -webkit-box-shadow: 0 0 90px #6fad02;	
+}
+
+/* close button positioned on upper right corner */
+.overlaycontainer .close { 
+    background-image: url("/toscawidgets/resources/static/images/gallery_close.png");
+    cursor: pointer;
+    height: 35px;
+    position: absolute;
+    right: -15px;
+    top: -15px;
+    width: 35px;
+}
+
+/* show hand on mouse over */
+.show-cursor {
+    cursor: pointer;
+}

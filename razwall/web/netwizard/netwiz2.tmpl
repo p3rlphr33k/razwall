@@ -1,0 +1,44 @@
+<TMPL_VAR NAME=NW_VAL_title>
+<br>
+<TMPL_IF EXPR="NW_VAL_error_message ne ''">
+  <font color="red"><TMPL_VAR NAME=NW_VAL_error_message></font>
+</TMPL_IF>
+<br>
+<table border="0">
+  <tr>
+    <td><b><font color="orange"><TMPL_VAR NAME=nw_dmz></font></b>:</td>
+    <td>
+      <font color="#666666"><TMPL_VAR NAME=nw_dmz_descr></font>
+    </td>
+  </tr>
+  <tr>
+    <td><b><font color="blue"><TMPL_VAR NAME=nw_lan2></font></b>:</td>
+    <td>
+      <font color="#666666"><TMPL_VAR NAME=nw_lan2_descr></font>
+    </td>
+  </tr>
+</table>
+
+<form action="<TMPL_VAR NAME=NW_VAL_self>" method="post">
+  <input type="hidden" name="session_id" value="<TMPL_VAR NAME=NW_VAL_session_id>">
+  <input type="hidden" name="step" value="<TMPL_VAR NAME=NW_VAL_step>">
+
+  <table border="0">
+  <TMPL_LOOP NAME=NW_VAL_ZONES_LOOP>
+    <tr>
+      <td>
+        <input type="radio" name="ZONES" value="<TMPL_VAR NAME=ZONES_LOOP_NAME>" <TMPL_VAR NAME=ZONES_LOOP_SELECTED>><TMPL_VAR NAME=ZONES_LOOP_CAPTION></input>
+      </td>
+    </tr>
+  </TMPL_LOOP>
+  </table>
+  <br>
+  <br>
+
+  <input type="submit" name="prev" value="<TMPL_VAR NAME=nw_prev>">
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <input type="submit" name="cancel" value="<TMPL_VAR NAME=nw_cancel>">
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <input type="submit" name="next" value="<TMPL_VAR NAME=nw_next>">
+
+</form>

@@ -1,0 +1,20 @@
+{
+ "admins" : {
+      "admin" : {
+                 "unlock" : "true",
+                 "enable" : "true",
+                 "network" : "true",
+                 "system" : "true",
+                 "language" : "true",
+                 "name" : "admin",
+                 "users" : "true",
+                 "logs" : "true",
+                 "password" : "81dc9bdb52d04dc20036dbd8313ed055",
+                 "refresh" : "true",
+                 "reset" : "true",
+                 "power" : "true",
+                 "server" : "true",
+                "dash" : "true"
+      }
+ }
+}
