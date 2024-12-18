@@ -1,0 +1,122 @@
+#!/usr/bin/perl
+
+#
+#        +-----------------------------------------------------------------------------+
+#        | RazWall Firewall - 2024                                                     |
+#        | www.RazWall.com		                                                       |
+#        +-----------------------------------------------------------------------------+
+#
+
+use strict;
+use warnings;
+
+my $prog = "raz";
+my $progdir = "/usr/bin";
+my $desc = "RazWall Management Interface";
+my $raz_port = 3131;
+my $retval = 0;
+
+# Source configuration file
+if (-f "/etc/sysconfig/$prog") {
+    do "/etc/sysconfig/$prog";
+}
+
+sub start {
+    print "Starting $prog: ";
+    system("ulimit -S -c 0 >/dev/null 2>&1");
+
+    # Kill old raz instances
+    my $raz_pids = `pidof $prog -o $$`;
+    chomp($raz_pids);
+    system("/bin/kill -9 $raz_pids >/dev/null 2>&1") if $raz_pids;
+
+    # Kill any process using the raz port
+    system("/usr/bin/fuser -k -9 ${raz_port}/tcp >/dev/null");
+    sleep(0.5);
+
+    # Update ownership of specific files
+    system("/bin/chown -f nobody.nogroup /tmp/visits.raz /var/efw/access/rsa* /var/efw/access/rsa.pub /var/cache/var* /var/run/access_basic_auth_cache /var/run/lock/access_basic_auth_cache &>/dev/null");
+
+    # Start the raz daemon
+    my $result = system("$progdir/$prog -D $ENV{OPTS} &");
+    $retval = $result == 0 ? 0 : 1;
+
+    sleep(1); # Give cherrypy time to bind
+
+    if ($retval == 0) {
+        system("touch /var/lock/subsys/$prog");
+        print "OK\n";
+    } else {
+        print "FAILED\n";
+    }
+
+    return $retval;
+}
+
+sub stop {
+    print "Shutting down $desc ($prog): ";
+    my $result = system("killall $prog");
+    $retval = $result == 0 ? 0 : 1;
+
+    if ($retval == 0) {
+        unlink "/var/lock/subsys/$prog";
+        print "OK\n";
+    } else {
+        print "FAILED\n";
+    }
+
+    return $retval;
+}
+
+sub rhstatus {
+    my $status = system("pgrep -f $prog >/dev/null");
+    if ($status == 0) {
+        print "$prog is running\n";
+        return 0;
+    } else {
+        print "$prog is not running\n";
+        return 1;
+    }
+}
+
+sub restart {
+    stop();
+    start();
+}
+
+sub reload {
+    print "Reloading $prog: ";
+    my $pid = `pgrep -f $progdir/$prog`;
+    chomp($pid);
+
+    if ($pid) {
+        system("kill -HUP $pid");
+        print "OK\n";
+    } else {
+        print "FAILED\n";
+    }
+}
+
+# Main control logic
+my $action = shift || '';
+
+if ($action eq 'start') {
+    start();
+} elsif ($action eq 'stop') {
+    stop();
+} elsif ($action eq 'restart') {
+    restart();
+} elsif ($action eq 'reload') {
+    reload();
+} elsif ($action eq 'status') {
+    rhstatus();
+} elsif ($action eq 'condrestart') {
+    rhstatus() == 0 && restart();
+} elsif ($action eq 'condstop') {
+    rhstatus() == 0 && stop();
+} else {
+    print "Usage: $0 {start|stop|status|reload|restart|condrestart|condstop}\n";
+    exit 1;
+}
+
+exit $retval;

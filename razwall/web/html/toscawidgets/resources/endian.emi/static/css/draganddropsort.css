@@ -1,0 +1,14 @@
+.draganddropsort .draganddropsort-item {
+    margin-bottom: 15px;
+    margin-right: 15px;
+}
+
+.draganddropsort .ui-sortable-placeholder {
+    border: 1px solid;
+    visibility: visible !important;
+    height: 50px !important;
+}
+
+.draganddropsort .ui-sortable-placeholder * { 
+    visibility: hidden;
+}

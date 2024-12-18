@@ -1,0 +1,181 @@
+#! /bin/bash
+#
+# openvpn   Start/Stop the openvpn daemon.
+#
+# chkconfig: 2345 70 41
+# description: openvpn is a Virtual Private Network daemon
+# processname: openvpn
+# config: /etc/openvpn/openvpn.server.*.conf
+# pidfile: /var/lock/subsys/openvpn
+
+# Source function library.
+. /etc/init.d/functions
+
+RETVAL=0
+BRIDGEDEV=""
+
+if [ -z "$2" ]; then
+    NAME=""
+else
+    NAME=".$2"
+fi
+
+CONFIGFILE="/etc/openvpn/openvpn${NAME}.conf"
+
+# See how we were called.
+
+prog="openvpn"
+progdir="/usr/sbin"
+
+# Source configuration
+SYSCFG="${prog}${NAME}"
+if [ -f /etc/sysconfig/$SYSCFG ] ; then
+	. /etc/sysconfig/$SYSCFG
+fi
+
+# Lockfile
+lock="/var/lock/subsys/openvpn${NAME}"
+
+# PID directory
+piddir="/var/run/openvpn"
+pidf=$piddir/openvpn${NAME}.pid
+
+# Our working directory
+work=/etc/openvpn
+dev=""
+
+loadconfig() {
+    dev=$(grep '^dev ' $CONFIGFILE | awk '{ print $2 }')
+}
+
+start() {
+	echo -n $"Starting $prog: "
+	if ! ip link show $dev &>/dev/null; then
+  	    openvpn --mktun --dev $dev &>/dev/null
+	    ip link set $dev up promisc on
+	    RETVAL=$?
+	    if [ $RETVAL -ne 0 ]; then
+            echo_failure
+	        echo
+            return $RETVAL
+        fi
+        [ -n "$BRIDGEDEV" ] && brctl addif $BRIDGEDEV $dev &>/dev/null
+    else
+        ip addr flush $dev
+        RETVAL=$?
+        if [ $RETVAL -ne 0 ]; then
+            echo_failure
+            echo
+            return $RETVAL
+        fi
+    fi
+
+	daemon $progdir/$prog --config /etc/openvpn/openvpn${NAME}.conf
+	RETVAL=$?
+	[ $RETVAL -eq 0 ] && touch $lock
+	echo
+ 	return $RETVAL
+}
+
+stop() {
+	echo -n $"Stopping $prog: "
+        [ -n "$BRIDGEDEV" ] && brctl delif $BRIDGEDEV $dev &>/dev/null
+	if [ -s $pidf ]; then
+            local pid=$(cat $pidf)
+            kill $pid >/dev/null 2>&1
+            if checkpid $pid 2>&1; then
+                # TERM first, then KILL if not dead
+                kill -TERM $pid
+                for i in `seq 1 40`; do
+                    usleep 100000
+                    if checkpid $pid; then
+                        break
+                    fi
+                done
+                if checkpid $pid; then
+                    kill -KILL $pid
+                    usleep 100000
+                fi
+            fi
+        fi
+        checkpid $pid
+        RC=$?
+        RETVAL=$((! $RC))
+	[ $RETVAL -eq 0 ] && rm -f $lock
+	[ $RETVAL -eq 0 ] && rm -f $pidf
+        [ $RETVAL -eq 0 ] && echo_success
+        [ $RETVAL -ne 0 ] && echo_failure
+	echo
+
+	openvpn --rmtun --dev $dev &>/dev/null
+
+	return $RETVAL
+}
+
+rhstatus() {
+	if ! [ -s $pidf ]; then
+            echo "openvpn is stopped"
+	    return 1
+        fi
+        kill -USR2 $(cat $pidf) >/dev/null 2>&1
+	RETVAL=$?
+	if [ $RETVAL -eq 0 ]; then
+	    pid=$(cat $pidf)
+            echo "openvpn (pid $pid) is running..."
+        else
+            echo "openvpn is stopped"
+	fi
+	return $RETVAL
+}
+
+restart() {
+	stop
+	start
+}
+
+reload() {
+	echo -n $"Reloading openvpn daemon configuration: "
+	if ! [ -s $pidf ]; then
+            echo "openvpn is stopped"
+	    return 1
+        fi
+        pid=$(cat $pidf)
+        kill -HUP $pid >/dev/null 2>&1
+	RETVAL=$?
+	echo
+	return $RETVAL
+}
+
+loadconfig
+
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  restart)
+	restart
+	;;
+  reload)
+	reload
+	;;
+  status)
+	rhstatus
+	;;
+  condrestart)
+	rhstatus &>/dev/null && restart || :
+	;;
+  condstop)
+	rhstatus &>/dev/null && stop || :
+	;;
+  condstart)
+	rhstatus &>/dev/null || start
+        ;;
+  *)
+	echo $"Usage: $0 {start|stop|status|reload|restart|condrestart|condstop|condstart}"
+	exit 1
+esac
+
+exit $?

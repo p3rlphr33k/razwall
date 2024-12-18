@@ -1,0 +1,61 @@
+<TMPL_VAR NAME=NW_VAL_title>
+<br>
+<TMPL_VAR NAME=NW_VAL_subtitle>
+<br>
+<TMPL_IF EXPR="NW_VAL_error_message ne ''">
+  <font color="red"><TMPL_VAR NAME=NW_VAL_error_message></font>
+</TMPL_IF>
+<br>
+<br>
+
+<script src="/include/modemmanager.js"></script>
+
+<table border="0">
+
+<form action="<TMPL_VAR NAME=NW_VAL_self>" method="post">
+  <input type="hidden" name="session_id" value="<TMPL_VAR NAME=NW_VAL_session_id>">
+  <input type="hidden" name="step" value="<TMPL_VAR NAME=NW_VAL_step>">
+  <input type="hidden" name="substep" value="<TMPL_VAR NAME=NW_VAL_substep>">
+  <input type="hidden" name="MM_MODEM_TYPE" value="<TMPL_VAR NAME=NW_VAL_MM_MODEM_TYPE>">
+
+  <tr>
+    <td width="25%"><TMPL_VAR NAME=nw_mm_select_modem>:</td>
+    <td>
+      <select name="MM_MODEM" id="mm_select">
+      </select>
+
+      <a href="javascript: void(0);" id="refresh_mm_button">
+          <img src="/images/reconnect.png" id="mm_refresh_icon" border="0" alt="refresh" title="refresh" style="vertical-align: middle"/>
+      </a>
+    </td>
+  </tr>
+
+  <tr>
+    <td width="25%"><TMPL_VAR NAME=nw_mm_modem_type>:</td>
+    <td id="mm_modem_info_type"></td>
+  </tr>
+
+  <tr>
+    <td width="25%"><TMPL_VAR NAME=nw_mm_identifier>:</td>
+    <td id="mm_modem_info_id"></td>
+  </tr>
+
+  <tr>
+    <td width="25%"><TMPL_VAR NAME=nw_mm_status>:</td>
+    <td id="mm_modem_info_status"></td>
+  </tr>
+
+</table>
+
+
+<br>
+<br>
+<input type="submit" name="prev" value="<TMPL_VAR NAME=nw_prev>">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="submit" name="cancel" value="<TMPL_VAR NAME=nw_cancel>">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="submit" name="next" value="<TMPL_VAR NAME=nw_next>">
+
+</form>
+
+<input type="hidden" name="MM_MODEM" value="<TMPL_VAR NAME=NW_VAL_MM_MODEM>">

@@ -1,0 +1,122 @@
+#! /bin/bash
+#
+# crond   Start/Stop the clam antivirus daemon.
+#
+# chkconfig: 2345 70 41
+# description: clamd is a standard Linux/UNIX program that scans for Viruses.
+# processname: clamd
+# config: /etc/clamd.conf
+# pidfile: /var/lock/subsys/clamd
+
+# Source function library.
+. /etc/init.d/functions
+
+RETVAL=0
+
+# See how we were called.
+
+prog="clamd"
+progdir="/usr/sbin"
+
+# Source configuration
+if [ -f /etc/sysconfig/$prog ] ; then
+	. /etc/sysconfig/$prog
+fi
+
+CLAMAV_PIDFILE_TIMEOUT=${CLAMAV_PIDFILE_TIMEOUT:-40}
+
+
+start() {
+	echo -n $"Starting $prog: "
+	killall -0 $progdir/$prog > /dev/null 2>&1
+	STARTING=$?
+	ulimit -S -c 0 >/dev/null 2>&1
+	if [ $STARTING -ne 0 ] ; then
+		$progdir/$prog &>/dev/null
+		RETVAL=$?
+	else
+		echo "$prog already starting"
+		RETVAL=0
+	fi
+	
+	if [ $RETVAL -eq 0 ]; then 
+	    timeout=0;
+	    while : ; do
+		[ ! -f /var/run/clamav/clamd.pid ] || break
+		if [ $timeout -ge $CLAMAV_PIDFILE_TIMEOUT ]; then
+		    RETVAL=1
+		    break
+		fi
+		sleep 1 && echo -n "."
+		timeout=$((timeout+1))
+	    done
+	fi
+	[ $RETVAL -eq 0 ] && touch /var/lock/subsys/clamd
+	[ $RETVAL -eq 0 ] && echo_success
+	[ $RETVAL -ne 0 ] && echo_failure
+	echo
+	return $RETVAL
+}
+
+stop() {
+	echo -n $"Stopping $prog: "
+	# Would be better to send QUIT first, then killproc if that fails
+	killproc $prog
+	RETVAL=$?
+	echo
+	[ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/clamd
+	return $RETVAL
+}
+
+rhstatus() {
+	status clamd
+}
+
+restart() {
+	stop
+	start
+}
+
+reload() {
+	echo -n $"Reloading clam daemon configuration: "
+	killproc clamd -HUP
+	RETVAL=$?
+	echo
+	return $RETVAL
+}
+
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  restart)
+	restart
+	;;
+  reload)
+	reload
+	;;
+  status)
+	rhstatus
+	;;
+  condrestart)
+	status clamd &>/dev/null && restart || :
+	;;
+  condstop)
+	status clamd &>/dev/null && stop || :
+	;;
+  condstart)
+       if [ -f "/var/run/clamav/clamd.pid" ]; then
+           checkpid `cat /var/run/clamav/clamd.pid` || start
+       else
+           start
+       fi
+       ;;
+  *)
+	echo $"Usage: $0 {start|stop|status|reload|restart|condstart|condrestart|condstop}"
+	exit 1
+esac
+
+exit $?

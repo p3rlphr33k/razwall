@@ -1,0 +1,98 @@
+#!/bin/sh
+
+################################################################################
+#
+# Program: syslog-ng init script
+#
+# Description:
+#
+#  This is an init script for syslog-ng on the Linux platform.
+#
+#  It totally relies on the Redhat function library and works the same
+#  way as other typical Redhat init scripts.
+#
+#
+# Platforms (tested): Linux (Redhat 6.1)
+#
+#
+# Author: Gregor Binder <gbinder@sysfive.com>
+#
+# Last Changed: October 10, 2000
+#
+#     Copyright (c) 2000 by sysfive.com GmbH, All rights reserved.
+#
+################################################################################
+
+################################################################################
+# configuration
+#
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+INIT_PROG="/usr/sbin/syslog-ng"    # Full path to daemon
+INIT_OPTS=""                   # options passed to daemon
+
+PATH=/bin:/sbin:/usr/bin:/usr/sbin
+
+# Source spamd configuration.
+if [ -f /etc/sysconfig/syslog-ng ] ; then
+        . /etc/sysconfig/syslog-ng
+fi
+
+[ -x $INIT_PROG ] || exit 0
+
+INIT_NAME=`basename "$INIT_PROG"`
+
+RETVAL=0
+
+umask 077
+ulimit -c 0
+
+# See how we were called.
+case "$1" in
+  start)
+	echo -n "Starting $INIT_NAME: "
+	daemon ${INIT_NAME} ${INIT_OPTS}
+	RETVAL=$?
+	echo
+	[ $RETVAL -eq 0 ] && touch "/var/lock/subsys/${INIT_NAME}"
+	;;
+  stop)
+	echo -n "Stopping $INIT_NAME: "
+	killproc $INIT_PROG
+	RETVAL=$?
+	echo
+	[ $RETVAL -eq 0 ] && rm -f "/var/lock/subsys/${INIT_NAME}"
+	;;
+  condrestart)
+	status syslog-ng &>/dev/null && $0 restart || :
+       ;;
+  condstop)
+	status syslog-ng &>/dev/null && $0 stop || :
+       ;;
+  status)
+        status syslog-ng
+        RETVAL=$?
+        ;;
+  reload)
+        echo -n $"Reloading $INIT_PROG:"
+        if [ -n "$(pidfileofproc $INIT_PROG)" ] ; then
+            killproc $INIT_PROG -HUP
+        else
+            failure $"Reloading $INIT_PROG"
+        fi
+        RETVAL=$?
+	echo
+	;;
+  restart)
+	$0 stop
+	$0 start
+	RETVAL=$?
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart|reload|condrestart|condstop|status}"
+	exit 1
+esac
+
+exit $RETVAL

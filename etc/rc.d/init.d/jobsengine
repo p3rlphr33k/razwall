@@ -1,0 +1,109 @@
+#! /bin/bash
+#
+# jobsengine   Start/Stop the jobsengine
+#
+# chkconfig: 2345 10 10
+# processname: jobsengine
+
+# Source function library.
+. /etc/init.d/functions
+
+RETVAL=0
+
+# See how we were called.
+
+prog="jobsengine"
+progdir="/usr/bin"
+desc="Jobs engine"
+
+OPTS=""
+
+# Source configuration
+if [ -f /etc/sysconfig/$prog ] ; then
+	. /etc/sysconfig/$prog
+fi
+
+PIDFILE=/var/run/jobsengine.pid
+
+start() {
+    echo -n $"Starting $desc ($prog): "
+    ulimit -S -c 0 >/dev/null 2>&1
+    $progdir/$prog $OPTS >/dev/null 2>&1
+    RETVAL=$?
+    [ $RETVAL -eq 0 ] && touch /var/lock/subsys/$prog
+    [ $RETVAL -eq 0 ] && echo_success
+    [ $RETVAL -ne 0 ] && echo_failure
+    echo
+    return $RETVAL
+}
+
+stop() {
+    echo -n $"Shutting down $desc ($prog): "
+    killproc $prog
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/$prog
+    return $RETVAL
+}
+
+rhstatus() {
+	status $prog
+}
+
+forcerestart() {
+	stop
+	start
+}
+
+restart() {
+    echo -n $"Starting $desc ($prog): "
+    ulimit -S -c 0 >/dev/null 2>&1
+    $progdir/$prog --restart $OPTS >/dev/null 2>&1
+    RETVAL=$?
+    [ $RETVAL -eq 0 ] && touch /var/lock/subsys/$prog
+    [ $RETVAL -eq 0 ] && echo_success
+    [ $RETVAL -ne 0 ] && echo_failure
+    echo
+    return $RETVAL
+}
+
+reload() {
+    echo -n $"Reloading jobsengine configuration: "
+ 	$progdir/$prog --reload >/dev/null
+    RETVAL=$?
+    echo_success
+    echo    
+	return $RETVAL
+}
+
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  restart)
+	restart
+	;;
+  force-restart)
+    forcerestart
+    ;;
+  reload)
+	reload
+	;;
+  status)
+	rhstatus
+	;;
+  condrestart)
+	status $prog &>/dev/null && restart || :
+	;;
+  condstop)
+	status $prog &>/dev/null && stop || :
+	;;
+  *)
+	echo $"Usage: $0 {start|stop|status|reload|restart|force-restart|condrestart|condstop}"
+	exit 1
+esac
+
+exit $RETVAL

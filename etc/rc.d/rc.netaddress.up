@@ -1,0 +1,140 @@
+#!/bin/sh
+#
+#        +-----------------------------------------------------------------------------+
+#        | RazWall Firewall - 2024                                                     |
+#        | www.RazWall.com		                                                       |
+#        +-----------------------------------------------------------------------------+
+#
+
+. /etc/rc.d/raz_lib.sh
+
+HOTSPOT_DIR=/var/efw/hotspot/
+ETHERNET_DIR=/var/efw/ethernet/
+HA_DIR=/var/efw/ha/
+
+if [ -e ${HA_DIR}/settings ]; then
+    loadconf ${HA_DIR}/settings
+fi
+
+if [ -e ${HOTSPOT_DIR}/settings ]; then
+    loadconf ${HOTSPOT_DIR}/settings
+fi
+
+loadconf ${ETHERNET_DIR}/settings
+
+sed -i -e "s/BLUE_DEV=.*/BLUE_DEV=br2/" ${ETHERNET_DIR}/settings
+
+loadconf ${ETHERNET_DIR}/settings
+save_old_settings ${ETHERNET_DIR}/settings
+
+function get_parent_dev() {
+    local IF="$1"
+    ip -o link show $IF | cut -d ':' -f2 | cut -d '@' -f 2
+}
+
+function build_bridge () {
+    local IF="$1"
+
+    if ! brctl showstp $IF >/dev/null 2>&1; then
+	brctl addbr $IF
+	brctl stp $IF off
+        brctl setbridgeprio $IF 0
+        brctl sethello $IF 1
+        brctl setmaxage $IF 4
+        brctl setfd $IF 4	
+    fi
+
+    ip link set ${IF} up
+    ip link set multicast on dev ${IF}
+    ip addr flush dev ${IF} 2>/dev/null
+
+    if [ ! -e ${ETHERNET_DIR}/${IF} ]; then
+	return
+    fi
+
+    while read DEV; do
+	[ -z "$DEV" ] && continue
+
+	# handle switch chips
+	parent=$(get_parent_dev "${DEV}")
+	if [ "${parent}" != "${DEV}" ]; then
+	    ip link set ${parent} up
+	fi
+
+	ip link set ${DEV} up promisc on
+	ip addr flush dev ${DEV} 2>/dev/null
+	brctl addif ${IF} ${DEV}
+    done < ${ETHERNET_DIR}/${IF}
+}
+
+function configure_address() {
+    local IF="$1"
+    shift
+    local POOL="$*"
+
+    [ -z "$POOL" ] && return
+    [ -z "$IF" ] && return
+
+    local IFS=,; for addr in $POOL; do
+	ip rule add prio 5 to ${addr} lookup main
+	if [ "${HA_ENABLED}" != "on" ]; then
+            ip addr add "${addr}" brd + dev ${IF}
+	fi
+    done
+}
+
+function set_mac_addr() {
+    if ! grep -q "efw_ether" /proc/cmdline; then
+	return
+    fi
+
+    echo "Set initial MAC addresses according kernel boot cmdline"
+
+    sed "s/^.*efw_ether=\([^=\ ()$]*\).*/\1/" /proc/cmdline | \
+	tr ";" "\n" | \
+	while read line; do 
+	    local iff=$(echo $line | cut -d ',' -f 1)
+	    local addr=$(echo $line | cut -d ',' -f 2)
+
+	    echo "* $iff: $addr"
+	    ip link set dev $iff addr $addr
+    done
+
+}
+
+set_mac_addr
+
+echo "Bringing network up"
+
+if [ ! -e ${ETHERNET_DIR}/${GREEN_DEV} ]; then
+    echo "eth0" > ${ETHERNET_DIR}/${GREEN_DEV}
+fi
+build_bridge "${GREEN_DEV}"
+
+configure_address "${GREEN_DEV}" "${GREEN_IPS}"
+
+if has_orange; then
+    if [ -n "$ORANGE_IPS" ]; then
+	build_bridge "${ORANGE_DEV}"
+	configure_address "${ORANGE_DEV}" "${ORANGE_IPS}"
+    fi
+fi
+
+if has_blue; then
+    if [ -n "$BLUE_IPS" ]; then
+        build_bridge "${BLUE_DEV}"
+        if [ "${HOTSPOT_ENABLED}" != 'on' ]; then
+	    configure_address "${BLUE_DEV}" "${BLUE_IPS}"
+	fi
+    fi
+fi
+
+# setup	management ip
+if [ "$HA_ENABLED" == "on" ]; then
+    if [ "$HA_NODE" != "" ]; then
+        loadconf /var/efw/ha/nodes/$HA_NODE
+        ip addr add $NODE_ADDR brd + dev $HA_MANAGEMENT_PORT
+    fi
+fi
+
+exit 0

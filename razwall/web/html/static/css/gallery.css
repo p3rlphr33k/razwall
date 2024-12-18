@@ -1,0 +1,142 @@
+/* the overlayed element */
+.gallery .simple_overlay {
+    
+    /* must be initially hidden */
+    display:none;
+    
+    /* place overlay on top of other elements */
+    z-index:10000;
+    
+    /* styling */
+    
+    width:900px;
+    min-height:300px;
+    border:1px solid;
+    
+    /* CSS3 styling for latest browsers */
+    -moz-box-shadow:0 0 90px 5px #000;
+    -webkit-box-shadow: 0 0 90px #000;
+}
+
+/* close button positioned on upper right corner */
+.gallery .simple_overlay .close {
+    background-image:url(/toscawidgets/resources/endian.emi/static/images/gallery_close.png);
+    position:absolute;
+    right:-15px;
+    top:-15px;
+    cursor:pointer;
+    height:35px;
+    width:35px;
+}
+
+/* "next image" and "prev image" links */
+.gallery .next, .prev {
+    
+    /* absolute positioning relative to the overlay */
+    position:absolute;
+    top:40%;
+    border:1px solid;
+    cursor:pointer;
+    display:block;
+    padding:10px 20px;
+    
+    /* upcoming CSS3 features */
+    -moz-border-radius:5px;
+    -webkit-border-radius:5px;
+}
+
+.gallery .prev {
+    left:0;
+    border-left:0;
+}
+
+.gallery .next {
+    right:0;
+    border-right:0;
+}
+
+.gallery .next:hover, .gallery .prev:hover {
+    text-decoration:none;
+}
+
+/* when there is no next or previous link available this class is added */
+.gallery .disabled {
+    visibility:hidden;
+}
+
+/* progress indicator (animated gif). should be initially hidden */
+.gallery .progress {
+    position:absolute;
+    top:45%;
+    left:50%;
+    display:none;
+}
+
+/* everybody should know about RGBA colors. */
+.gallery .next, .gallery .prev, .gallery .info {
+    text-decoration: none;
+}
+
+.galleryimage {
+    float: left;
+    padding: 10px;
+}
+
+.galleryimage img {
+    width: 349px;
+}
+
+/*
+root element for the scrollable.
+when scrolling occurs this element stays still.
+*/
+.gallery .scrollable {
+    position:relative;
+    overflow:hidden;
+    margin: 25px 100px;
+    width: 700px;
+    min-height: 150px;
+    height: 100%;
+}
+
+/*
+root element for scrollable items. Must be absolutely positioned
+and it should have a extremely large width to accommodate scrollable items.
+it's enough that you set width and height for the root element and
+not for this element.
+*/
+.gallery .scrollable .items {
+/* this cannot be too large */
+    width:20000em;
+    position:absolute;
+}
+
+/*
+    a single item. must be floated in horizontal scrolling.
+    typically, this element is the one that *you* will style
+    the most.
+*/
+.gallery .items div {
+    float:left;
+}
+
+.gallery .items img {
+    width: 700px;
+    margin-right: 1500px;
+    float:none;
+}
+
+/* the "information box" */
+.gallery .items .info {
+    position:relative;
+    bottom:0;
+    left:0;    
+    padding:10px 15px;
+    margin: 10px;
+    float:none;
+}
+
+.gallery .items .info strong {
+    display:block;
+}
+

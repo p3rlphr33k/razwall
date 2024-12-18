@@ -1,0 +1,41 @@
+#!/bin/sh
+#
+#        +-----------------------------------------------------------------------------+
+#        | RazWall Firewall - 2024                                                     |
+#        | www.RazWall.com		                                                       |
+#        +-----------------------------------------------------------------------------+
+#
+
+PATH=/bin:/sbin:/usr/bin:/usr/sbin
+
+/etc/init.d/uplinksdaemon condstop
+stopalluplinks
+
+. /etc/rc.d/efw_lib.sh
+
+if [ -e "${CONFIG_ROOT}/ethernet/settings.old" ]; then
+    loadconf ${CONFIG_ROOT}/ethernet/settings.old
+else
+    loadconf ${CONFIG_ROOT}/ethernet/settings
+fi
+
+SUBNETS=$GREEN_IPS
+if has_blue; then
+    SUBNETS="$SUBNETS $BLUE_IPS"
+fi
+if has_orange; then
+    SUBNETS="$SUBNETS $ORANGE_IPS"
+fi
+SUBNETS=$(echo $SUBNETS | sed "s/,/ /g")
+
+for net in $SUBNETS; do
+    ip rule del to $net 2> /dev/null
+done
+
+brctl show | grep "br[0-9]" | awk '{ print $1}' | while read BRIDGE; do
+    ip addr flush dev ${BRIDGE} 2>/dev/null
+    ip link set ${BRIDGE} down
+    brctl delbr ${BRIDGE}
+done
+
+exit 0

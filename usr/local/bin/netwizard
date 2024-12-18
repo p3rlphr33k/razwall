@@ -1,0 +1,813 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# +--------------------------------------------------------------------------+
+# | Endian Firewall                                                          |
+# +--------------------------------------------------------------------------+
+# | Copyright (c) 2004-2016 S.p.A. <info@endian.com>                         |
+# |         Endian S.p.A.                                                    |
+# |         via Pillhof 47                                                   |
+# |         39057 Appiano (BZ)                                               |
+# |         Italy                                                            |
+# |                                                                          |
+# | This program is free software; you can redistribute it and/or modify     |
+# | it under the terms of the GNU General Public License as published by     |
+# | the Free Software Foundation; either version 2 of the License, or        |
+# | (at your option) any later version.                                      |
+# |                                                                          |
+# | This program is distributed in the hope that it will be useful,          |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of           |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            |
+# | GNU General Public License for more details.                             |
+# |                                                                          |
+# | You should have received a copy of the GNU General Public License along  |
+# | with this program; if not, write to the Free Software Foundation, Inc.,  |
+# | 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.              |
+# +--------------------------------------------------------------------------+
+
+__author__ = "Andrea Bonomi <a.bonomi@endian.com>"
+__date__ = "2013-05-22"
+
+import os
+import pwd
+import grp
+import signal
+import sys
+import readline
+import re
+import string
+import getpass
+import iplib
+from optparse import OptionParser, OptionGroup
+from endian.core.logger import error
+from endian.data import DataSource
+from endian.core.settingsfile import SettingsFile
+from endian.job.engine_control import send_cmd_to_engine
+
+VAR = "/var/efw/"
+HOST_SETTINGS = VAR + "host/settings"
+MAIN_SETTINGS = VAR + "main/settings"
+UPLINKS_MAIN_SETTINGS = VAR + "uplinks/main/settings"
+ETHERNET = VAR + "ethernet"
+ETHERNET_SETTINGS = VAR + "ethernet/settings"
+
+HOSTNAME_RE = re.compile(r'^[a-zA-Z\d\_-]{1,63}$')
+DOMAIN_RE = re.compile(r'^[a-zA-Z\d\_-]{,63}(\.[a-zA-Z\d\_-]{,63})*$')
+
+SYSTEM_ACCESS_RULE = {
+    'bridge': '',
+    'remark': '',
+    'log': '',
+    'proto': 'tcp',
+    'src_dev': 'ANY',
+    'enabled': 'on',
+    'src_ip': '',
+    'mac': '',
+    'dst_port': '22&80&10443',
+    'dst_ip': '',
+    'logprefix': 'INPUTFW',
+    'target': 'ACCEPT'
+}
+
+def check_ip_in_cidr(ip, cidr_list):
+    for cidr in cidr_list:
+        if iplib.IPv4Address(ip) in iplib.CIDR(cidr):
+            return True
+    else:
+        return False
+
+
+def check_ip(ip, **kwargs):
+    if not ip and kwargs.get('required', None) == False:
+        return
+    try:
+        iplib.CIDR("%s/32" % ip)
+    except:
+        raise Exception("Invalid IP address")
+    if 'cidr' in kwargs and not check_ip_in_cidr(ip, kwargs['cidr']):
+        raise Exception("IP address not in %s" % kwargs.get('zone', 'GREEN_IPS'))
+
+
+def check_cidr(ip, **kvargs):
+    try:
+        iplib.CIDR(ip)
+    except:
+        raise Exception("Invalid IP/CIDR")
+
+
+def check_hostname(hostname, **kvargs):
+    if HOSTNAME_RE.match(hostname) is None:
+        raise Exception("Invalid hostname")
+
+
+def check_domain(domain, **kvargs):
+    if DOMAIN_RE.match(domain) is None:
+        raise Exception("Invalid domain")
+
+
+CONFIG = {
+    'HOSTNAME': {
+        'order': 1,
+        'msg': "Hostname",
+        'validator': check_hostname
+    },
+    'DOMAINNAME': {
+        'order': 2,
+        'msg': "Domain",
+        'validator': check_domain
+    },
+    'RED_TYPE': {
+        'order': 10,
+        'msg': "RED interface type",
+        'options': ["STATIC", "DHCP", "NOUPLINK", "BRIDGED"],
+        'trans': string.upper
+    },
+    'RED_DEV': {
+        'order': 11,
+        'msg': "RED device",
+        'required': True
+    },
+    'RED_IPS': {
+        'order': 12,
+        'msg': "RED IPs (IP/CIDR)",
+        'required': True,
+        'validator': check_cidr
+    },
+    'RED_GATEWAY': {
+        'order': 13,
+        'msg': "RED gateway",
+        'required': True,
+        'validator': check_ip
+    },
+    'RED_DNS1': {
+        'order': 14,
+        'msg': "Primary DNS",
+        'required': True,
+        'validator': check_ip
+    },
+    'RED_DNS2': {
+        'order': 15,
+        'msg': "Secondary DNS",
+        'required': True,
+        'validator': check_ip
+    },
+    'GREEN_DEV': {
+        'order': 20,
+        'msg': "GREEN devices",
+        'required': True,
+        'split': True
+    },
+    'GREEN_IPS': {
+        'order': 21,
+        'msg': "GREEN IPs (IP/CIDR)",
+        'required': True,
+        'split': True,
+        'validator': check_cidr
+    },
+    'ENABLE_GREEN_DHCP': {
+        'order': 22,
+        'msg': "Enable DHCP server on GREEN",
+        'options': ["on", "off"],
+        'trans': string.lower
+    },
+    'ORANGE_DEV': {
+        'order': 30,
+        'msg': "ORANGE devices",
+        'required': False,
+        'split': True
+    },
+    'ORANGE_IPS': {
+        'order': 31,
+        'msg': "ORANGE IPs (IP/CIDR)",
+        'required': False,
+        'split': True,
+        'validator': check_cidr
+    },
+    'BLUE_DEV': {
+        'order': 40,
+        'msg': "BLUE devices",
+        'required': False,
+        'split': True
+    },
+    'BLUE_IPS': {
+        'order': 41,
+        'msg': "BLUE IPs (IP/CIDR)",
+        'required': False,
+        'split': True,
+        'validator': check_cidr
+    },
+    'ENABLE_SSH': {
+        'order': 50,
+        'msg': "Enable SSH access",
+        'options': ["on", "off"],
+        'trans': string.lower
+    },
+    'SYSTEM_ACCESS': {
+        'order': 51,
+        'msg': "Allow access to ports 22, 80 and 10443 from any interface",
+        'options': ["on", "off"],
+        'trans': string.lower
+    },
+}
+
+
+def get_config():
+    config = {}
+    ds = DataSource()
+    # Main
+    settings_file = SettingsFile(HOST_SETTINGS)
+    config['HOSTNAME'] = settings_file.get('HOSTNAME') or ""
+    config['DOMAINNAME'] = settings_file.get('DOMAINNAME') or ""
+    # Main uplink
+    settings_file = SettingsFile(UPLINKS_MAIN_SETTINGS)
+    if settings_file.get('RED_TYPE') == "NONE":
+        config['RED_TYPE'] = "NOUPLINK"
+    else:
+        config['RED_DEV'] = settings_file.get('RED_DEV', "")
+        if settings_file.get('RED_TYPE') == "STEALTH":
+            config['RED_TYPE'] = "BRIDGED"
+        else:
+            config['RED_TYPE'] = settings_file.get('RED_TYPE') or "DHCP"
+    config['RED_GATEWAY'] = settings_file.get('DEFAULT_GATEWAY', "")
+    config['RED_DNS1'] = settings_file.get('DNS1') or ""
+    config['RED_DNS2'] = settings_file.get('DNS2') or ""
+    config['RED_IPS'] = (settings_file.get('RED_IPS') or "")
+    config['RED_IPS'] = config['RED_IPS'] and config['RED_IPS'].split(',') or []
+    # Ethernet settings
+    settings_file = SettingsFile(ETHERNET_SETTINGS)
+    # IPs
+    for zone in ['GREEN', 'ORANGE', 'BLUE']:
+        ips = settings_file.get(zone + '_IPS') or ""
+        config[zone + '_IPS'] = ips and ips.split(',') or []
+    # Devices
+    for zone, dev in [('GREEN_DEV', 'br0'), ('ORANGE_DEV', 'br1'), ('BLUE_DEV', 'br2')]:
+        dev = settings_file.get(zone) or dev
+        try:
+            f = None
+            try:
+                f = file(os.path.join(ETHERNET, dev), 'r')
+                interfaces = f.read()
+                f.close()
+            except:
+                interfaces = ""
+        finally:
+            if f:
+                f.close()
+        interfaces = [x for x in interfaces.split("\n") if x]
+        config[zone] = interfaces
+    # SSH
+    try:
+        config['ENABLE_SSH'] = ds.REMOTE.SETTINGS.ENABLE_SSH
+    except:
+        config['ENABLE_SSH'] = 'off'
+    # System access
+    try:
+        xtaccess = DataSource("xtaccess").config
+        config['SYSTEM_ACCESS'] = (SYSTEM_ACCESS_RULE in xtaccess) and 'on' or 'off'
+    except:
+        config['SYSTEM_ACCESS'] = 'off'
+    # DHCP
+    try:
+        config['ENABLE_GREEN_DHCP'] = ds.DHCP.SETTINGS.ENABLE_GREEN or 'off'
+    except:
+        config['ENABLE_GREEN_DHCP'] = 'off'
+    # Search for mandatory zones.
+    wizard = DataSource("wizard").settings
+    if wizard.get('WIZARD_MANDATORY_ZONES'):
+        for zone in wizard.WIZARD_MANDATORY_ZONES.split('&'):
+            zone_dev = '%s_DEV' % zone
+            if zone_dev not in CONFIG:
+                continue
+            CONFIG[zone_dev]['required'] = True
+    return config
+
+
+def make_config_file(filename, username="nobody", group="nogroup"):
+    """
+    ..autofunction:: make_config_file
+    Create an empty config file and its path
+    """
+    # Create the path
+    try:
+        dir = os.path.dirname(filename)
+        os.makedirs(dir)
+        chown(dir, username, group)
+    except:
+        pass
+    # Create the file
+    try:
+        os.utime(filename, None)
+    except:
+        open(filename, 'a').close()
+    # Change the user and group
+    chown(filename, username, group)
+
+
+def chown(filename, username, group):
+    try:
+        uid = username is None and -1 or pwd.getpwnam(username).pw_uid
+        gid = group is None and -1 or grp.getgrnam(group).gr_gid
+        os.chown(filename, uid, gid)
+    except:
+        pass
+
+
+def restore_ethernet_settings(config, test=False):
+    make_config_file(ETHERNET_SETTINGS)
+    settings_file = SettingsFile(ETHERNET_SETTINGS)
+    # IPs
+    for zone in ['GREEN', 'ORANGE', 'BLUE']:
+        ips = config.get(zone + "_IPS", "")
+        if not isinstance(ips, list):
+            ips = [ips]
+        if not ips:
+            settings_file[zone + '_IPS'] = ""
+            settings_file[zone + '_ADDRESS'] = ""
+            settings_file[zone + '_BROADCAST'] = ""
+            settings_file[zone + '_NETADDRESS'] = ""
+            settings_file[zone + '_CIDR'] = ""
+            settings_file[zone + '_NETMASK'] = ""
+        else:
+            settings_file[zone + '_IPS'] = ",".join(ips)
+            try:
+                ip = iplib.CIDR(ips[0])
+            except:
+                error("Error parsing %s_IPS" % zone)
+                return False
+            settings_file[zone + '_ADDRESS'] = ip.address.get_dot()
+            settings_file[zone + '_BROADCAST'] = ip.get_broadcast_ip().get_dot()
+            settings_file[zone + '_NETADDRESS'] = ip.network_ip.get_dot()
+            settings_file[zone + '_CIDR'] = ip.netmask.get_bits()
+            settings_file[zone + '_NETMASK'] = ip.netmask.get_dot()
+    # Devices
+    for zone, dev in [('GREEN_DEV', 'br0'), ('ORANGE_DEV', 'br1'), ('BLUE_DEV', 'br2')]:
+        settings_file[zone] = dev
+        if test:
+            continue
+        filename = os.path.join(ETHERNET, dev)
+        f = open(filename, 'w')
+        try:
+            value = config.get(zone, "")
+            if isinstance(value, list):
+                value = "\n".join(value)
+            # If RED type is NOUPLINK, add the RED interface to the GREEN bridge
+            if config.get('RED_TYPE', "") == "NOUPLINK" and zone == 'GREEN_DEV':
+                red_dev = config.get("RED_DEV", "")
+                if isinstance(red_dev, list):
+                    red_dev = "\n".join(red_dev)
+                value = red_dev + "\n" + value
+            f.write(value + "\n")
+        finally:
+            f.close()
+        chown(filename, "nobody", "nogroup")
+    # CONFIG_TYPE (0-7): Specifies the constellation of enabled zones as a bitfield.
+    # Each bit specifies if a zone is enabled (1) or disabled (0).
+    # The bits correspond to: RED, BLUE, ORANGE, in this order of precedence.
+    # 000 => 0, -
+    # 001 => 1, orange
+    # 100 => 2, red
+    # 101 => 3, red, orange
+    # 010 => 4, blue
+    # 011 => 5, blue, orange
+    # 110 => 6, red,blue
+    # 111 => 7  red,blue,orange
+    settings_file['CONFIG_TYPE'] = (config.get('ORANGE_IPS') and 1 or 0) + \
+                                   2 + \
+                                   (config.get('BLUE_IPS') and 4 or 0)
+    if not test:
+        settings_file.write()
+    return True
+
+
+def restore_host_settings(config, test=False):
+    make_config_file(HOST_SETTINGS)
+    settings_file = SettingsFile(HOST_SETTINGS)
+    settings_file['HOSTNAME'] = config.get('HOSTNAME') or ""
+    settings_file['DOMAINNAME'] = config.get('DOMAINNAME') or ""
+    if not test:
+        settings_file.write()
+    return True
+
+
+def restore_uplinks(config, test=False):
+    make_config_file(UPLINKS_MAIN_SETTINGS)
+    settings_file = SettingsFile(UPLINKS_MAIN_SETTINGS)
+    settings_file['AUTOSTART'] = "on"
+    settings_file['MANAGED'] = "on"
+    settings_file['ONBOOT'] = "on"
+    settings_file['ENABLED'] = "on"
+    settings_file['BACKUPPROFILE'] = ""
+    settings_file['MAC'] = ""
+    settings_file['MTU'] = ""
+    settings_file['CHECKHOSTS'] = ""
+    # RED Type
+    red_type = config.get('RED_TYPE', "")
+    if not red_type:
+        if config.get('RED_IPS', ""):
+            red_type = "STATIC"
+        else:
+            red_type = "DHCP"
+    else:
+        red_type = red_type.upper()
+    # No uplink
+    if red_type == "NOUPLINK":
+        settings_file['RED_TYPE'] = "NONE"
+        settings_file['RED_DEV'] = "br0"  # RED DEV = GREEN DEV
+        settings_file['CHECKHOSTS'] = "127.0.0.1"
+    # Static/DHCP
+    else:
+        if red_type == "BRIDGED":
+            settings_file['RED_TYPE'] = "STEALTH"
+        else:
+            settings_file['RED_TYPE'] = red_type
+        settings_file['RED_DEV'] = config.get('RED_DEV', "")
+    settings_file['DEFAULT_GATEWAY'] = config.get('RED_GATEWAY', "")
+    # DNS
+    settings_file['DNS1'] = config.get('RED_DNS1')
+    settings_file['DNS2'] = config.get('RED_DNS2')
+    # RED IPs
+    ips = config.get('RED_IPS', "")
+    if isinstance(ips, list):
+        ip = ips and ips[0] or ''
+    else:
+        ip = ips
+    if not ip:
+        settings_file['RED_IPS'] = ""
+        settings_file['RED_ADDRESS'] = ""
+        settings_file['RED_BROADCAST'] = ""
+        settings_file['RED_NETADDRESS'] = ""
+        settings_file['RED_CIDR'] = ""
+        settings_file['RED_NETMASK'] = ""
+    else:
+        settings_file['RED_IPS'] = isinstance(ips, list) and ",".join(ips) or ips
+        try:
+            ip = iplib.CIDR(ip)
+        except:
+            error("Error parsing RED_IPS")
+            return False
+        settings_file['RED_ADDRESS'] = ip.address.get_dot()
+        settings_file['RED_BROADCAST'] = ip.get_broadcast_ip().get_dot()
+        settings_file['RED_NETADDRESS'] = ip.network_ip.get_dot()
+        settings_file['RED_CIDR'] = ip.netmask.get_bits()
+        settings_file['RED_NETMASK'] = ip.netmask.get_dot()
+    if not test:
+        settings_file.write()
+    return True
+
+
+def restore_wizard(config):
+    try:
+        os.mkdir(os.path.join(VAR, "wizard"))
+    except:
+        pass
+    wizard = DataSource("wizard").settings
+    state = (wizard.get("WIZARD_STATE") or "").lower()
+    if state not in ["done", "register"]:
+        if wizard.get('WIZARD_URI_REGISTER'):
+            wizard["WIZARD_STATE"] = "REGISTER"
+            wizard["WIZARD_NEXT_NETWIZARD"] = "register"
+        else:
+            wizard["WIZARD_STATE"] = "DONE"
+            wizard["WIZARD_NEXT_NETWIZARD"] = "done"
+        wizard.write()
+
+
+def restore_ssh(config):
+    try:
+        directory = os.path.join(VAR, "remote")
+        os.mkdir(directory)
+        chown(directory, "nobody", "nogroup")
+    except:
+        pass
+    ssh = DataSource("remote").settings
+    ssh["ENABLE_SSH"] = config["ENABLE_SSH"]
+    ssh.write()
+    chown("/var/efw/remote/settings", "nobody", "nogroup")
+
+
+def restore_system_access(config):
+    if config["SYSTEM_ACCESS"] == 'on':
+        xtaccess = DataSource("xtaccess").config
+        if SYSTEM_ACCESS_RULE not in xtaccess:
+            xtaccess.append(SYSTEM_ACCESS_RULE)
+            xtaccess.write()
+            chown("/var/efw/xtaccess/config", "nobody", "nogroup")
+
+
+def restore_dhcp(config):
+    settings = DataSource("dhcp").settings
+    settings["ENABLE_GREEN"] = config["ENABLE_GREEN_DHCP"]
+    settings.write()
+    chown("/var/efw/dhcp/settings", "nobody", "nogroup")
+
+
+def get_nics():
+    result = []
+    for nic in os.listdir('/sys/class/net'):
+        if nic == 'lo':
+            continue
+        if os.path.exists(os.path.join('/sys/class/net', nic, 'bridge')) or \
+           os.path.exists(os.path.join('/sys/class/net', nic, 'tun_flags')):
+            continue
+        result.append(nic)
+    return sorted(result)
+
+
+def completer(text, state, options):
+    try:
+        return [x for x in options if x.startswith(text)][state]
+    except:
+        return None
+
+
+def prompt(msg, default="", required=False, validator=None, options=None, trans=None, password=False, split=False, minlen=None, validator_args=None):
+    if not validator_args:
+        validator_args = {}
+    if isinstance(default, list):
+        default = " ".join(default)
+    prev_value = default
+
+    readline.parse_and_bind("tab: complete")
+    readline.set_completer(lambda text, state: completer(text, state, options))
+
+    def readline_startup_hook():
+        readline.insert_text(prev_value)
+    try:
+        readline.set_startup_hook(readline_startup_hook)
+        value = None
+        if options is not None:
+            msg = msg + " <" + "/".join(options) + ">"
+        msg = msg + "? "
+        while not value:
+            if password:
+                value = getpass.getpass(msg)
+            else:
+                value = raw_input(msg)
+            prev_value = value
+            if split:
+                value = [x for x in re.split('[ |\t|,|;|&]+', value) if x]
+            else:
+                value = [value]
+            if minlen and len(value) < minlen:
+                print "You must specify at least %d values" % minlen
+                value = None
+                valid = False
+                continue
+            if trans is not None:
+                value = [trans(x) for x in value]
+            valid = True
+            if validator is not None:
+                for v in value:
+                    try:
+                        validator(v, **validator_args)
+                    except Exception, e:
+                        print("Configuration error: %s" % e)
+                        value = None
+                        valid = False
+                        continue
+                if not valid:
+                    continue
+            if options is not None:
+                for v in value:
+                    if v not in options:
+                        print "Invalid option - valid options are: %s" % ",".join(options)
+                        value = None
+                        valid = False
+                        continue
+                if not valid:
+                    continue
+            if not required or value:
+                break
+        if not split and value:
+            value = value[0]
+        return value
+    finally:
+        readline.set_startup_hook(None)
+
+
+def read_prompt(config, var, **args):
+    args = dict(args)
+    args['default'] = config.get(var, "")
+    for option in ['msg', 'default', 'validator', 'trans', 'options', 'split', 'required']:
+        if option not in args and option in CONFIG[var]:
+            args[option] = CONFIG[var][option]
+    config[var] = prompt(**args)
+
+
+def ask_config(config):
+    nics = get_nics()
+    read_prompt(config, 'HOSTNAME')
+    read_prompt(config, 'DOMAINNAME')
+
+    show_interfaces()
+    read_prompt(config, 'RED_TYPE')
+    if config['RED_TYPE'] == 'STATIC':
+        read_prompt(config, 'RED_DEV', options=nics)
+        try:
+            nics.remove(config['RED_DEV'])
+        except:
+            pass
+        read_prompt(config, 'RED_IPS')
+        read_prompt(config, 'RED_GATEWAY')
+        read_prompt(config, 'RED_DNS1')
+        read_prompt(config, 'RED_DNS2')
+    elif config['RED_TYPE'] == 'DHCP':
+        read_prompt(config, 'RED_DEV', options=nics)
+        try:
+            nics.remove(config['RED_DEV'])
+        except:
+            pass
+        read_prompt(config, 'RED_DNS1', validator_args=dict(required=False))
+        read_prompt(config, 'RED_DNS2', validator_args=dict(required=False))
+    elif config['RED_TYPE'] == 'NOUPLINK':
+        read_prompt(config, 'RED_GATEWAY')
+        read_prompt(config, 'RED_DNS1')
+        read_prompt(config, 'RED_DNS2')
+
+    if config['RED_TYPE'] == 'BRIDGED':
+        read_prompt(config, 'GREEN_DEV', options=nics, minlen=2)
+    else:
+        read_prompt(config, 'GREEN_DEV', options=nics)
+    try:
+        for nic in config['GREEN_DEV']:
+            nics.remove(nic)
+    except:
+        pass
+    read_prompt(config, 'GREEN_IPS')
+    read_prompt(config, 'ENABLE_GREEN_DHCP')
+
+    if config['RED_TYPE'] == 'BRIDGED':
+        read_prompt(config, 'RED_DEV', options=config['GREEN_DEV'])
+        read_prompt(config, 'RED_GATEWAY',
+                    validator_args={'cidr': config['GREEN_IPS'], 'zone': 'GREEN_IPS'})
+        read_prompt(config, 'RED_DNS1', required=False)
+        read_prompt(config, 'RED_DNS2', required=False)
+
+    read_prompt(config, 'ORANGE_DEV', options=nics)
+    try:
+        for nic in config['ORANGE_DEV']:
+            nics.remove(nic)
+    except:
+        pass
+    read_prompt(config, 'ORANGE_IPS', required=config['ORANGE_DEV'])
+
+    read_prompt(config, 'BLUE_DEV', options=nics)
+    read_prompt(config, 'BLUE_IPS', required=config['BLUE_DEV'])
+
+    read_prompt(config, 'ENABLE_SSH')
+    read_prompt(config, 'SYSTEM_ACCESS')
+
+
+def print_config(config):
+    for k, v in sorted(CONFIG.iteritems(), key=lambda x: x[1]['order']):
+        value = config.get(k, "")
+        if isinstance(value, list):
+            value = " ".join(value)
+        print "%s: %s" % (v["msg"], value)
+
+
+def signal_handler(signal, frame):
+    print
+    sys.exit(0)
+
+
+def show_interfaces():
+    print
+    print "Interface  Address           Status"
+    print "-----------------------------------"
+    for nic in get_nics():
+        try:
+            f = file(os.path.join('/sys/class/net/', nic, 'address'), 'r')
+            address = f.read().strip()
+            f.close()
+            try:
+                f = file(os.path.join('/sys/class/net/', nic, 'carrier'), 'r')
+                carrier = f.read().strip() == "1"
+                f.close()
+            except:
+                carrier = False
+            print "%-10s %s %s" % (nic, address, carrier and "UP" or "DOWN")
+        except Exception, ex:
+            print ex
+            pass
+    print
+
+
+def store_on(option, opt_str, value, parser):
+    setattr(parser.values, option.dest, 'on')
+
+
+def store_off(option, opt_str, value, parser):
+    setattr(parser.values, option.dest, 'off')
+
+
+def parse_args(config):
+    # Create the parser argument according to the config
+    parser = OptionParser()
+    parser.add_option('--show', dest='show', action='store_true',
+          help='Display current configuration and exit')
+    group = OptionGroup(parser, 'Batch mode', 'Options for non-interactive mode')
+    parser.add_option_group(group)
+    for k, v in sorted(CONFIG.iteritems(), key=lambda x: x[1]['order']):
+        if v.get('options') == ['on', 'off']: # boolean
+            group.add_option('--%s' % k.lower(), dest=k,
+                              action="callback", callback=store_on,
+                              help=v['msg'])
+            if (k.lower().startswith('enable_')):
+                t = k.lower().replace('enable_', 'disable_')
+                group.add_option('--%s' % t, dest=k,
+                              action="callback", callback=store_off)
+        else:
+            group.add_option('--%s' % k.lower(), dest=k,
+                          help=v['msg'])
+    (options, args) = parser.parse_args()
+    # Show
+    if options.show:
+        print_config(config)
+        sys.exit(0)
+
+    # Validate the arguments
+    non_interactive = False
+    for k, v in CONFIG.iteritems():
+        value = getattr(options, k)
+        if value is not None:
+            if v.get('split'):
+                value = [x for x in re.split('[ |\t|,|;|&]+', value) if x]
+            else:
+                value = [value]
+            validator = v.get('validator')
+            if validator is not None:
+                for vv in value:
+                    try:
+                        validator(vv)
+                    except Exception, e:
+                        print("%s: Configuration error: %s" % (k.lower(), e))
+                        sys.exit(1)
+            if v.get('trans') is not None:
+                value = [v.get('trans')(x) for x in value]
+            if v.get('options') is not None:
+                for vv in value:
+                    if vv not in v.get('options'):
+                        print("%s: Invalid option - valid options are: %s" % (k.lower(), ",".join(v.get('options'))))
+                        sys.exit(1)
+            if not v.get('split'):
+                value = value and value[0] or ''
+            else:
+                value = ' '.join(value)
+            config[k] = value
+            non_interactive = True
+
+    if non_interactive:
+        print_config(config)
+        write_config(config)
+        apply_config(config)
+        sys.exit(0)
+
+
+def write_config(config):
+    print "Writing configuration..."
+    restore_host_settings(config)
+    restore_ethernet_settings(config)
+    restore_uplinks(config)
+    restore_wizard(config)
+    restore_ssh(config)
+    restore_system_access(config)
+    restore_dhcp(config)
+
+
+def apply_config(config):
+    print "Applying configuration..."
+    send_cmd_to_engine("emit event(msg:updatewizard)")
+    send_cmd_to_engine("restart ssh")
+
+
+def main():
+    signal.signal(signal.SIGINT, signal_handler)
+    config = get_config()
+    parse_args(config)
+
+    print "Network Configuration Wizard"
+    print "----------------------------"
+    confirm = False
+
+    while not confirm:
+        print_config(config)
+        print
+        ask_config(config)
+        print
+        print "================================================================="
+        print
+        print "The following parameters will be used to configure the system:"
+        print
+        print_config(config)
+        print
+        confirm = prompt("Is the above correct", options=["yes", "no"], default="", required=True) == "yes"
+
+    print
+    confirm = prompt("Write configuration", options=["yes", "no"], default="", required=True) == "yes"
+    if confirm:
+        write_config(config)
+        apply_config(config)
+
+
+if __name__ == '__main__':
+    main()

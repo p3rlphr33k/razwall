@@ -1,0 +1,491 @@
+/* style.css */
+html {
+    background-color: #ffffff;
+    /*background-image: url(/images/background.png);
+    background-repeat: repeat-y;
+    background-position: center;*/
+}
+
+body {
+    color: #666666;
+}
+
+h3 {
+    border-color: #cccccc;
+}
+h4, h5 {
+    color: #ca232a;
+}
+
+a {
+    color: #579903;
+}
+a:hover {
+    color: #000000;
+}
+a.info {
+    color: #579903;
+}
+a.info:hover {
+    color: #000000;
+}
+.boldbase a {
+    color: #579903;
+}
+.boldbase a:hover {
+    color: #579903; /* ??? */
+}
+
+.green {
+    color: #339933;
+}
+.red {
+    color: #e93f33;
+}
+.orange {
+    color: #ff9933;
+}
+.yellow {
+    color: #ffff00;
+}
+.blue {
+    color: #333399;
+}
+
+.multi-controller-divider {
+    border-color: #cccccc;
+}
+
+#background {
+    background-color: #ffffff;
+    /*
+	background-image: url(/images/background.png);
+    background-repeat: repeat-y;
+    background-position: center;
+	*/
+}
+
+#header-back {
+    height: 118px;
+}
+#header {
+    height: 91px;
+}
+
+#header-background {
+    height: 91px;
+}
+
+#logo {
+    left: 22px;
+}
+#logo-product {
+    top: 36px;
+    left: 52px;
+}
+#header-icons {
+    padding-top: 10px;
+}
+#header-icons ul {
+    padding-right: 11px;
+}
+#header-icons ul li a {
+    color: #757575;
+}
+
+#content {
+}
+#page-content {
+}
+#page-content-box {
+    border-color: #cccccc;
+}
+
+/* menu.css */
+#menu-top {
+    height: 28px;
+}
+
+#menu-top-background {
+    height: 28px;
+    top: 91px;
+}
+
+#menu-top ul {
+    padding-left: 198px;
+}
+
+#menu-top ul li {
+    border-color: transparent;
+    height: 27px;
+    margin-top: 1px;
+}
+#menu-top ul li a {
+    font-size: 11px;
+    color: #ffffff;
+}
+#menu-top ul li.selected a {
+    color: #ffffff;
+    font-weight: bold;
+}
+
+#menu-left {
+}
+#menu-left ul {
+    border-color: #cccccc;
+    margin-left: 8px;
+}
+#menu-left ul li {
+    border-color: #cccccc;
+    border-right: 0px;
+    line-height: 22px;
+}
+#menu-left ul li a {
+    color: #666666;
+}
+#menu-left ul li:hover {
+    background-color: #f0f0f0;
+    color: #000000;
+}
+#menu-left ul li:hover a {
+    color: #000000;
+}
+#menu-left ul li.selected {
+    background-color: #f0f0f0;
+    font-weight: bold;
+}
+#menu-left ul li.selected a {
+    color: #666666;
+}
+
+#menu-subtop ul li {
+    color: #656565;
+}
+#menu-subtop ul li a {
+    color: #666666;
+}
+#menu-subtop ul li.selected {
+    background-color: #ffffff;
+    border-color: #a6a6a6;
+    color: #656565;
+}
+#menu-subtop ul li.selected a {
+    color: #656565;
+}
+
+/* content.css */
+table.list {
+    border-color: #bfbfbf;
+}
+
+div.error, div.warning, div.note {
+    border-color: #cccccc;
+}
+
+table tr.header {
+    background-color: #e6e6e6;
+}
+
+div.accordion-container tr.header td {
+    border-color: #cccccc;
+}
+div.accordion-container tr.odd {
+    background-color: #fafafa;
+}
+div.accordion-container tr.even {
+    background-color: #f0f0f0;
+}
+
+tr.selected {
+    background-color: #ffff00;
+}
+
+table.ruleslist {
+    border-color: #cccccc;
+}
+table.ruleslist th,
+table.ruleslist td {
+    border-color: #cccccc;
+}
+table.ruleslist th,
+table.ruleslist td.boldbase {
+    background-color: #e6e6e6;
+    border-color: #cccccc;
+}
+table.ruleslist td.actions {
+    background-color: #ffffff;
+    border-color: #cccccc;
+}
+table.ruleslist tr.odd {
+    background-color: #fafafa;
+}
+table.ruleslist tr.even {
+    background-color: #f0f0f0;
+}
+
+div.editortitle {
+    border-color: #cccccc;
+}
+div.editorbox {
+    background-color: #f0f0f0;
+    border-color: #cccccc;
+}
+
+label.error-msg {
+    color: #993333;
+}
+
+.form-field.error, .multi-form-field.error {
+    color: #993333;
+}
+
+.service-switch .content .description {
+    background-color: #eeeeee;
+    border-color: #dddddd;
+}
+.service-switch .content .options-container div.title {
+    border-color: #aaaaaa;
+}
+
+#ssh-description {
+    background-color: #ededed;
+    border-color: #cccccc;
+}
+
+.efw-form .section div.title {
+    border-color: #aaaaaa;
+}
+
+.accordion-head {
+    border-color: #dbdbdb;
+}
+.accordion-container {
+    background-color: #ffffff;
+    border-color: #dddddd;
+}
+
+.category-head {
+    background-color: #efefdf;
+}
+.category-container {
+    background-color: #ffffff;
+}
+.category-container .subcategory {
+    background-color: #ffffff;
+    border-color: #dddddd;
+}
+
+.important .content {
+    color: #ffffff;
+}
+.error-fancy .content, .notification-fancy .content {
+    color: #ffffff;
+}
+.notification .content {
+    color: #ffffff;
+}
+
+/* emi branding */
+
+/* closablecontainer.css */
+.closeablecontainer-header {
+    border-color: #cccccc;
+    color: #656565;
+    font-weight: bold;
+}
+.closeablecontainer-content {
+    border-color: #cccccc;
+}
+
+/* container.css */
+.fielderror {
+    color: #993333;
+}
+.has_error {
+    border-color: #993333;
+}
+
+.container span.info {
+    border-color: #cccccc;
+}
+
+/* datagrid.css */
+.datagrid table th {
+    background-color: #e6e6e6;
+}
+.datagrid table th,
+.datagrid table td,
+.datagrid table th:first-child,
+.datagrid table td:first-child,
+.datagrid table th:last-child,
+.datagrid table td:last-child {
+    border-color: #cccccc;
+}
+.datagrid table tr.odd {
+    background-color: #fafafa;
+}
+.datagrid table tr.even {
+    background-color: #f0f0f0;
+}
+.datagrid table tr.selected {
+    background-color: #f6fae6;
+}
+.datagrid table td.actions {
+    background-color: #ffffff;
+}
+
+.pagination .active{
+    background-color: #579903;
+    color: #ffffff;
+}
+.pagination a {
+    border-color: #cccccc;
+}
+.pagination a:hover{
+    border-color: #666666;
+}
+.pagination .next a,
+.pagination .previous a {
+    border-color: #ffffff;
+}
+.pagination .next_off a,
+.pagination .previous_off a {
+    color: #cccccc;
+    border-color: #ffffff;
+}
+.pagination .next_off a:hover,
+.pagination .previous_off a:hover {
+    border-color: #ffffff;
+}
+
+/* datatables.css */
+.dataTables_processing {
+    border-color: #cccccc;
+    color: #666666;
+    background-color: #ffffff;
+}
+
+table.display thead th {
+    border-color: #cccccc;
+}
+table.display tfoot th {
+    border-color: #cccccc;
+}
+table.display tr.heading2 td {
+    border-color: #cccccc;
+}
+table.display tr.odd {
+    background-color: #fafafa;
+}
+table.display tr.even {
+    background-color: #f0f0f0;
+}
+table.display tr.even.row_selected td {
+    background-color: #f6fae6;
+}
+table.display tr.odd.row_selected td {
+    background-color: #f6fae6;
+}
+
+.paging_full_numbers .ui-button {
+    border-color: #cccccc;
+    background-color: #ededed;
+    color: #666666;
+}
+.paging_full_numbers .ui-button:hover {
+    background-color: #656565;
+    color: #666666;
+}
+.paging_full_numbers .paginate_active {
+    background-color: #f6fae6;
+}
+
+/* draganddropsort.css */
+.draganddropsort .ui-sortable-placeholder {
+    border-color: #6fad02;
+    background-color: #b9ec60;
+}
+
+/* gallery.css */
+.gallery .simple_overlay {
+    background-color: #333333;
+    border-color:  #333333;
+}
+.gallery .next,
+.gallery .prev,
+.gallery .info {
+
+    background-color: #ededed;
+    border-color: #666666;
+    color: #666666;
+}
+.gallery .next:hover,
+.gallery .prev:hover {
+    background-color: #cccccc;
+}
+
+/* grideditor.css */
+.grideditor {
+    background-color: #f0f0f0;
+    border-color: #cccccc;
+}
+.grideditor .editortitle {
+    border-color: #cccccc;
+}
+
+/* notification.css */
+.notification_important {
+    color: #ffffff;
+}
+.notification_info {
+    color: #ffffff;
+}
+.notification_error {
+    color: #ffffff;
+}
+
+.error-fancy .content, .notification-fancy .content {
+    color: #ffffff;
+}
+
+/* overlaycontainer.css */
+.overlaycontainer {
+    background-color: #ffffff;
+    border-color: #cccccc;
+}
+
+/* seperator.css */
+hr.separator {
+    border-color: #cccccc;
+}
+
+/* settingseditor.css */
+.settingseditor .editortitle {
+    border-color: #cccccc;
+}
+.settingsedtior .editorbox {
+    background-color: #f0f0f0;
+    border-color: #cccccc;
+}
+
+/* serviceinformationplugincontent.css */
+div.serviceinformationplugin-service {
+    border-color: #cccccc;
+}
+div.serviceinformationplugin-service span.service-name {
+}
+div.serviceinformationplugin-service span.service-on {
+    color: #339933;
+}
+div.serviceinformationplugin-service span.service-off {
+    color: #e93f33;
+}
+
+/* switch.css */
+.service-switch .title {
+}
+
+.switch-controller .description {
+    background-color: #eeeeee;
+    border-color: #dddddd;
+}

@@ -1,0 +1,82 @@
+#!/usr/bin/python
+
+#
+#        +-----------------------------------------------------------------------------+
+#        | Endian Firewall                                                             |
+#        +-----------------------------------------------------------------------------+
+#        | Copyright (c) 2005-2006 Endian                                              |
+#        |         Endian GmbH/Srl                                                     |
+#        |         Bergweg 41 Via Monte                                                |
+#        |         39057 Eppan/Appiano                                                 |
+#        |         ITALIEN/ITALIA                                                      |
+#        |         info@endian.it                                                      |
+#        |                                                                             |
+#        | This program is free software; you can redistribute it and/or               |
+#        | modify it under the terms of the GNU General Public License                 |
+#        | as published by the Free Software Foundation; either version 2              |
+#        | of the License, or (at your option) any later version.                      |
+#        |                                                                             |
+#        | This program is distributed in the hope that it will be useful,             |
+#        | but WITHOUT ANY WARRANTY; without even the implied warranty of              |
+#        | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               |
+#        | GNU General Public License for more details.                                |
+#        |                                                                             |
+#        | You should have received a copy of the GNU General Public License           |
+#        | along with this program; if not, write to the Free Software                 |
+#        | Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA. |
+#        | http://www.fsf.org/                                                         |
+#        +-----------------------------------------------------------------------------+
+#
+
+import rpm
+import stat
+from os import chmod, chown
+import os.path
+from pwd import getpwnam
+from grp import getgrnam
+
+ts = rpm.TransactionSet()
+mi = ts.dbMatch()
+
+for p in mi:
+
+	found = filter(lambda f: f.startswith("/var/efw") and True, p[rpm.RPMTAG_FILENAMES])
+
+	if found:
+		#print "* %s *" % p[rpm.RPMTAG_NAME]
+		for i in range(len(p[rpm.RPMTAG_FILENAMES])):
+			fname = p[rpm.RPMTAG_FILENAMES][i]
+			
+			if fname.startswith("/var/efw"):
+
+				modes = p[rpm.RPMTAG_FILEMODES][i]
+				user = p[rpm.RPMTAG_FILEUSERNAME][i]
+				group = p[rpm.RPMTAG_FILEGROUPNAME][i]
+				perm = stat.S_IMODE(modes)
+
+				ftype = ""
+				if stat.S_ISDIR(modes):
+					ftype = "DIR"
+				elif stat.S_ISLNK(modes):
+					ftype = "LINK"
+				else:
+					ftype = "FILE"
+				
+				print "Fixing: %s %s:%s %o" % (fname, user, group, perm)
+				try:
+					uid = getpwnam(user)[2]
+				except:
+					uid = 0
+					print "WARNING: unknown user '%s'" % user
+
+				try:
+					gid = getgrnam(group)[2]
+				except:
+					gid = 0
+					print "WARNING: unknown group '%s'" % group
+
+				if os.path.exists(fname):
+					chown(fname, uid, gid)
+					chmod(fname, perm)
+
+ts.closeDB()

@@ -1,0 +1,91 @@
+#! /bin/bash
+#
+# dnsmasq   Start/Stop the dnsmasq daemon.
+#
+# chkconfig: 2345 70 41
+# description: dnsmasq is a DNS forwarder.
+# processname: dnsmasq
+# config: /etc/dnsmasq.conf
+# pidfile: /var/run/dnsmasq.pid
+
+# Source function library.
+. /etc/init.d/functions
+
+RETVAL=0
+
+# See how we were called.
+
+prog="dnsmasq"
+progdir="/usr/bin"
+
+# Source configuration
+if [ -f /etc/sysconfig/$prog ] ; then
+   . /etc/sysconfig/$prog
+fi
+
+[ ! -e /etc/dnsmasq/dnsmasq.conf ] && exit 1
+
+start() {
+	echo -n $"Starting $prog: "
+	daemon $progdir/$prog -C /etc/dnsmasq/dnsmasq.conf
+	RETVAL=$?
+	echo
+	[ $RETVAL -eq 0 ] && touch /var/lock/subsys/dnsmasq
+	return $RETVAL
+}
+
+stop() {
+       echo -n $"Stopping $prog: "
+       # Would be better to send QUIT first, then killproc if that fails
+       killproc $prog
+       RETVAL=$?
+       echo
+       [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/dnsmasq
+       return $RETVAL
+}
+
+rhstatus() {
+	   status dnsmasq
+}
+
+restart() {
+	  stop
+	  start
+}
+
+reload() {
+	 echo -n $"Reloading dnsmasq daemon configuration: "
+	 killproc dnsmasq -HUP
+	 RETVAL=$?
+	 echo
+	 return $RETVAL
+}
+
+case "$1" in
+  start)
+  start
+  ;;
+  stop)
+  stop
+  ;;
+  restart)
+  restart
+  ;;
+  reload)
+  reload
+  ;;
+  status)
+  rhstatus
+  ;;
+  condrestart)
+  [ -f /var/lock/subsys/dnsmasq ] && restart || :
+  ;;
+  condstop)
+  [ -f /var/lock/subsys/dnsmasq ] && stop || :
+  ;;
+  *)
+  echo $"Usage: $0 {start|stop|status|reload|restart|condrestart|condstop}"
+  exit 1
+esac
+
+exit $?

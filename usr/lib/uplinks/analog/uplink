@@ -1,0 +1,26 @@
+#!/bin/sh
+
+. /etc/rc.d/efw_lib.sh
+. ${UPLINK_SCRIPTS}/common
+. ${UPLINK_SCRIPTS}/generic/pppd.sh
+. ${UPLINK_SCRIPTS}/generic/analog.sh
+
+function start() {
+    modprobe ppp_generic || failure "Could not load kernel modules"
+    analog_write_peer "${uplink}" || failure "Could not write peer file"
+    analog_write_chat "${uplink}" || failure "Could not write chat file"
+    pppd_call "${uplink}" || failure "Could not successfully call pppd"
+    return 0
+}
+
+function stop() {
+    local ret=0
+
+    pppd_kill ${uplink}
+    ret=$(($ret + $?))
+    return $ret
+}
+
+switch "$1"
+
+exit 0

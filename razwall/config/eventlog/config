@@ -1,0 +1,38 @@
+[
+    {
+        "event": "20100016", 
+        "mail_enabled": "on"
+    }, 
+    {
+        "event": "10100011", 
+        "mail_enabled": "off"
+    }, 
+    {
+        "event": "10100026", 
+        "mail_enabled": "off"
+    }, 
+    {
+        "event": "10100038", 
+        "mail_enabled": "off"
+    }, 
+    {
+        "event": "20100036", 
+        "mail_enabled": "off"
+    }, 
+    {
+        "event": "20100044", 
+        "mail_enabled": "off"
+    }, 
+    {
+        "event": "20100054", 
+        "mail_enabled": "off"
+    }, 
+    {
+        "event": "20200018", 
+        "mail_enabled": "off"
+    }, 
+    {
+        "event": "20200024", 
+        "mail_enabled": "off"
+    }
+]

@@ -1,0 +1,42 @@
+#!/usr/bin/perl
+#
+#        +-----------------------------------------------------------------------------+
+#        | RazWall Firewall - 2024                                                     |
+#        | www.RazWall.com		                                                       |
+#        +-----------------------------------------------------------------------------+
+#
+
+use strict;
+use warnings;
+
+# Simulated function for sending commands to the engine
+sub send_cmd_to_engine {
+    my ($cmd) = @_;
+    print "Command sent to engine: $cmd\n";
+}
+
+# Main logic for the firewall script
+sub main {
+    if (@ARGV != 1) {
+        print "usage: $0 start|stop|reload|restart\n";
+        exit(1);
+    }
+
+    my $action = $ARGV[0];
+
+    if ($action eq 'start') {
+        send_cmd_to_engine("start firewall");
+    } elsif ($action eq 'stop') {
+        send_cmd_to_engine("stop firewall");
+    } elsif ($action eq 'restart') {
+        send_cmd_to_engine("restart firewall");
+    } elsif ($action eq 'reload') {
+        send_cmd_to_engine("emit request(name:firewall,status:reload)");
+    } else {
+        print "Invalid action: $action\n";
+        print "usage: $0 start|stop|reload|restart\n";
+        exit(1);
+    }
+}
+
+main();

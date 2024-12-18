@@ -1,0 +1,11 @@
+.endian-tooltip {
+    position: absolute;
+    z-index: 999999;
+    background-color: #eee;
+    display: none;
+    padding: 10px;
+}
+
+.tooltip-link, .endian-tooltip a {
+    color: rgb(0, 0, 238);
+}

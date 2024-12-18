@@ -1,0 +1,83 @@
+<!doctype html public "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>Colour Picker</title>
+<meta name="Keywords" content="">
+<meta name="Description" content="">
+<meta name="MSSmarttagsPreventParsing" content="TRUE" />
+<meta name="robots" content="index,follow" />
+<script type="text/JavaScript">
+<!--
+var colours = self.parent.log_colors;
+
+
+var divPreview;
+
+function mouseOver(el, Colour){
+  divPreview.style.background = Colour;
+  el.style.borderColor = '#FFFFFF';
+}
+
+function mouseOut(el){
+  el.style.borderColor = '#666666';
+}
+
+function mouseDown(Colour) {
+  self.parent.setColor(Colour);
+  hide();
+}
+
+function init(){
+    divPreview = Obj("divPreview");
+}
+
+function Obj(name) {
+    return document[name]||(document.all && document.all[name])||(document.getElementById && document.getElementById(name));
+}
+
+function hide() {
+    iframe_node = self.parent.getObj();
+    iframe_node.style.visibility = 'hidden';
+    self.parent.unlockPalette();
+}
+
+//-->
+</script>
+<style type="text/css">
+td{text-align:center;vertical-align:middle;}
+.tblPalette{cursor:pointer;background:#FFFFFF;width:100%;height:100%;line-height:1px;font-size:1px;}
+.tblPalette td{border:1px #666666 solid;}
+</style>
+</head>
+
+<body bgcolor="#FFFFFF" onLoad="init();" onContextMenu="return false" onDragStart="return false" onSelectStart="return false" style="margin:0px;padding:0px;">
+<table border=0 cellspacing=0 cellpadding=0 width="100%" height="100%">
+<tr>
+ <td valign="middle" style="width:55px;height:25px;background:#FFFFFF;">
+  <center><div name="divPreview" id="divPreview" style="height:20px;width:50px;border:1px #000000 solid;"></div></center>
+ </td>
+ <td bgcolor="#FFFFFF">
+  <img src="/images/close.gif" onclick="hide();" width="21" height="15" border="0" alt="Close" title='Close Palette'>
+ </td>
+</tr>
+<tr>
+ <td style="width:100%" colspan="2" id="palette_td">
+  <script type="text/JavaScript">
+   <!--
+    code = "<table class='tblPalette' cellpadding='0' cellspacing='1' border='0'>";
+    i = 0;
+    for (var color in colours){
+      if((i)%4 == 0)code += "<tr>";
+      code += "<td id='el_"+i+"' bgcolor="+color+" onMouseOver=\"mouseOver(this, '"+color+"');\" onMouseOut='mouseOut(this)' onClick=\"mouseDown('"+color+"');\">&nbsp;</td>\n";
+      if((i+1)%4 == 0)code += "</tr>\n";
+      i++;
+    }
+    document.write(code+"</table>");
+   //-->
+  </script>
+ </td>
+ </tr>
+</table>
+
+</body>
+</html>

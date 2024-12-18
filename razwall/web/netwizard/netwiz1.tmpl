@@ -1,0 +1,109 @@
+<script type="text/javascript">
+function change_network_type() {
+    $(this).find("input").prop("checked", true).change();
+}
+function change_wan_type() {
+    $(this).find("input").prop("checked", true).change();
+}
+function toggle_network_types() {
+    var network_type = $("input[name=NETWORK_TYPE]:checked").val();
+    $("div.wan_types").hide();
+    $("div.wan_types."+network_type).show();
+    $("div.network_description").hide();
+    $("div.network_description."+network_type).show();
+}
+function toggle_network_description() {
+    var network_type = $(this).find("input").val();
+    $("div.network_description").hide();
+    $("div.network_description."+network_type).show();
+}
+$(document).ready(function() {
+    toggle_network_types();
+    $("input[name=NETWORK_TYPE]").change(toggle_network_types);
+    $("input[name=NETWORK_TYPE]").parent().mouseenter(toggle_network_description);
+    $("input[name=NETWORK_TYPE]").parent().mouseleave(toggle_network_types);
+    $("li.network_type").click(change_network_type);
+    $("li.wan_type").click(change_wan_type);
+});
+</script>
+
+<TMPL_VAR NAME=NW_VAL_title>
+<br>
+<TMPL_IF EXPR="NW_VAL_error_message ne ''">
+<font color="red"><TMPL_VAR NAME=NW_VAL_error_message></font>
+</TMPL_IF>
+<br>
+
+<span style="font-weight: bold;"><TMPL_VAR NAME=nw_network_modes></span>
+<div style="margin-top: 5px; margin-bottom: 10px; padding: 10px; border: 1px solid #cccccc;">
+    <div style="float: left; width: 290px;">
+        <ul style="list-style-type: none; padding: 0px; margin: 0px;">
+<TMPL_LOOP NAME=NW_VAL_NETWORK_LOOP>
+            <li class="network_type" style="cursor: pointer;">
+                <input type="radio" name="NETWORK_TYPE" value="<TMPL_VAR NAME=NETWORK_LOOP_NAME>" <TMPL_VAR NAME=NETWORK_LOOP_SELECTED>>&nbsp;<TMPL_VAR NAME=NETWORK_LOOP_CAPTION></input>
+            </li>
+</TMPL_LOOP>
+        </ul>
+    </div>
+    <div style="float: left; width: 420px;">
+<TMPL_LOOP NAME=NW_VAL_NETWORK_LOOP>
+        <div class="network_description <TMPL_VAR NAME=NETWORK_LOOP_NAME>" style="display: none;">
+            <span style="font-weight: bold;"><TMPL_VAR NAME=NETWORK_LOOP_CAPTION></span>
+            <br>
+            <span><TMPL_VAR NAME=NETWORK_LOOP_DESCRIPTION></span>
+        </div>
+</TMPL_LOOP>
+    </div>
+    <br style="clear: both;">
+</div>
+<TMPL_LOOP NAME=NW_VAL_NETWORK_LOOP>
+<div class="wan_types <TMPL_VAR NAME=NETWORK_LOOP_NAME>" style="display: none;">
+<TMPL_IF EXPR="NETWORK_LOOP_WAN_ITEM eq ''">
+    <span style="font-weight: bold;"><TMPL_VAR NAME=NETWORK_LOOP_TITLE></span>
+</TMPL_IF>
+    <form action="<TMPL_VAR NAME=NW_VAL_self>" method="post">
+        <input type="hidden" name="session_id" value="<TMPL_VAR NAME=NW_VAL_session_id>">
+        <input type="hidden" name="step" value="<TMPL_VAR NAME=NW_VAL_step>">
+        
+    <TMPL_IF EXPR="NETWORK_LOOP_WAN_ITEM ne ''">
+        <input type="hidden" name="WAN_TYPE" value="<TMPL_VAR NAME=NETWORK_LOOP_WAN_ITEM>">
+    <TMPL_ELSE>
+        <div style="margin-top: 5px; margin-bottom: 10px; padding: 10px; border: 1px solid #cccccc;">
+            <div>
+                <div style="float: left; width: 290px;">
+                    <ul style="list-style-type: none; padding: 0px; margin: 0px;">
+            <TMPL_LOOP NAME=NETWORK_LOOP_WAN_ITEMS>
+                        <li class="wan_type" style="cursor: pointer;">
+                            <input type="radio" name="WAN_TYPE" value="<TMPL_VAR NAME=WAN_LOOP_NAME>" <TMPL_VAR NAME=WAN_LOOP_SELECTED>>&nbsp;<TMPL_VAR NAME=WAN_LOOP_CAPTION></input>
+                        </li>
+            </TMPL_LOOP>
+                    </ul>
+                </div>
+                <div style="float: left; width: 250px;">
+        <TMPL_IF EXPR="NETWORK_LOOP_NAME eq 'ROUTED'">
+                    <table border="0" bgcolor="#cccccc" cellpadding="5" cellspacing="1" style="width: 100%;">
+                        <tr>
+                            <td bgcolor="#eeeeee" colspan="2"><b><TMPL_VAR NAME=hardware_information></b></td>
+                        </tr>
+                        <tr>
+                            <td bgcolor="#fefefe"><TMPL_VAR NAME=nr_interfaces></td>
+                            <td bgcolor="#fefefe"><b><TMPL_VAR NAME=NW_VAL_if_count></b></td>
+                        </tr>
+                    </table>
+        </TMPL_IF>
+                </div>
+                <br style="clear:both">
+            </div>
+        </div>
+</TMPL_IF>
+        <div style="padding-left: 10px;">
+            <input type="submit" name="cancel" value="<TMPL_VAR NAME=nw_cancel>">
+            &nbsp;
+            <input type="submit" name="next" value="<TMPL_VAR NAME=nw_next>">
+        </div>
+    </form>
+</div>
+</TMPL_LOOP>
+        </td>
+    </tr>
+</table>

@@ -1,0 +1,64 @@
+#!/bin/sh
+
+# $Id: mailgraph-init,v 1.4 2005/06/13 11:23:22 dws Exp $
+# example init script for mailgraph
+#
+# chkconfig: 2345 82 28
+# description: mailgraph postfix log grapher.
+#
+# processname: mailgraph
+# pidfile: /var/run/mailgraph.pid
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+MAILGRAPH_PL=/usr/sbin/mailgraph
+MAIL_LOG=/var/log/maillog
+PID_FILE=/var/run/mailgraph.pid
+RRD_DIR=/var/log/rrd
+
+lock=/var/lock/subsys/mailgraph
+
+if [ -f /etc/sysconfig/mailgraph ] ; then
+        . /etc/sysconfig/mailgraph
+fi
+
+RETVAL=0
+case "$1" in
+    start)
+	echo -n "Starting mail statistics grapher: mailgraph"
+	daemon +5 $MAILGRAPH_PL -l $MAIL_LOG -d \
+	    --daemon-pid=$PID_FILE --daemon-rrd=$RRD_DIR
+        RETVAL=$?
+        echo
+        [ $RETVAL -eq 0 ] && touch $lock
+	;;
+    stop)
+	# Stop daemons.
+	echo -n "Stopping mail statistics grapher: mailgraph"
+        killproc mailgraph
+        RETVAL=$?
+        echo
+        [ $RETVAL -eq 0 ] && rm -f $lock
+	;;
+    restart)
+        $0 stop
+        $0 start
+        ;;
+    condrestart)
+	status mailgraph &>/dev/null && $0 restart || :
+	;;
+    condstop)
+	status mailgraph &>/dev/null && $0 stop || :
+	;;
+    status)
+        status mailgraph
+        RETVAL=$?
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart|status|condrestart|condstop}"
+        RETVAL=1
+        ;;
+esac
+exit $RETVAL
+

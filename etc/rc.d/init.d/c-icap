@@ -1,0 +1,159 @@
+#!/bin/bash
+#
+# c-icap   Start/Stop the icap daemon.
+#
+# chkconfig: 2345 70 41
+# description: c-icap is a standard Linux/UNIX program that implements ICAP interface.
+# processname: c-icap
+# config: /etc/c-icap/c-icap.conf
+# pidfile: /var/lock/subsys/c-icap
+
+# Source function library.
+. /etc/init.d/functions
+
+RETVAL=0
+
+# See how we were called.
+
+prog="c-icap"
+progdir="/usr/bin"
+
+OPTS="-f /etc/c-icap/c-icap.conf"
+
+PIDFILE="/var/run/c-icap/c-icap.pid"
+
+# Source configuration
+if [ -f /etc/sysconfig/$prog ] ; then
+	. /etc/sysconfig/$prog
+fi
+
+if [ ! -f /var/log/c-icap/server.log ] ; then
+	touch /var/log/c-icap/server.log
+fi
+
+if [ -f /var/log/c-icap/server.log ] ; then
+	chown icap.icap /var/log/c-icap/server.log
+fi
+
+if [ ! -p /var/log/fifo/c-icap ] ; then
+	mkfifo /var/log/fifo/c-icap
+fi
+
+if [ -p /var/log/fifo/c-icap ]; then
+        chown icap.icap /var/log/fifo/c-icap
+fi
+
+
+PIDFILE_TIMEOUT=${PIDFILE_TIMEOUT:-40}
+EXIT_TIMEOUT=${EXIT_TIMEOUT:-15}
+
+cleanup_ipcs() {
+    ipcs -s | grep icap | awk '{ print $2 }' | xargs -i ipcrm -s {} 2>/dev/null
+    ipcs -m | grep icap | awk '{ print $2 }' | xargs -i ipcrm -m {} 2>/dev/null
+}
+
+start() {
+	echo -n $"Starting $prog: "
+        ulimit -S -c 0 >/dev/null 2>&1
+	$progdir/$prog $OPTS &>/dev/null
+	RETVAL=$?
+	
+	if [ $RETVAL -eq 0 ]; then 
+	    timeout=0;
+	    while : ; do
+		[ ! -f $PIDFILE ] || break
+		if [ $timeout -ge $PIDFILE_TIMEOUT ]; then
+		    RETVAL=1
+		    break
+		fi
+		sleep 1 && echo -n "."
+		timeout=$((timeout+1))
+	    done
+	fi
+	[ $RETVAL -eq 0 ] && touch /var/lock/subsys/c-icap
+	[ $RETVAL -eq 0 ] && echo_success
+	[ $RETVAL -ne 0 ] && echo_failure
+	echo
+	return $RETVAL
+}
+
+stop() {
+	echo -n $"Stopping $prog: "
+        kill -2 `cat $PIDFILE`
+	RETVAL=0
+	timeout=0
+        while [ 1 ]; do
+   	    if [ $timeout -ge $EXIT_TIMEOUT ]; then
+	        RETVAL=1
+	        break
+	    fi
+            pidof c-icap >/dev/null || break
+            sleep 1 && echo -n "."
+   	    timeout=$((timeout+1))
+        done
+        [ $RETVAL -ne 0 ] && kill -9 `pidof c-icap` 2>&1
+        rm -f /tmp/icap_lock_*
+        rm -f $PIDFILE
+
+        cleanup_ipcs
+
+        RETVAL=0
+	[ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/c-icap
+	[ $RETVAL -eq 0 ] && echo_success
+	[ $RETVAL -ne 0 ] && echo_failure
+        echo
+	return $RETVAL
+}
+
+rhstatus() {
+	status c-icap
+}
+
+restart() {
+	stop
+	start
+}
+
+reload() {
+	echo -n $"Reloading c-icap daemon configuration: "
+	killproc c-icap -HUP
+	RETVAL=$?
+	echo
+	return $RETVAL
+}
+
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  restart)
+	restart
+	;;
+  reload)
+	reload
+	;;
+  status)
+	rhstatus
+	;;
+  condrestart)
+	status c-icap &>/dev/null && restart || :
+	;;
+  condstop)
+	status c-icap &>/dev/null && stop || :
+	;;
+  condstart)
+       if [ -f "/var/run/c-icap/c-icap.pid" ]; then
+           checkpid `cat $PIDFILE` || start
+       else
+           start
+       fi
+       ;;
+  *)
+	echo $"Usage: $0 {start|stop|status|reload|restart|condstart|condrestart|condstop}"
+	exit 1
+esac
+
+exit $?

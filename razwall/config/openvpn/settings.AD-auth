@@ -1,0 +1,9 @@
+AUTHENTICATION_STACK=ldap,local
+CA_FILENAME=cacert.pem
+CERT_FILENAME=24.111.67.50cert.pem
+DAP_BIND_DN=cn=Administrator,cn=Users,dc=dc,dc=grand-forks.lib.nd.us
+LDAP_BIND_PASSWORD=GFLibServer!
+LDAP_URI=ldap://192.168.19.26
+LDAP_USER_BASEDN=cn='Library Staff',dc=dc,dc=grand-forks.lib.nd.us
+LDAP_USER_SEARCHFILTER=(&(objectCategory=person)(objectClass=user)(sAMAccountName=%(u)s))
+OPENVPN_ENABLED=on

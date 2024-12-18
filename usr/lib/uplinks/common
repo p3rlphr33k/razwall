@@ -1,0 +1,119 @@
+#!/bin/sh
+
+#
+#        +-----------------------------------------------------------------------------+
+#        | Endian Firewall                                                             |
+#        +-----------------------------------------------------------------------------+
+#        | Copyright (c) 2005-2006 Endian                                              |
+#        |         Endian GmbH/Srl                                                     |
+#        |         Bergweg 41 Via Monte                                                |
+#        |         39057 Eppan/Appiano                                                 |
+#        |         ITALIEN/ITALIA                                                      |
+#        |         info@endian.it                                                      |
+#        |                                                                             |
+#        | This program is free software; you can redistribute it and/or               |
+#        | modify it under the terms of the GNU General Public License                 |
+#        | as published by the Free Software Foundation; either version 2              |
+#        | of the License, or (at your option) any later version.                      |
+#        |                                                                             |
+#        | This program is distributed in the hope that it will be useful,             |
+#        | but WITHOUT ANY WARRANTY; without even the implied warranty of              |
+#        | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               |
+#        | GNU General Public License for more details.                                |
+#        |                                                                             |
+#        | You should have received a copy of the GNU General Public License           |
+#        | along with this program; if not, write to the Free Software                 |
+#        | Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA. |
+#        | http://www.fsf.org/                                                         |
+#        +-----------------------------------------------------------------------------+
+#
+
+PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin
+. /etc/rc.d/efw_lib.sh
+. ${UPLINK_SCRIPTS}/generic/hookery.sh
+. ${UPLINK_SCRIPTS}/generic/data.sh
+
+if [ "$(basename $0)" == "common" ]; then
+    echo "ERROR: script has to be included somewhere"
+    exit 1
+fi
+param="$1"
+uplink="$2"
+
+init_variables "$uplink" "$param"
+
+function cleanup() {
+    local uplink="$1"
+    set_failure "${uplink}"
+}
+
+
+function kill_starting() {
+    local uplink="$1"
+    local pidfile="${UPLINK_RUN}/${uplink}/pid.pid"
+    test ! -e $pidfile && return
+    local pid=$(cat $pidfile 2>/dev/null)
+    test -z $pid && return
+    kill $pid 2>/dev/null
+}
+
+function call_start() {
+    log_done "Starting Uplink '$uplink'"
+
+    # create /etc/iproute2/rt_table entries
+    rt_table_uplinks_sync
+
+    if ! function_exists "start"; then
+	bailout "No start function defined!"
+    fi
+
+    # only start if the link is inactive
+    if is_active "${uplink}"; then
+        bailout "Uplink '${uplink}' is already active. Skipping"
+    fi
+    if is_connecting "${uplink}"; then
+        bailout "Uplink '${uplink}' is already connecting by another instance. Skipping"
+    fi
+    set_connecting "${uplink}"
+    start
+}
+
+function call_stop() {
+    log_done "Stopping Uplink '$uplink'"
+
+    if ! function_exists "stop"; then
+	bailout "No stop function defined!"
+    fi
+
+    kill_starting "${uplink}"
+    set_disconnecting "${uplink}"
+
+    stop
+    local ret=$?
+    set_inactive "${uplink}"
+    return $ret
+}
+
+function switch() {
+
+    case "$param" in
+	'start')
+            call_start
+            if [ $? -ne 0 ]; then
+	        bailout "Could not bring up link '${uplink}'"
+            fi
+	    ;;
+	'stop')
+            call_stop
+            if [ $? -eq 0 ]; then
+	        log_done "Successfully shut down link '${uplink}'"
+            else
+	        bailout "Could not shut down link '${uplink}'"
+            fi
+	    ;;
+	*)
+	    echo "Usage: $0 start|stop"
+	    exit 1
+	    ;;
+    esac
+}

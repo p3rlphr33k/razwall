@@ -1,0 +1,71 @@
+/*!
+ * jQuery UI Accordion 1.10.2
+ * http://jqueryui.com
+ *
+ * Copyright 2013 jQuery Foundation and other contributors
+ * Released under the MIT license.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Accordion#theming
+ */
+
+.ui-accordion {
+    margin-bottom: 10px;
+}
+
+.ui-accordion .ui-accordion-header {
+	display: block;
+	cursor: pointer;
+	position: relative;
+	padding: .5em .5em .5em .7em;
+	min-height: 0; /* support: IE7 */
+}
+.ui-accordion .ui-accordion-icons {
+	padding-left: 2.2em;
+}
+.ui-accordion .ui-accordion-noicons {
+	padding-left: .7em;
+}
+.ui-accordion .ui-accordion-icons .ui-accordion-icons {
+	padding-left: 2.2em;
+}
+.ui-accordion .ui-accordion-header .ui-accordion-header-icon {
+	position: absolute;
+	left: .5em;
+	top: 50%;
+	margin-top: -8px;
+}
+.ui-accordion .ui-accordion-content {
+	padding: 12px 0 0 12px;
+	border-top: 0;
+	overflow: auto;
+}
+/* custom fix */
+.ui-accordion:last-child {
+    margin-bottom: 10px;
+}
+.ui-accordion .ui-accordion-header .ui-icon {
+    float: left;
+}
+.ui-accordion .ui-accordion-header a {
+    line-height: 16px;
+}
+/*.ui-accordion {
+    width: inherit;
+    margin-left: -13px;
+    margin-right: -13px;
+    margin-bottom: 12px;
+}
+
+.ui-accordion .ui-accordion-header {
+    padding: 0px;
+    cursor: pointer;
+}
+
+.ui-accordion .ui-accordion-content {
+    margin: 0;
+    top: 0;
+    overflow: hidden;
+    padding: 12px;
+    padding-bottom: 2px;
+}*/

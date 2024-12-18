@@ -1,0 +1,450 @@
+body {
+        background-color:#FFFFFF;
+        /*background-color:#BBBBBB;*/
+        /*background: #FFF URL('../images/bg.gif') repeat-x;*/
+	overflow:none;
+	font-family:arial;
+        }
+#splashScreen {
+	background:url('/images/overlay.png');
+	display:block;
+	position:absolute;
+	top:0px;
+	bottom:0px;
+	left:0px;
+	right:0px;
+	z-index:10000;
+}
+#loadImg {
+	width:120px;
+	height:120px;
+	margin: auto;
+	position: absolute;
+    top: 0;
+    left: 50px;
+    right: 0;
+    bottom: 0;
+}
+
+#socketStatus {
+	position:absolute;
+	top:15px;
+	left:15px;
+	width:22px;
+	height:22px;
+	background-image: url('/images/loading-sprite.png');
+	z-index:100;
+}
+
+.socketGreen {
+	background-position:0px 0px;
+}
+
+.socketYellow {
+	background-position:0px -22px;
+}
+
+.socketRed {
+	background-position:0px -44px;
+}
+
+.evenRow {
+        background-color:#fff;}
+
+.oddRow {
+        background-color:#EEEEEE;}
+
+.evenRow:hover, .oddRow:hover {
+        cursor:pointer;
+        background-color: #56A5EC;
+		}
+
+div.table {border: 0px solid black; display: table; border-collapse: collapse; width:100%; }
+div.tr {border: 0px solid black; display: table-row; }
+div.td {border: 0px solid black; display: table-cell; }
+
+.username_box {
+/*background: #FFF URL('../images/username-bg.jpg') no-repeat;*/
+width:300px;
+padding:5px;
+}
+
+.password_box {
+/*background: #FFF URL('../images/password-bg.jpg') no-repeat;*/
+width:300px;
+padding:5px;
+}
+
+.username_box:focus {
+background-image: none;
+}
+
+.password_box:focus {
+background-image: none;
+}
+
+.winBlock {
+	margin-left:auto;
+	margin-right:auto;
+	padding:3px;
+}
+
+.winSection {
+	padding:3px;
+}
+
+.winBlock input,button, .winSection input,button {
+	font-size: 25px;
+	padding:5px;
+	margin: 2px;
+}
+.inline {
+	display: inline-block;
+}
+.right {
+	text-align: right;
+}
+.left {
+	text-align: left;
+}
+.small {
+	font-size: 12px;
+}
+.medium {
+	font-size: 16px;
+}
+.large {
+	font-size: 20px;
+}
+.bold {
+	font-weight: bold;
+}
+
+/*************************************************/
+
+.windowtitle {
+float:left;
+width:320px;
+height:30px;
+padding:0px 0px 0px 0px;
+margin-top:5px;
+margin-left:5px;
+}
+.button {
+float:right;
+width:30px;
+height:30px;
+padding:0px 0px 0px 0px;
+cursor:pointer;
+}
+.button img {display:inline;}
+
+/* Required CSS classes: must be included in all pages using this script */
+
+/* Apply the element you want to drag/resize */
+.drsElement {
+ position: absolute;
+ border: 1px solid #333;
+ background: #FFF; /*URL('../images/transpixel.png');*/
+}
+
+/*
+ The main mouse handle that moves the whole element.
+ You can apply to the same tag as drsElement if you want.
+*/
+
+.drsMoveHandle {
+cursor: move;
+overflow:hidden;
+color:#696969;
+font-family:arial;
+font-weight:bold;
+padding:1px 1px 1px 1px;
+height:32px;
+}
+
+#indicator {
+	position:absolute;
+	display:block;
+	bottom:0px;
+	right:0px;
+	background:#E3E3E3;
+	color:#000000;
+	padding:5px;
+	z-index:100;
+}
+/*
+ The DragResize object name is automatically applied to all generated
+ corner resize handles, as well as one of the individual classes below.
+*/
+
+.dragresize {
+ position: absolute;
+ width: 15px;
+ height: 15px;
+ font-size: 16px;
+}
+
+/*
+ Individual corner classes - required for resize support.
+ These are based on the object name plus the handle ID.
+*/
+.dragresize-tl {
+ top: -15px;
+ left: -15px;
+ cursor: nw-resize;
+ background:URL('../images/dragresize-tl.png') no-repeat;
+}
+.dragresize-tm {
+ top: -15px;
+ left: 0px;
+ width:100%;
+ cursor: n-resize;
+ background:URL('../images/dragresize-tm.png') repeat-x;
+}
+.dragresize-tr {
+ top: -15px;
+ right: -15px;
+ cursor: ne-resize;
+ background:URL('../images/dragresize-tr.png') no-repeat;
+}
+.dragresize-ml {
+ top: 0px;
+ height:100%;
+ left: -15px;
+ cursor: w-resize;
+ background:URL('../images/dragresize-ml.png') repeat-y;
+}
+.dragresize-mr {
+ top: 0px;
+ height:100%;
+ right: -15px;
+ cursor: e-resize;
+ background:URL('../images/dragresize-mr.png') repeat-y;
+}
+.dragresize-bl {
+ bottom: -15px;
+ left: -15px;
+ cursor: sw-resize;
+ background:URL('../images/dragresize-bl.png') no-repeat;
+}
+.dragresize-bm {
+ bottom: -15px;
+ width:100%;
+ left: 0px;
+ cursor: s-resize;
+ background:URL('../images/dragresize-bm.png') repeat-x;
+}
+.dragresize-br {
+ bottom: -15px;
+ right: -15px;
+ cursor: se-resize;
+ background:URL('../images/dragresize-br.png') no-repeat;
+}
+
+/* Style the tab */
+.usertab, .policytab {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+}
+
+/* Style the buttons inside the tab */
+.usertab div,.policytab div  {
+  background-color: inherit;
+  display:inline-block;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+  font-size: 17px;
+}
+
+/* Change background color of buttons on hover */
+.usertab button:hover, .policytab button:hover {
+  background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.usertab button.active, .policytab button.active {
+  background-color: #ccc;
+}
+
+/* Style the tab content */
+.usertabcontent, .policytabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 0px solid #ccc;
+  border-top: none;
+}
+
+/*Conference Styles*/
+
+    #conferenceframe {
+      display: flex;
+      margin: 0;
+      align-items: center;
+      justify-content: center;
+      padding: 0 50px;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    video {
+      max-width: calc(50% - 100px);
+      margin: 0px;
+      box-sizing: border-box;
+      border-radius: 0px;
+      padding: 0;
+      box-shadow: rgba(156, 172, 172, 0.2) 0px 2px 2px, rgba(156, 172, 172, 0.2) 0px 4px 4px, rgba(156, 172, 172, 0.2) 0px 8px 8px, rgba(156, 172, 172, 0.2) 0px 16px 16px, rgba(156, 172, 172, 0.2) 0px 32px 32px, rgba(156, 172, 172, 0.2) 0px 64px 64px;
+    }
+    .copy {
+      font-size: 16px;
+      color: rgba(0, 0, 0, 0.5);
+    }
+	.copysmall {
+		position:absolute;
+		bottom:3px;
+		left:4px;
+	}
+	
+#videoBG {
+    position: absolute;
+    top: 0;
+    left: 0;
+    min-width: 100% !important;
+    min-height: 100% !important;
+    z-index: -1000;
+    overflow: hidden;
+    object-fit: cover;
+    -webkit-filter: blur(25px);
+    -moz-filter: blur(25px);
+    -o-filter: blur(25px);
+    -ms-filter: blur(25px);
+    filter: blur(25px);
+}
+	
+#localVideo {
+	position: absolute;
+    bottom: 0px;
+    right: 0px;
+	min-width: 150px !important;
+    min-height: 150px !important;
+}
+
+#remoteVideos {
+	display:none;
+	position:absolute;
+	top:0px;
+	left:0px;
+	right:0px;
+	bottom:150px;
+	background:#696969;
+}
+.remoteVideo {
+
+}
+
+#conferenceframe .confinput {
+	width: auto;
+	padding: 8px;
+	float: left !important;
+	margin-right: 16px !important;
+	border: 1px solid #ccc !important;
+	overflow: visible;
+	font: inherit;
+	margin: 0;
+	color: #000 !important;
+	border-radius:25px;
+	margin-bottom:12px;
+}
+
+#conferenceframe .confbutton {
+	padding: 8px 16px;
+	overflow: hidden;
+	text-decoration: none;
+	text-align: center;
+	cursor: pointer;
+	white-space: nowrap;
+	-webkit-appearance: button;
+	font: inherit;
+	margin: 0;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 140px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 150%;
+  left: 50%;
+  margin-left: -75px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+#share {
+	display:inline-block;
+}
+
+#newConf {
+	padding-top: 150px;
+}
+
+#consoleframe {
+ position:absolute;
+ left:48px;
+ right:0px;
+ bottom:0px;
+ border:0px #000 solid;
+}
+
+#conosleBar {
+	height:40px;
+}
+
+#consoleData {
+	color: #FFF;
+	font-family: monospace;
+	height: 200px;
+	width:100%;
+	background: #000;
+	cursor:pointer;
+	overflow: scroll;
+	display:none;
+}
+
+#consoleHS {
+	float: right;
+	background: URL('../images/console.png') no-repeat;
+	height: 18px;
+	width: 26px;
+	margin: 7px;
+	cursor:pointer;
+	padding-top: 5px;
+}

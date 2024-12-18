@@ -1,0 +1,29 @@
+#!/bin/sh
+
+. /etc/rc.d/efw_lib.sh
+. ${UPLINK_SCRIPTS}/common
+. ${UPLINK_SCRIPTS}/generic/pppoe.sh
+. ${UPLINK_SCRIPTS}/generic/static.sh
+
+function start() {
+    if [ -z "${interface}" ]; then
+	failure
+    fi
+
+    pppoe_init || failure
+    pppoe_write_peer $uplink $interface || failure
+    pppoe_call $uplink $interface || failure
+}
+
+function stop() {
+    local ret=0
+    pppoe_stop $uplink
+    ret=$(($ret + $?))
+    static_down
+    ret=$(($ret + $?))
+    return $ret
+}
+
+switch "$1"
+
+exit 0

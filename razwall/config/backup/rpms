@@ -1,0 +1,647 @@
+acl 2.2.51 r3.d2
+acpid 2.0.23 r0.e1.d2
+amavisd-new 2.6.6 0.e30.y4.d2
+apache2 2.4.12 r0.e9.d2
+attr 2.4.46 r4.d2
+base-files-endian 1.0.0 r2.d2
+base-passwd 3.5.26 r2.d2
+bash 4.2 r6.e0.y5.d2
+bc 1.06 r2.d2
+beecrypt 4.2.1 r3.d2
+beep 1.3 1.e0.d2
+bind-utils 9.8.1 r5.d2
+bridge-utils 1.5 r0.d2
+busybox 1.21.1 r0.e1.d2
+busybox-syslog 1.21.1 r0.e1.d2
+busybox-udhcpc 1.21.1 r0.e1.d2
+bzip2 1.0.6 r5.d2
+c-icap 0.4.2 0.e7.d2
+c-icap-modules 0.4.1 r0.e7.d2
+c-icap-modules-clamav 0.4.1 r0.e7.d2
+ca-certificates 20211016 r0.e2.d2
+cabextract 1.4 3.e0.d2
+clamav 0.103.8 1.d2
+clamav-clamdscan 0.103.8 1.d2
+clamav-daemon 0.103.8 1.d2
+clamav-freshclam 0.103.8 1.d2
+collectd 5.3.0 2.e33.y4.d2
+community-appliance 5.0.4 4.d2
+community-appliance-community-x64 5.0.4 4.d2
+conntrack-tools 1.4.2 r0.d2
+consolekit 0.4.6 r0.d2
+coreutils 8.21 r0.d2
+cpio 2.11 r4.d2
+cracklib 2.9.0 r0.d2
+curl 7.34.0 r0.e1.y1.d2
+daq 2.0.0 0.e0.d2
+db 5.3.21 r0.e1.d2
+db-bin 5.3.21 r0.e1.d2
+dbus-1 1.6.10 r6.0.e2.d2
+debianutils 2.30 r1.e1.d2
+dhcp-client 4.2.5+P1 r1.e3.d2
+dhcp-relay 4.2.5+P1 r1.e3.d2
+dhcp-server 4.2.5+P1 r1.e3.d2
+dhcp-server-config 4.2.5+P1 r1.e3.d2
+diffutils 3.3 r0.d2
+dmidecode 3.1 r0.d2
+dnsmasq 2.79 r0.e2.d2
+dracut 044 e1.y1.d2
+e2fsprogs 1.42.8 r0.d2
+e2fsprogs-badblocks 1.42.8 r0.d2
+e2fsprogs-e2fsck 1.42.8 r0.d2
+e2fsprogs-mke2fs 1.42.8 r0.d2
+e2fsprogs-tune2fs 1.42.8 r0.d2
+ebtables 2.0.10+4 r3.d2
+ed 1.9 r0.d2
+efibootmgr 0.16 r0.d2
+efivar 0.36 r0.d2
+efw-avengine 5.0.5 2.d2
+efw-backup 5.0.16 1.e11.y7.d2
+efw-base 5.0.15 0.d2 2
+efw-ca 5.0.15 2.d2
+efw-clamav 5.0.8 2.d2 1
+efw-collectd 5.0.1 0.e11.y1.d2 2
+efw-configroot 5.0.1 r0.d2 1
+efw-console 5.0.5 0.e3.d2
+efw-dashboard 5.0.8 0.e7.y2.d2
+efw-dbus 5.0.1 0.e1.d2
+efw-dhcpd 5.0.14 0.e8.y6.d2 1
+efw-dnsmasq 5.0.15 1.d2
+efw-eal-backend 5.0.20 1.d2
+efw-eal-frontend 5.0.10 0.d2
+efw-endian 5.0.1 0.e0.d2
+efw-fail2ban 5.0.2 2.d2
+efw-firewall 5.0.28 2.d2 2
+efw-frox 5.0.4 1.d2 1
+efw-guilib 5.0.13 1.d2
+efw-httpd 5.0.17 0.e17.d2 1
+efw-icap 5.0.4 0.e9.d2
+efw-ifup 5.0.1 0.e4.d2 1
+efw-interfaceeditor 5.0.7 1.e2.y1.d2
+efw-interfaceeditor-uplink-all 5.0.7 1.e2.y1.d2
+efw-interfaceeditor-uplink-analog 5.0.7 1.e2.y1.d2
+efw-interfaceeditor-uplink-dhcp 5.0.7 1.e2.y1.d2
+efw-interfaceeditor-uplink-gateway 5.0.7 1.e2.y1.d2
+efw-interfaceeditor-uplink-modem 5.0.7 1.e2.y1.d2
+efw-interfaceeditor-uplink-pppoe 5.0.7 1.e2.y1.d2
+efw-interfaceeditor-uplink-pptp 5.0.7 1.e2.y1.d2
+efw-interfaceeditor-uplink-static 5.0.7 1.e2.y1.d2
+efw-interfaceeditor-uplink-stealth 5.0.7 1.e2.y1.d2
+efw-ipsec 5.0.13 1.e9.y2.d2 1
+efw-livelogs 5.0.3 0.e3.y1.d2 1
+efw-locales 5.0.8 0.e8.y2.d2
+efw-locales-ar 5.0.8 0.e8.y2.d2
+efw-locales-ca 5.0.8 0.e8.y2.d2
+efw-locales-da 5.0.8 0.e8.y2.d2
+efw-locales-de 5.0.8 0.e8.y2.d2
+efw-locales-el 5.0.8 0.e8.y2.d2
+efw-locales-es 5.0.8 0.e8.y2.d2
+efw-locales-fi 5.0.8 0.e8.y2.d2
+efw-locales-fr 5.0.8 0.e8.y2.d2
+efw-locales-gl 5.0.8 0.e8.y2.d2
+efw-locales-he 5.0.8 0.e8.y2.d2
+efw-locales-hr 5.0.8 0.e8.y2.d2
+efw-locales-hu 5.0.8 0.e8.y2.d2
+efw-locales-id 5.0.8 0.e8.y2.d2
+efw-locales-it 5.0.8 0.e8.y2.d2
+efw-locales-ja 5.0.8 0.e8.y2.d2
+efw-locales-nb 5.0.8 0.e8.y2.d2
+efw-locales-nl 5.0.8 0.e8.y2.d2
+efw-locales-pl 5.0.8 0.e8.y2.d2
+efw-locales-pt 5.0.8 0.e8.y2.d2
+efw-locales-pt-br 5.0.8 0.e8.y2.d2
+efw-locales-ro 5.0.8 0.e8.y2.d2
+efw-locales-ru 5.0.8 0.e8.y2.d2
+efw-locales-sk 5.0.8 0.e8.y2.d2
+efw-locales-sl 5.0.8 0.e8.y2.d2
+efw-locales-sr 5.0.8 0.e8.y2.d2
+efw-locales-sv 5.0.8 0.e8.y2.d2
+efw-locales-tr 5.0.8 0.e8.y2.d2
+efw-locales-vi 5.0.8 0.e8.y2.d2
+efw-locales-zh-cn 5.0.8 0.e8.y2.d2
+efw-mailgraph 5.0.1 0.e5.d2 1
+efw-modemmanager 5.0.4 0.e1.d2
+efw-monit 5.0.1 0.e7.d2
+efw-netwizard 5.0.18 0.e2.y3.d2 1
+efw-netwizard-uplink-all 5.0.18 0.e2.y3.d2 1
+efw-netwizard-uplink-analog 5.0.18 0.e2.y3.d2 1
+efw-netwizard-uplink-dhcp 5.0.18 0.e2.y3.d2 1
+efw-netwizard-uplink-gateway 5.0.18 0.e2.y3.d2 1
+efw-netwizard-uplink-modem 5.0.18 0.e2.y3.d2 1
+efw-netwizard-uplink-pppoe 5.0.18 0.e2.y3.d2 1
+efw-netwizard-uplink-static 5.0.18 0.e2.y3.d2 1
+efw-netwizard-uplink-stealth 5.0.18 0.e2.y3.d2 1
+efw-network 5.0.14 1.d2 1
+efw-network-status 5.0.14 1.d2 1
+efw-notifications 5.0.6 0.e10.y1.d2
+efw-ntop 5.0.2 0.e4.d2
+efw-ntp 5.0.2 0.e10.y3.d2
+efw-openssh 5.0.10 0.e7.y4.d2
+efw-popscan 5.0.5 1.d2 1
+efw-proxy 5.0.23 2.e20.d2 1
+efw-qos 5.0.2 1.e8.d2
+efw-radius 5.0.2 0.e6.y1.d2 1
+efw-restartscripts 5.0.8 0.e2.y5.d2
+efw-samba 5.0.3 0.e5.y1.d2 1
+efw-sarg 5.0.8 0.e4.d2 1
+efw-shell 5.0.7 1.d2
+efw-smtpscan 5.0.18 0.e48.d2 2
+efw-snmp 5.0.2 0.e6.d2
+efw-snort 5.0.16 2.d2 1
+efw-spamassassin 5.0.10 2.e23.y2.d2 1
+efw-syslog 5.0.4 1.e12.y1.d2
+efw-upgrade 5.0.6 0.e2.d2 1
+efw-urlfilter 5.0.4 1.e10.d2
+efw-vpn 5.0.45 1.d2 1
+efw-vpn-authentication-community 5.0.1 0.e2.y1.d2 1
+efw-vpnclient 5.0.13 0.e3.d2 1
+efw-webfilter-config 5.0.4 0.e2.d2 1
+eglibc-binary-localedata-en-gb 2.18 r0.d2
+eglibc-binary-localedata-en-us 2.18 r0.d2
+eglibc-charmaps 2.18 r0.d2
+eglibc-gconv 2.18 r0.d2
+eglibc-gconvs 2.18 r0.d2
+eglibc-locale-en-gb 2.18 r0.d2
+emi 5.0.61 1.d2
+endian-artwork-community 5.0.3 0.e1.d2
+endian-artwork-core 5.0.14 0.e2.d2
+endian-core 5.0.50 0.e12.y4.d2
+endian-gpgkey 1.0 0.e2.y2.d2
+endian-release-community 3.3.27 r0.d2 1
+ethconfig 2.4 1.e9.d2
+ethtool 3.10 r0.d2
+ez-ipupdate 3.0.11b8 0e1.d2
+fcron 3.0.6 0.e33.y2.d2
+file 5.14 r0.d2
+findutils 4.4.2 r6.d2
+fontconfig-utils 2.10.2 r1.e1.y1.d2
+freeze 2.5.0 3.e2.d2
+frox 0.7.18 0.e7.y1.d2
+fuser 22.20 r0.d2
+gawk 4.0.2 r0.d2
+gawk-common 4.0.2 r0.d2
+gd 2.0.35+2.0.36rc1 r5.d2
+geoip 1.6.0 r0.d2
+git 2.13.7 r0.e1.y1.d2
+gnupg 2.0.21 r0.d2
+gpg-pubkey 9cc2461f 4250553b
+grep 2.14 r0.d2
+grub 2.00 r1.e4.y2.d2
+grub-bootconf 1.00 r0.d2
+grub-efi2 2.02 r0.e1.d2
+gzip 1.6 r0.d2
+harfbuzz 0.9.19 r0.d2
+hdparm 9.43 r0.d2
+ifplugd 0.28 1.e5.y1.d2
+initscripts-endian 5.0.1 0.e14.y6.d2 1
+iproute2 3.10.0 r0.e0.y1.d2
+ipset 6.26 0.e0.d2
+iptables 1.4.19.1 r1.y4.d2
+iptstate 1.4 0.e0.d2
+iputils s20121221 r0.e1.y1.d2
+iputils-arping s20121221 r0.e1.y1.d2
+iputils-ping s20121221 r0.e1.y1.d2
+iputils-ping6 s20121221 r0.e1.y1.d2
+iputils-tracepath s20121221 r0.e1.y1.d2
+iputils-tracepath6 s20121221 r0.e1.y1.d2
+iputils-traceroute6 s20121221 r0.e1.y1.d2
+jemalloc 3.4.1 r0.d2
+jobsengine 5.0.11 3.d2
+jquery-libs 5.0.7 1.d2
+js-bootstrap 3.3.7 r1.d2
+js-datatables 1.10.15 r1.d2
+js-lodash 4.17.2 r1.d2
+js-require 2.3.3 r1.d2
+js-require-text 2.0.12 r0.e2.d2
+js-reqwest 2.0.5 r1.d2
+js-vue 2.2.1 r2.d2
+json-c 0.11+20130402 r0.d2
+kbd 1.15.2 r4.d2
+kbd-keymaps 1.15.2 r4.d2
+kendoui-web 2013.1.319 0.e3.d2
+kernel 4.4.145 e7.4.d2
+kernel-base 4.4.145 e7.4.d2
+kernel-firmware 4.4.145 e7.4.d2
+kernel-image 4.4.145 e7.4.d2
+kernel-module-ena 2.2.11 r0.d2+4.4.145.e7.4
+kernel-module-ixgbe-intel 5.1.3 r0.d2+4.4.145.e7.4
+kernel-modules 4.4.145 e7.4.d2
+kernel-xtables-addons-modules 2.15 r0.d2+4.4.145.e7.4
+keymaps 1.0 r20.d2
+killall 22.20 r0.d2
+kmod 14+git0+3b38c7fcb5 r0.d2
+krb5 1.11.3 r0.d2
+krb5-locale-en-us 1.11.3 r0.d2
+ldd 2.18 r0.e6.d2
+less 458 r0.d2
+lha 1.14i 19.e0.d2
+libacl1 2.2.51 r3.d2
+libapr-1-0 1.4.8+1 r0.d2
+libaprutil-1-0 1.5.2+1 r0.d2
+libassuan0 2.1.1 r0.d2
+libattr1 2.4.46 r4.d2
+libblkid1 2.23.2 r0.e1.d2
+libbz2-0 1.0.6 r5.d2
+libc6 2.18 r0.e6.d2
+libcairo2 1.12.14 r0.d2
+libcap2 2.22 r5.d2
+libclamav6 0.98.5 30.e5.y2.d2
+libclamav9 0.103.8 1.d2
+libclammspack0 0.103.8 1.d2
+libclamunrar-iface9 0.103.8 1.d2
+libclamunrar6 0.98.5 30.e5.y2.d2
+libclamunrar9 0.103.8 1.d2
+libcom-err2 1.42.8 r0.d2
+libcrypto1.0.0 1.0.1r r0.e6.d2
+libcurl4 7.34.0 r0.e1.y1.d2
+libdaemon0 0.14 r0.d2
+libdbd-sqlite3 0.8.3+1 r0.e1.d2
+libdbi1 0.8.4 r0.0.d2
+libdbus-1-3 1.6.10 r6.0.e2.d2
+libdbus-glib-1-2 0.100.2 r0.d2
+libdnet 1.12 0.e0.d2
+libe2p2 1.42.8 r0.d2
+libecap2 0.2.0 2.e0.d2
+libecap3 1.0.1 2.e0.d2
+libelf1 0.148 r11.d2
+liberation-fonts 1.04 r4.d2 1
+libevtlog0 0.2.13 r0.d2
+libexpat1 2.1.0 r0.d2
+libext2fs2 1.42.8 r0.d2
+libffi6 3.0.13 r0.d2
+libfontconfig1 2.10.2 r1.e1.y1.d2
+libfreetype6 2.4.12 r0.d2
+libgcc1 4.8.1 r0.d2
+libgcrypt11 1.5.3 r0.d2
+libgdbm-compat4 1.10 r3.d2
+libgdbm4 1.10 r3.d2
+libglib-2.0-0 2.36.4 r0.d2 1
+libglib-2.0-locale-en-gb 2.36.4 r0.d2 1
+libgmp10 5.1.1 r0.d2
+libgpg-error0 1.12 r0.d2
+libgudev-1.0-0 182 r7.e1.d2
+libicapapi4 0.4.2 0.e7.d2
+libicudata51 51.2 r0.d2
+libicui18n51 51.2 r0.d2
+libicuio51 51.2 r0.d2
+libicuuc51 51.2 r0.d2
+libjpeg8 8d r1.d2
+libkmod2 14+git0+3b38c7fcb5 r0.d2
+libksba8 1.3.0 r1.d2
+libldap-2.4-2 2.4.23 r1.e1.y1.d2
+libltdl7 2.4.2 r6.0.d2
+liblzo2-2 2.06 r1.d2
+libmbim 1.16.2 r0.d2
+libmnl0 1.0.3 r0.d2
+libmount1 2.23.2 r0.e1.d2
+libmozjs 17.0.0 r0.d2
+libncurses5 5.9 r15.1.d2
+libncursesw5 5.9 r15.1.d2
+libnet1 1.1.5 r0.d2
+libnetfilter-acct1 1.0.2 r0.d2
+libnetfilter-conntrack3 1.0.4 r0.e1.d2
+libnetfilter-cthelper0 1.0.0 r0.d2
+libnetfilter-cttimeout1 1.0.0 r0.d2
+libnetfilter-log 1.0.1 r0.d2
+libnetfilter-queue1 1.0.2 r0.d2
+libnetsnmp30 5.7.2 r1.e0.y2.d2
+libnewt0.52 0.52.14 r2.d2
+libnfnetlink0 1.0.1 r0.d2
+libnl-3-200 3.2.22 r0.d2 1
+libnl-3-cli 3.2.22 r0.d2 1
+libnl-3-genl 3.2.22 r0.d2 1
+libnl-nf-3-200 3.2.22 r0.d2 1
+libnl-route-3-200 3.2.22 r0.d2 1
+libol0 0.3.18 r0.d2
+libossp-uuid16 1.6.2 r2.d2
+libpam 1.1.6 r3.d2
+libpam-runtime 1.1.6 r3.d2
+libpanelw5 5.9 r15.1.d2
+libpcap1 1.4.0 r5.0.d2
+libpci3 3.2.0 r0.d2
+libpcre1 8.33 r0.d2
+libpcre2 10.22 r0.d2
+libpcreposix0 8.33 r0.d2
+libperl5 5.14.3 r1.e1.d2
+libpixman-1-0 0.30.2 r0.d2 1
+libpng16-16 1.6.3 r0.d2
+libpopt0 1.16 r3.d2
+libpq5 9.2.4 r0.0.e9.y3.d2
+libpth20 2.0.7 r3.d2
+libpython2.7-1.0 2.7.3 r0.3.e6.d2
+libqmi 1.20.2 r0.d2
+libreadline6 6.2 r4.d2
+libsasl2-3 2.1.26 y5.d2
+libsasl2-bin 2.1.26 y5.d2
+libsensors4 3.3.3 r0.d2
+libsqlite3-0 3071700 r0.d2
+libss2 1.42.8 r0.d2
+libssl1.0.0 1.0.1r r0.e6.d2
+libstdc++6 4.8.1 r0.d2
+libtdb1 3.6.25 r0.y1.d2
+libtevent0 3.6.25 r0.y1.d2
+libtinfo5 5.9 r15.1.d2
+libudev0 182 r7.e1.d2
+libusb-1.0-0 1.0.20 r0.d2
+libuser 0.62 r0.d2
+libuser-locale-en-gb 0.62 r0.d2
+libuuid1 2.23.2 r0.e1.d2
+libwbclient0 3.6.25 r0.y1.d2
+libwrap0 7.6 r10.d2
+libx11-6 1.6.1 r0.d2 1
+libxau6 1.0.8 r0.d2 1
+libxcb-render0 1.9.1 r0.d2
+libxcb-shm0 1.9.1 r0.d2
+libxcb1 1.9.1 r0.d2
+libxdmcp6 1.1.1 r0.d2 1
+libxext6 1.3.2 r0.d2 1
+libxft2 2.3.1 r0.d2 1
+libxml2 2.9.1 r0.d2
+libxrender1 0.9.8 r0.d2 1
+libyaml-0-2 0.1.4 r0.d2
+libz1 1.2.8 r0.d2
+linux-atm 2.5.2 0.e0.d2
+lmsensors-config-libsensors 1.0 r0.d2
+locale-base-en-gb 2.18 r0.d2
+locale-base-en-us 2.18 r0.d2
+lockfile 3.22 14.e0.d2
+logrotate 3.8.1 r0.e3.d2
+logwatch 7.3.6 2.e6.y1.d2
+luajit 2.0.2 r0.d2
+lvm2 2.02.97 r2.0.d2
+lzop 1.03 r0.d2
+makedevs 1.0.0 r7.d2
+mdadm 3.3.4 r0.d2
+misc-progs 5.0.2 0.e5.d2 2
+mktemp 1.7 r3.d2
+mobile-broadband-provider-info 20151214 r0.d2 1
+mod-authnz-external 3.3.2 r2.d2
+modemmanager 1.8.4 r0.e1.d2
+monit 5.2.3 1.e15.d2 2
+nano 2.2.5 r3.0.d2
+ncurses 5.9 r15.1.d2
+ncurses-terminfo 5.9 r15.1.d2
+ncurses-terminfo-base 5.9 r15.1.d2
+ndpi 1.6.2+rf2b0c9c2 e0.y4.d2
+net-snmp-mibs 5.7.2 r1.e0.y2.d2
+net-snmp-server 5.7.2 r1.e0.y2.d2
+net-snmp-server-snmpd 5.7.2 r1.e0.y2.d2
+net-snmp-server-snmptrapd 5.7.2 r1.e0.y2.d2
+net-tools 1.60+25 r0.d2
+netbase 5.1 r0.d2 1
+noip-updater 2.1.1 0.e0.d2
+nomarch 1.3 3.e1.d2
+nspr 4.10 r0.d2
+ntopng 1.0dev+svnr6777 e17.d2 1
+ntp 4.2.8 r0.e3.d2
+ntp-tickadj 4.2.8 r0.e3.d2
+ntpdate 4.2.8 r0.e3.d2
+openssh 7.2p2 r0.e2.d2
+openssh-keygen 7.2p2 r0.e2.d2
+openssh-scp 7.2p2 r0.e2.d2
+openssh-sftp-server 7.2p2 r0.e2.d2
+openssh-ssh 7.2p2 r0.e2.d2
+openssh-sshd 7.2p2 r0.e2.d2
+openssl 1.0.1r r0.e6.d2
+openssl-conf 1.0.1r r0.e6.d2
+openssl-engines 1.0.1r r0.e6.d2
+openssl-misc 1.0.1r r0.e6.d2
+openvpn 2.4.3 21.d2
+openvpn-auth 5.0.6 3.d2 1
+overlib 4.21 0.e1.d2
+p3scan 2.3.2 1.e16.y3.d2
+p7zip 16.02 r0.e1.d2
+packagegroup-core-basic-extended 1.0 r6.d2
+packagegroup-core-basic-libs 1.0 r6.d2
+packagegroup-core-boot 1.0 r11.d2
+packagegroup-core-multiuser 1.0 r6.d2
+packagegroup-core-ssh-openssh 1.0 r1.d2
+packagegroup-endian-base-acpi 1.0 r1.e5.d2
+packagegroup-endian-basic 1.0 r1.e5.d2
+packagegroup-endian-basic-utils 1.0 r1.e5.d2
+packagegroup-endian-eglibc 1.0 r1.e5.d2
+packagegroup-endian-ext2 1.0 r1.e5.d2
+packagegroup-endian-initscripts 1.0 r1.e5.d2
+packagegroup-endian-kernel 1.0 r1.e5.d2
+packagegroup-endian-lsb-desktop 1.0 r1.e5.d2
+packagegroup-endian-sys-services 1.0 r1.e5.d2
+pam-plugin-deny 1.1.6 r3.d2
+pam-plugin-env 1.1.6 r3.d2
+pam-plugin-faildelay 1.1.6 r3.d2
+pam-plugin-group 1.1.6 r3.d2
+pam-plugin-keyinit 1.1.6 r3.d2
+pam-plugin-lastlog 1.1.6 r3.d2
+pam-plugin-limits 1.1.6 r3.d2
+pam-plugin-loginuid 1.1.6 r3.d2
+pam-plugin-mail 1.1.6 r3.d2
+pam-plugin-motd 1.1.6 r3.d2
+pam-plugin-nologin 1.1.6 r3.d2
+pam-plugin-permit 1.1.6 r3.d2
+pam-plugin-rootok 1.1.6 r3.d2
+pam-plugin-securetty 1.1.6 r3.d2
+pam-plugin-shells 1.1.6 r3.d2
+pam-plugin-unix 1.1.6 r3.d2
+pam-plugin-warn 1.1.6 r3.d2
+pango 1.32.5 r2.d2
+pango-module-basic-fc 1.32.5 r2.d2
+pax 3.4 r2.d2
+pciutils 3.2.0 r0.d2
+pciutils-ids 3.2.0 r0.d2
+perl 5.14.3 r1.e1.d2
+perl-archive-zip 1.30 r0.d2
+perl-berkeleydb 0.51 r0.d2
+perl-class-singleton 1.4 r0.d2
+perl-compress-zlib 2.015 r0.d2
+perl-config-inifiles 2.78 r0.d2
+perl-convert-binhex 1.119 r0.d2
+perl-convert-tnef 0.18 r0.d2
+perl-convert-uulib 1.4 r0.d2
+perl-crypt-openssl-rsa 0.28 r1.d2
+perl-datetime 0.2901 r0.d2
+perl-datetime-locale 0.22 r0.d2
+perl-datetime-timezone 0.37 r0.d2
+perl-db-file 1.827 r0.d2
+perl-digest-hmac 1.03 r0.d2
+perl-digest-sha1 2.13 r0.d2
+perl-encode-locale 1.03 r0.d2
+perl-error 0.17019 r0.d2
+perl-file-tail 0.99.3 r0.d2
+perl-gd 2.49 r0.d2
+perl-html-entities-numbered 0.04 r0.d2
+perl-html-parser 3.69 r0.y1.d2
+perl-html-template 2.94 r0.d2
+perl-html-template-expr 0.07 r0.d2
+perl-http-date 6.02 r0.d2
+perl-http-message 6.06 r0.d2
+perl-io-multiplex 1.13 r0.d2
+perl-io-stringy 2.110 r0.d2
+perl-json-xs 2.0 r0.d2
+perl-libwww-perl 6.04 r0.d2
+perl-list-moreutils 0.33 r0.d2
+perl-locale-gettext 1.05 r0.d2
+perl-mail-dkim 0.39 r0.d2
+perl-mail-spamassassin 3.3.2 r1.d2
+perl-mail-spf 2.8.0 r0.d2
+perl-mailtools 2.12 r0.d2
+perl-mime-tools 5.504 r1.d2
+perl-misc 5.14.3 r1.e1.d2
+perl-module-unicore 5.14.3 r1.e1.d2
+perl-modules 5.14.3 r1.e1.d2
+perl-net-dns 0.72 r0.d2
+perl-net-dns-resolver-programmable 0.003 r0.d2
+perl-net-http 6.06 r0.d2
+perl-net-ipv4addr 0.10 r0.d2
+perl-net-server 2.007 r0.d2
+perl-netaddr-ip 4.072 r0.d2
+perl-params-validate 0.94 r0.d2
+perl-parse-recdescent 1.967003 r0.d2
+perl-rrdtool 1.4.8 r2.e1.d2
+perl-text-glob 0.09 r0.d2
+perl-unix-syslog 1.1 r0.d2
+perl-uri 1.60 r0.d2
+perl-yaml-syck 1.29 r0.d2
+polkit 0.111 r0.e2.d2
+postfix 2.10.1 2.e26.d2
+postgrey 1.34 0.e13.d2
+ppp 2.4.5 r6.e7.d2
+ppp-oe 2.4.5 r6.e7.d2
+pptp-linux 1.7.2 r1.d2
+procps 3.2.8 r11.y3.d2
+psmisc 22.20 r0.d2
+pstree 22.20 r0.d2
+python-beaker 1.5.4 r0.d2
+python-bleach 1.4.3 r0.d2
+python-certifi 2017.7.27.1 r0.e1.d2
+python-cffi 1.11.0 r0.d2
+python-cheetah 2.1.1 r0.d2
+python-cherrypy 2.3.0 r2.e3.d2
+python-completion 1.0 r1.e1.y1.d2
+python-configobj 4.7.2 r0.d2
+python-core 2.7.3 r0.3.e6.d2
+python-crypto 2.6.1 r0.e1.y0.d2
+python-cryptography 2.1 r0.e1.d2
+python-dbus 1.2.0 r0.d2
+python-decoratortools 1.8 r1.d2
+python-elixir 0.7.1 r0.d2
+python-enum34 1.1.6 r0.d2
+python-fail2ban 0.10.5 r3.d2
+python-formencode 1.2.2 r0.e1.y1.d2
+python-html5lib 0.9999999 r1.d2
+python-htmltmpl 1.22 r0.d2
+python-idna 2.6 r0.d2
+python-ipaddress 1.0.18 r0.d2
+python-iplib 1.1 r0.d2
+python-ldap 2.3.9 r0.e1.d2
+python-mako 0.7.3 r0.d2
+python-markupsafe 0.9.3 r0.d2
+python-modules 2.7.3 r0.3.e6.d2
+python-netfilter-conntrack 0.4.2 0.e1.d2
+python-paste 1.4.2 r0.d2
+python-paste-deploy 1.3.1 r0.d2
+python-pastescript 1.7.3 r0.d2
+python-peak-rules 0.5a1.dev+r2713 r0.d2
+python-peak-util-addons 0.7 r1.d2
+python-peak-util-bytecodeassembler 0.6+r2646 r0.d2
+python-peak-util-extremes 1.1.1 r1.d2
+python-peak-util-symboltype 1.0 r1.d2
+python-pexpect 2.4 r0.d2
+python-psycopg2 2.5.2 r0.d2
+python-pyasn1 0.1.8 r0.d2
+python-pyopenssl 0.13 r0.d2
+python-pytz 2016.10 r0.d2
+python-rpm 5.4.9 r63.e1.y3.d2
+python-setproctitle 1.1 r0.d2
+python-setuptools 0.6c11 ml5.d2
+python-simplejson 3.11.1 r0.d2
+python-six 1.10.0 r0.d2
+python-smartpm 1.4.1 r9.e5.d2
+python-smartpm-backend-rpm 1.4.1 r9.e5.d2
+python-sqlalchemy 0.6.6 r0.d2
+python-sqlobject 2.1.0 r0.e1.y1.d2
+python-tgmochikit 1.4.2 r0.d2
+python-toscawidgets 0.9.9 r1.d2
+python-toscawidgets-dynforms 0.9.8 r0.d2
+python-toscawidgets-forms 0.9.9 r0.d2
+python-turbogears 1.1.1 e1.y2.d2 1
+python-turbojson 1.3.2 r0.d2
+python-urllib3 1.22 r0.d2
+python-webob 1.2.3 r0.d2
+python-yaml 3.10 r0.d2
+pyzor 0.4.0 11.e7.d2
+redis 2.8.4 r1.y4.d2
+ripole 0.2.0 1.rf.e1.d2
+rp-pppoe 3.8 r10.d2
+rpm 5.4.9 r63.e1.y3.d2
+rpm-common 5.4.9 r63.e1.y3.d2
+rpm-libs 5.4.9 r63.e1.y3.d2
+rrdtool 1.4.8 r2.e1.d2
+rsync 3.0.9 r0.d2
+run-postinsts 1.0 r9.d2
+samba 3.6.25 r0.y1.d2
+samba-base 3.6.25 r0.y1.d2
+sarg 2.3.11 r1.d2
+scripts 5.0.3 0.e21.y3.d2 1
+sed 4.2.2 r0.d2
+shadow 4.2.1 r0.d2
+shadow-securetty 4.2.1 r3.d2
+slang 2.2.4 r12.d2
+smartpm 1.4.1 r9.e5.d2
+snort 2.9.4.6 4.e11.y5.d2
+sqlite3 3071700 r0.d2
+squid 3.5.27 0.e7.d2
+squid-graph 3.2 1.e0.d2
+squid-radius-auth 1.10 1.e1.d2
+strongswan 5.3.5 r5.y5.d2
+strongswan-plugins 5.3.5 r5.y5.d2
+stslog 5.0.1 0.e2.d2 1
+sudo 1.9.5p2 r0.d2
+syslog-ng 3.5.4.1 1.e23.y1.d2
+sysvinit 2.88dsf r11.d2
+sysvinit-inittab-endian 1.0.0 3.d2
+sysvinit-pidof 2.88dsf r11.d2
+tar 1.26 r5.e1.d2
+tcl 8.6.0 r0.d2
+tcl-lib 8.6.0 r0.d2
+tcpdump 4.9.2 r0.d2
+time 1.7 r2.d2
+tmpwatch 2.11 2.d2
+tnef 1.4.10 1.rf.e0.d2
+tzdata-posix 2016g r0.d2
+udev 182 r7.e1.d2
+udev-cache 182 r7.e1.d2
+udev-utils 182 r7.e1.d2
+ulogd 2.0.5 0.e15.y2.d2
+unarj 2.63a 0.a.dag.d2
+unrar 3.5.2 1.rf.e0.d2
+unzip 6.0 r4.d2 1
+update-alternatives-cworth 0.1.8+svnr653 r13.0.e1.d2 1
+update-rc.d 0.7 r5.d2
+uplinksdaemon 5.0.6 0.e20.d2
+usb-modeswitch 2.4.0 r0.d2
+usb-modeswitch-data 20160612 r0.e0.y1.d2
+usbutils 007 r0.d2
+usbutils-ids 007 r0.d2
+util-linux 2.23.2 r0.e1.d2
+util-linux-agetty 2.23.2 r0.e1.d2
+util-linux-blkid 2.23.2 r0.e1.d2
+util-linux-cfdisk 2.23.2 r0.e1.d2
+util-linux-fdisk 2.23.2 r0.e1.d2
+util-linux-fsck 2.23.2 r0.e1.d2
+util-linux-losetup 2.23.2 r0.e1.d2
+util-linux-mkfs 2.23.2 r0.e1.d2
+util-linux-mount 2.23.2 r0.e1.d2
+util-linux-partx 2.23.2 r0.e1.d2
+util-linux-readprofile 2.23.2 r0.e1.d2
+util-linux-sfdisk 2.23.2 r0.e1.d2
+util-linux-swaponoff 2.23.2 r0.e1.d2
+util-linux-umount 2.23.2 r0.e1.d2
+vim 7.4.27 r0.e2.d2
+vim-data 7.4.27 r0.e2.d2
+vim-syntax 7.4.27 r0.e2.d2
+vim-vimrc 7.4.27 r0.e2.d2
+winbind 3.6.25 r0.y1.d2
+wireless-tools 29 r4.d2 1
+xtables-addons 2.15 r0.d2+4.4.145.e7.4
+xtables-addons-dbip 202103 r0.d2
+zeromq 4.0.3 r0.d2
+zoo 2.10 21.debian.e1.d2

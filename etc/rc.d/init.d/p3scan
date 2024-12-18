@@ -1,0 +1,74 @@
+#!/bin/sh
+#
+# p3scn This script starts and stops the p3scan daemon
+#
+# chkconfig: - 80 30
+# processname: p3scan
+# description: p3scan is a proxy process which intercepts pop3 traffic
+#              and gives it to clamav and/or spamassassin
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+# Set default spamd configuration.
+P3SCANOPTIONS=""
+P3SCAN_PID=/var/run/p3scan/p3scan.pid
+
+lock=/var/lock/subsys/p3scan
+
+# Source spamd configuration.
+if [ -f /etc/sysconfig/p3scan ] ; then
+	. /etc/sysconfig/p3scan
+fi
+
+[ -f /usr/sbin/p3scan ] || exit 0
+PATH=$PATH:/usr/sbin:/usr/local/bin
+
+# By default it's all good
+RETVAL=0
+
+# See how we were called.
+case "$1" in
+  start)
+	# Start daemon.
+	echo -n "Starting p3scan: "
+        if [ -f $P3SCAN_PID ]; then
+            ps -p $(cat $P3SCAN_PID) &>/dev/null || rm -f $P3SCAN_PID
+        fi
+	daemon $NICELEVEL p3scan $P3SCANOPTIONS -l $P3SCAN_PID
+	RETVAL=$?
+        echo
+        [ $RETVAL -eq 0 ] && touch $lock
+        ;;
+  stop)
+        # Stop daemons.
+        echo -n "Shutting down p3scan: "
+        killproc p3scan
+        RETVAL=$?
+        echo
+	if [ $RETVAL -eq 0 ]; then
+		rm -f $lock
+ 	        test -f $P3SCAN_PID && rm -f $P3SCAN_PID
+	fi
+        ;;
+  restart)
+        $0 stop
+        $0 start
+        ;;
+  condrestart)
+       status p3scan &>/dev/null && $0 restart || :
+       ;;
+  condstop)
+       status p3scan &>/dev/null && $0 stop || :
+       ;;
+  status)
+	status p3scan
+	RETVAL=$?
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart|status|condrestart|condstop}"
+	RETVAL=1
+	;;
+esac
+
+exit $RETVAL

@@ -1,0 +1,6 @@
+div.hide-level{
+          transition: 0.5s linear;
+          max-height: 0;
+          display: none;
+          opacity:0;
+}

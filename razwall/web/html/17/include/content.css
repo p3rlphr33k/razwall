@@ -1,0 +1,670 @@
+table.list {
+    width: 100%;
+    margin: 0;
+    margin-top: 0px;
+    border: 1px solid;
+    border-top: 0px;
+    padding: 7px;
+    font-size: 11px;
+}
+
+div.error, div.warning, div.note {
+    border: 1px solid;
+    border-top: 0px;
+    margin: 0px;
+    margin-bottom: 20px;
+    padding: 10px;
+}
+
+img.error, img.warning, img.note {
+    margin-right: 40px;
+}
+
+h3.error, h3.warning, h3.note {
+    background-color: #ededed;
+    background-image: url(/images/header_content.png);
+    background-repeat: no-repeat;
+}
+
+table tr.header {
+}
+
+div.accordion-container tr.header td {
+    border-bottom: 1px solid;
+    margin: 0px;
+    padding: 0px;
+}
+
+div.accordion-container tr.odd {
+    margin: 0px;
+    padding: 0px;
+}
+
+div.accordion-container tr.even {
+    margin: 0px;
+    padding: 0px;
+}
+
+div.accordion-container tr td {
+    margin: 0px;
+    padding: 4px 4px 4px 2px;
+}
+
+div.accordion-container td.top-no-padding {
+    padding-top: 0px;
+}
+
+tr.selected {
+}
+
+.page-content {
+}
+
+table.ruleslist {
+    width: 100%;
+    border: 1px solid;
+}
+
+table.ruleslist td, table.ruleslist th {
+    text-align: left;
+    border-bottom: 1px solid;
+    margin: 0px;
+    padding: 4px 4px 4px 2px;
+}
+
+table.ruleslist td.boldbase, table.ruleslist th {
+    font-weight: bold;
+    text-align: left;
+    border-left: 1px solid;
+    padding-left: 4px;
+}
+
+table.ruleslist td.boldbase:first-child, table.ruleslist th:first-child {
+    border-left: none;
+}
+
+table.ruleslist td {
+    padding-left: 5px;
+}
+
+table.ruleslist td.actions {
+    border: none;
+    border-left: 1px solid;
+    border-bottom: 1px solid;
+}
+
+table.ruleslist td.actions input {
+    float: left;
+    width: 16px;
+    height: 16px;
+    margin: 0px;
+    padding: 0px;
+    padding-left: 4px;
+}
+
+table.ruleslist td.actions a {
+    float: left;
+    width: 16px;
+    height: 16px;
+    margin: 0px;
+    padding: 0px;
+    padding-left: 4px;
+}
+
+img.clear {
+    float: left;
+    height: 16px;
+    width: 16px;
+    margin: 0px;
+    padding: 0px;
+    padding-left: 4px;
+}
+
+div.box {
+    padding-bottom: 20px;
+}
+
+div.boxvalue {
+}
+
+div.submit {
+    text-align: left;
+    margin: 0px;
+    padding: 0px;
+}
+
+div.boxsubmit {
+    text-align: left;
+    margin: 0px;
+    padding: 10px 0px 0px 8px;
+}
+
+div.editortitle {
+    text-align: left;
+    border-bottom: 1px solid;
+    margin: 0px;
+    padding: 0px 0px 10px 0px;
+}
+
+div.editoradd {
+    line-height: 16px;
+    text-align: left;
+    background: url(/images/editoradd.png) no-repeat;
+    margin: 0px;
+    margin-bottom: 10px;
+    margin-left: 0px;
+    padding: 0px;
+    padding-left: 20px;
+}
+
+div.editorbox {
+    text-align: left;
+    border: 1px solid;
+    margin: 0px;
+    margin-bottom: 10px;
+    padding: 12px;
+}
+
+div.ediorerror {
+    text-align: left;
+}
+
+div.editorsubmit {
+    text-align: left;
+    margin: 0px;
+    padding: 10px 0px 0px 0px;
+}
+
+/* Form layout styles */
+input.checkbox {
+    margin: 0px;
+    padding: 0px;
+    margin-right: 4px;
+}
+
+.form-field, .multi-form-field {
+    float:left;
+    padding-right: 4px;
+}
+.form-field input, .form-field select,
+.multi-form-field input, .multi-form-field select {
+    display: block;
+    margin: 0px;
+    margin-top: 4px;
+}
+.form-field input, .form-field select {
+    width: 370px;
+}
+.multi-form-field input, .multi-form-field select {
+    width: 180px;
+}
+input.checkbox {
+    margin: 0px;
+    margin-top: 4px;
+    padding: 0px;
+}
+label {
+    font-weight: bold;
+}
+#network-register td {
+    padding: 4px 4px 4px 0px;
+}
+td.section-title {
+    padding: 4px 4px 0px 0px;
+}
+td.title p.form-section-title {
+    font-size: 14px;
+    font-weight: normal;
+    margin: 0px;
+    padding: 0px;
+    padding-top: 8px;
+    padding-bottom: 4px;
+}
+.form-section-title.first {
+    padding-top: 0px;
+}
+label.error-msg {
+    display: block;
+    clear: both;
+    font-weight: normal;
+    padding-top: 3px;
+}
+.form-field.error, .multi-form-field.error {
+}
+
+div.save-button {
+    float: left;
+    width: 680px;
+    margin-top: 3px;
+    padding-top: 6px;
+    padding-right: 24px;
+    padding-bottom: 0;
+}
+
+/* Styles for the ajaxed service switch (on/off) */
+.service-switch {
+    margin: 0px;
+    padding: 0px;
+}
+.service-switch .title {
+    line-height: 17px;
+    font-size: 14px;
+}
+.service-switch .image {
+    cursor: pointer;
+    padding-left: 6px;
+}
+.service-switch .content {
+}
+.service-switch .content .description {
+    border: 1px solid;
+    width: 500px;
+    margin-top: 19px;
+    padding: 4px;
+}
+
+/* Style the spinner text */
+.service-switch .content .working {
+    margin-top: 18px;
+}
+
+/* Spinner layout styles */
+.spinner {
+    
+    display: none;
+    line-height: 16px;
+    background: url(/images/indicator.gif) no-repeat 0px 0px;
+    margin: 0px;
+    padding: 0px;
+    padding-left: 24px;
+}
+.service-switch .content .options-container {
+    margin-top: 11px;
+}
+.service-switch .content .options-container div.title {
+    border-bottom: 1px dotted;
+    margin: 0px;
+    margin-bottom: 12px;
+    padding: 0px;
+}
+.service-switch .content .options-container div.title h2.title {
+    font-size: 14px;
+    font-weight: normal;
+    margin: 0px;
+    padding: 0px;
+    padding-top: 8px;
+    padding-bottom: 4px;
+}
+.service-switch .content .options-container div.options {
+}
+.service-switch .enable-uplinks {
+    padding-top: 10px;
+}
+.service-switch .enable-uplinks span {
+    padding-right: 10px;
+}
+
+/* Vertical-align only applies to checkboxes - needed only for firefox to align label and checkbox */
+.service-switch .enable-uplinks input {
+    vertical-align: bottom;
+    margin: 0px;
+    margin-left: 10px;
+    margin-right: 4px;
+    padding: 0px;
+}
+.service-switch .enable-uplinks select {
+    margin-left: 4px;
+}
+
+/* styles for remote.cgi */
+.service-switch-image {
+    padding-left: 6px;
+}
+.switch-options {
+    margin-top: 0px;
+}
+
+.switch-info-container {
+}
+#ssh-options, #ssh-hold {
+    padding-top: 10px;
+}
+#ssh-hold {
+    margin-top: 7px;
+}
+p.form-section-title {
+    font-size: 14px;
+    font-weight: normal;
+    margin: 0px;
+    padding: 0px;
+    padding-bottom: 4px;
+}
+div.title {
+    padding: 4px 4px 0px 0px;
+}
+#ssh-description {
+    width: 500px;
+    border: 1px solid;
+    margin-top: 17px;
+    padding: 4px;
+}
+
+/* Styles for EFW Forms */
+.efw-form {
+}
+.efw-form .section {
+    margin-bottom: 0px;
+}
+.efw-form .section.first {
+    margin-top: 0px;
+}
+.efw-form .section div.title {
+    border-bottom: 1px dotted;
+    margin: 0px;
+    padding: 0px;
+    margin-bottom: 12px;
+}
+.efw-form .section div.title h2.title {
+    font-size: 14px;
+    font-weight: normal;
+    margin: 0px;
+    padding: 0px;
+    padding-top: 8px;
+    padding-bottom: 4px;
+}
+
+.accordion-head {
+    background-image: url(/images/header_accordion.png);
+    border-right: 1px solid;
+    margin: 0px;
+    margin-left: -13px;
+    margin-right: -13px;
+    padding: 0px;
+    cursor: pointer;
+}
+
+.accordion-head img.toggle {
+    float: left;
+    border: none;
+    margin: 0px;
+    padding-left: 3px;
+    padding-top: 6px;
+}
+
+
+.accordion-head h3.title {
+    float: left;
+    font-size: 11px;
+    font-weight: normal;
+    line-height: 24px;
+    background: none;
+    border: none;
+    padding: 0px;
+    padding-left: 3px;
+}
+.accordion-container {
+    border-bottom: 1px solid;
+    border-left: 1px solid;
+    border-right: 1px solid;
+    margin-left: -13px;
+    margin-right: -13px;
+    padding: 12px;
+    padding-bottom: 0;
+}
+
+.category-head {
+    line-height: 0px;
+    width: 320px;
+    margin: 0px;
+    padding: 0px;
+    cursor: pointer;
+}
+.category-head img.toggle {
+    float: left;
+    border: 0px none;
+    margin: 0px;
+    padding-left: 10px;
+    padding-top: 6px;
+}
+.category-head h3.title {
+    float: left;
+    line-height: 24px;
+    width: 260px;
+    background: none;
+    border: none;
+    padding-left: 10px;
+}
+.category-head img.status {
+    float: right;
+    border: none;
+    margin: 0px;
+    padding: 4px;
+}
+.category-container {
+    margin-bottom: 2px;
+    cursor: pointer;
+}
+.category-container .subcategory {
+    border-left: 1px solid;
+    border-right: 1px solid;
+    border-bottom: 1px solid;
+}
+.category-container .subcategory a.title {
+    float: left;
+    font-weight: normal;
+    margin: 0px;
+    margin-left: 26px;
+    padding-left: 4px;
+    padding-top: 5px;
+    padding-bottom: 4px;
+}
+.category-container .subcategory img.status {
+    float: right;
+    border: 0px none;
+    margin: 0px;
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+.efw-form .section .fields-row .multiselect,
+.efw-form .section .fields-row textarea {
+    height: 80px;
+}
+
+.efw-form .section .fields-row select {
+    height: 20px;
+}
+
+.efw-form .section .fields-row .field div.category-head {
+    width: 318px;
+}
+.efw-form .section .fields-row .field .category-head h3.title {
+    width: 260px;
+}
+
+.efw-form .section .fields-row.field-textarea {
+    padding-bottom: 5px;
+}
+.efw-form .section .fields-row.field-select {
+    padding-bottom: 6px;
+}
+.efw-form .section .fields-row.field-checkbox {
+    padding-bottom: 25px;
+}
+.efw-form .section .fields-row.field-category {
+    padding-bottom: 34px;
+}
+.efw-form .section .fields-row {
+    padding-bottom: 4px;
+}
+
+.efw-form .section .fields-row .multi-field input, 
+.efw-form .section .fields-row .multi-field select,
+.efw-form .section .fields-row .zone-field input, 
+.efw-form .section .fields-row .zone-field select,
+.efw-form .section .fields-row .field input, 
+.efw-form .section .fields-row .field select, 
+.efw-form .section .fields-row .field .value, 
+.efw-form .section .fields-row .field textarea {
+    display: block;
+    margin: 0px;
+    margin-top: 4px;
+}
+
+.efw-form .section .fields-row .field select,
+.efw-form .section .fields-row .field textarea,
+.efw-form .section .fields-row.field-checkbox {
+    width: 316px;
+}
+.efw-form .section .fields-row .field input,
+.efw-form .section .fields-row.field-empty {
+    width: 310px;
+}
+
+.efw-form .section .fields-row .multi-field select,
+.efw-form .section .fields-row .multi-field textarea,
+.efw-form .section .fields-row .multi-field.field-checkbox {
+    width: 184px;
+}
+.efw-form .section .fields-row .multi-field input,
+.efw-form .section .fields-row .multi-field.field-empty {
+    width: 178px;
+}
+
+.efw-form .section .fields-row .zone-field select,
+.efw-form .section .fields-row .zone-field textarea,
+.efw-form .section .fields-row .zone-field.field-checkbox {
+    width: 208px;
+}
+.efw-form .section .fields-row .zone-field input,
+.efw-form .section .fields-row .zone-field.field-empty {
+    width: 202px;
+}
+
+.efw-form .section .fields-row .field.checkbox input,
+.efw-form .section .fields-row .multi-field.checkbox input,
+.efw-form .section .fields-row .zone-field.checkbox input {
+    display: inline;
+    width: inherit;
+}
+
+.efw-form .section .fields-row .field.checkbox label,
+.efw-form .section .fields-row .multi-field.checkbox label,
+.efw-form .section .fields-row .zone-field.checkbox label {
+    font-weight: normal;
+    padding-left: 4px;
+}
+
+.efw-form .field.checkbox input,
+.efw-form .multi-field.checkbox input, 
+.efw-form .zone-field.checkbox input {
+    margin: 0px;
+    padding: 0px;
+}
+
+.efw-form .section .field.submit input, 
+.efw-form .section .multi-field.submit input, 
+.efw-form .section .zone-field.submit input {
+    width: inherit;
+}
+
+/* Styles for multi column form sections, meaning that more than one column is next to the other */
+.efw-form .section.multi-column {
+    float: left;
+    padding-right: 20px;
+}
+.editorcontainer .efw-form .section.multi-column {
+    float: left;
+    padding-right: 18px;
+}
+
+/* If the form is used within an editorbox the padding around the
+ * title is removed
+ */
+ 
+.editorbox .efw-form .section div.title h2.title {
+    padding-top: 0px;
+}
+
+/* Legend to a list should show a space of 6px to the list above */
+.list-legend {
+    margin-top: 6px;
+}
+
+.inline {
+    display: inline;
+}
+table.ruleslist tr td.center, table.ruleslist tr th.center {
+    text-align: center;
+}
+
+.notification {
+    background: url(/images/bubble_yellow.png) transparent no-repeat 0px 0px;
+    padding: 10px;
+    height: 93px;
+    width: 486px;
+}
+
+.notification .content {
+    margin-top: 9px;
+    padding-left: 80px;
+    padding-right: 10px;
+    text-align: left;
+}
+
+.notification-fancy,
+.important-fancy,
+.error-fancy {
+    width: 504px;
+    margin-left: 120px;
+}
+
+.notification-fancy .content,
+.important-fancy .content,
+.error-fancy .content {
+    text-align: left;
+    width: 468px;
+    padding-top: 19px;
+    padding-bottom: 14px;
+    padding-left: 18px;
+    padding-right: 18px;
+}
+
+.notification-fancy .content {
+    background: url(/images/bubble_yellow_content.png) no-repeat 0px 0px;
+}
+.important-fancy .content {
+    background: url(/images/bubble_green_content.png) no-repeat 0px 0px;
+}
+.error-fancy .content {
+    background: url(/images/bubble_red_content.png) no-repeat 0px 0px;
+}
+
+.error-fancy .content .sign {
+}
+
+.notification-fancy .content .text,
+.important-fancy .content .text,
+.error-fancy .content .text {
+    padding-left: 30px;
+    line-height: 15px;
+}
+
+.notification-fancy .bottom,
+.important-fancy .bottom,
+.error-fancy .bottom {
+    height: 20px;
+    width: 504px;
+}
+
+.notification-fancy .bottom {
+    background-image: url(/images/bubble_yellow_bottom.png);
+}
+.important-fancy .bottom {
+    background-image: url(/images/bubble_green_bottom.png);
+}
+.error-fancy .bottom {
+    background-image: url(/images/bubble_red_bottom.png);
+}

@@ -1,0 +1,101 @@
+#! /bin/sh
+#
+# monit
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+MONIT=/usr/bin/monit
+
+[ -f $MONIT ] || exit 0
+
+RETVAL=0
+
+save_monitored_services() {
+        # Save the monitored services list
+        echo "Saving monitored services list..."
+        $MONIT summary | grep Process | grep -v "not monitored" | cut -d "'" -f 2 > /tmp/monit.services
+}
+
+restore_monitored_services() {
+        # Restore the monitored services
+        if [ -f /tmp/monit.services ]; then
+                echo -n "Restoring monitored services list.."
+                count=1
+                while test $count -lt 30
+                do
+                        echo -n "."
+                        $MONIT status 2>&1 | grep -q 'no status available -- the monit daemon is not running'
+                        if test $? -ne 0 ; then
+                                break;
+                        fi
+                        count=`expr $count + 1`
+                        sleep 1
+                done
+                echo ""
+                while read service; do
+                        $MONIT monitor $service
+                done < /tmp/monit.services
+                monit
+                sleep 5
+                rm /tmp/monit.services
+        fi
+}
+
+start() {
+        # Start Monit
+        echo -n "Starting monit: "
+        daemon $NICELEVEL $MONIT
+        RETVAL=$?
+        echo
+        [ $RETVAL = 0 ] && touch /var/lock/subsys/monit
+        return $RETVAL
+}
+
+stop() {
+        # Stop Monit
+        echo -n "Stopping monit: "
+        killproc monit
+        RETVAL=$?
+        echo
+        [ $RETVAL = 0 ] && rm -f /var/lock/subsys/monit
+        return $RETVAL
+}
+
+restart() {
+        # Restart Monit
+        save_monitored_services
+        stop
+        start
+        restore_monitored_services 
+}
+
+# See how we were called.
+case "$1" in
+  start)
+        start
+        ;;
+  stop)
+        stop
+        ;;
+  restart|restart-enabled)
+        restart
+	RETVAL=$?
+	;;
+  reload)
+        restart
+        RETVAL=$?
+        ;;
+  condrestart)
+       [ -e /var/lock/subsys/monit ] && restart
+       ;;
+  status)
+        status monit
+        RETVAL=$?
+        ;;
+  *)
+        echo "Usage: $0 {start|stop|restart|restart-enabled|reload|condrestart|status}"
+        exit 1
+esac
+
+exit $RETVAL

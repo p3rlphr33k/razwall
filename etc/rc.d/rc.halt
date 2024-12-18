@@ -1,0 +1,59 @@
+#!/bin/sh
+export PATH=/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin
+
+# Write the shutdown/reboot message on the LCD
+if hash lcd-notifier 2>/dev/null; then
+    if [ "$1" = "halt" ]; then
+        lcd-notifier -b -I -n "|   system is| shutting down" -t 1000 &>/dev/null
+    else
+        lcd-notifier -b -I -n "|   system is|   rebooting" -t 1000 &>/dev/null
+    fi
+    sleep 1
+    killall -9 lcd-daemon &>/dev/null
+fi
+
+echo "Shutting down..."
+sleep 3
+echo "Running halt scripts..."
+run-parts /etc/rc.d/halt/
+echo "Saving the clock"
+/sbin/hwclock --utc --systohc
+/etc/init.d/save-rtc.sh
+
+echo "Sending all processes the TERM signal..." 
+/sbin/killall5 -15
+sleep 3
+echo "Sending all processes the KILL signal..."
+/sbin/killall5 -9
+sleep 3
+
+echo "Turning off swap"
+swapoff -a
+
+# The proc and sys fs are not unmounted by 'umount -a'
+echo "Unmounting others"
+umount -n -a -r
+echo "Unmounting root"
+mount -n -o remount,ro /
+
+# Send nice shutdown beep now
+if [ -x /usr/bin/beep ]; then
+    /usr/bin/beep -l 75 -f 3000
+    /usr/bin/beep -l 75 -f 2000
+    /usr/bin/beep -l 75 -f 1000
+    /usr/bin/beep -l 75 -f 500
+fi
+
+# If we have leds, disable them
+LED_STORAGE="/sys/class/leds/led:orange:storage"
+LED_POWER="/sys/class/leds/led:orange:power"
+if [ -e "${LED_POWER}" ]; then
+    echo "none" > ${LED_STORAGE}/trigger
+    echo "none" > ${LED_POWER}/trigger
+fi
+
+if [ "$1" = "halt" ]; then
+	halt -i -d -p -f
+else
+	reboot -i -d -f
+fi

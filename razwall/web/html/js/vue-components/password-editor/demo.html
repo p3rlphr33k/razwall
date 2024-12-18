@@ -1,0 +1,32 @@
+<script src="https://unpkg.com/vue@2.3.3"></script>
+<script src=../container/container.js></script>
+<script src=password-editor.js></script>
+
+<div id="app">
+    <container>
+        <password-editor id="password" v-model="password" @invalid-password="passwordNoMatch"></password-editor>
+    </container>
+</div>
+
+
+<script>
+Vue.component('password-editor', window.passwordEditor.passwordEditor);
+Vue.component('container', window.container.container);
+Vue.component('field-container', window.container.fieldContainer);
+var app = new Vue({
+    el: "#app",
+    data: {
+        password: ''
+    },
+    watch: {
+        password: function(){
+            console.log(this.password);
+        }
+    },
+    methods: {
+        passwordNoMatch: function(){
+            console.log("No match!");
+        }
+    }
+});
+</script>

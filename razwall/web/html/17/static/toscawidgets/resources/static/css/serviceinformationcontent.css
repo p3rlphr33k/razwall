@@ -1,0 +1,47 @@
+
+div.serviceinformationplugin-service {
+	position: relative;
+	border-bottom: solid 1px;
+	padding-bottom: 3px;
+	padding-top: 3px;
+}
+
+div.serviceinformationplugin-service:last-child {
+	border-bottom: none;
+}
+
+div.serviceinformationplugin-service span.service-name {
+	position: absolute;
+	left: 0px;
+	font-weight: bold;
+    cursor: pointer;
+}
+
+div.serviceinformationplugin-service div.service-messages {
+	width:100%;
+	border-top: dotted 1px rgb(160,160,160);
+	padding-top: 3px;
+	padding-bottom: 3px;
+	margin-top: 3px;
+}
+
+div.serviceinformationplugin-service span.service-on {
+	font-weight: bold;
+}
+div.serviceinformationplugin-service span.service-off {
+	font-weight: bold;
+}
+
+div.serviceinformationplugin-service span.service-livelog {
+	position: absolute;
+	right: 40px;
+}
+
+div.serviceinformationplugin-service span.service-on, div.serviceinformationplugin-service span.service-off {
+	position: absolute;
+	right: 0px;
+}
+
+.serviceInformation-on-show, .serviceInformation-on-hide {
+    display: none;
+}

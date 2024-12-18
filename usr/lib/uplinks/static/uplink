@@ -1,0 +1,24 @@
+#!/bin/sh
+
+. /etc/rc.d/efw_lib.sh
+. ${UPLINK_SCRIPTS}/common
+. ${UPLINK_SCRIPTS}/generic/static.sh
+. ${UPLINK_SCRIPTS}/generic/route.sh
+
+function stop() {
+    local ret=0
+    route_stop
+    ret=$(($ret + $?))
+    static_down
+    ret=$(($ret + $?))
+    return $ret
+}
+
+function start() {
+    static_start
+    return $?
+}
+
+switch "$1"
+
+exit 0

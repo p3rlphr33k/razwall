@@ -1,0 +1,3 @@
+off,,192.168.19.25,,,UPLINK:main,SNAT,EXCHANGE OUT MIDCO .52,,24.111.67.52
+on,,192.168.19.14,,,UPLINK:main,SNAT,web.gflibrary.com out .51,,24.111.67.51
+on,,192.168.14.0/24,,,UPLINK:main,SNAT,vlan 700 to 24.111.67.53 external IP,,24.111.67.53

@@ -1,0 +1,86 @@
+#!/bin/bash
+#
+# Init script for AMaViS email virus scanner.
+#
+# Written by Dag Wieers <dag@wieers.com>.
+#
+# chkconfig: 2345 79 31
+# description: AMaViS virus scanner.
+#
+# processname: amavisd
+# config: /etc/amavisd.conf
+# pidfile: /var/run/amavisd.pid
+
+. /etc/init.d/functions
+
+### Default variables
+AMAVIS_USER="amavis"
+CONFIG_FILE="/etc/amavisd.conf"
+
+RETVAL=0
+prog="amavisd"
+desc="Mail Virus Scanner"
+
+start() {
+	echo -n $"Starting $desc ($prog): "
+	daemon /usr/sbin/$prog -c "$CONFIG_FILE"
+	RETVAL=$?
+	echo
+	[ $RETVAL -eq 0 ] && touch /var/lock/subsys/$prog
+	return $RETVAL
+}
+
+stop() {
+	echo -n $"Shutting down $desc ($prog): "
+	killproc $prog
+	RETVAL=$?
+	echo
+	[ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/$prog
+    sleep 2
+	return $RETVAL
+}
+
+reload() {
+	echo -n $"Reloading $desc ($prog): "
+	killproc $prog -HUP
+	RETVAL=$?
+	echo
+	return $RETVAL
+}
+
+restart() {
+	stop
+	start
+}
+
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  restart)
+	restart
+	;;
+  reload)
+	reload
+	;;
+  condrestart)
+        status $prog &>/dev/null && restart || :
+	RETVAL=$?
+	;;
+  condstop)
+        status $prog &>/dev/null && stop || :
+	RETVAL=$?
+	;;
+  status)
+	status $prog
+	RETVAL=$?
+	;;
+  *)
+	echo $"Usage: $0 {start|stop|restart|reload|condrestart|condstop|status}"
+	RETVAL=1
+esac
+
+exit $RETVAL

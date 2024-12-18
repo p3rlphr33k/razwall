@@ -1,0 +1,161 @@
+#!/bin/bash
+# +--------------------------------------------------------------------------+
+# | Endian Firewall                                                          |
+# +--------------------------------------------------------------------------+
+# | Copyright (c) 2016 Endian S.p.A. <info@endian.com>                       |
+# |         Endian S.p.A.                                                    |
+# |         via Pillhof 47                                                   |
+# |         39057 Appiano (BZ)                                               |
+# |         Italy                                                            |
+# |                                                                          |
+# | This program is free software; you can redistribute it and/or modify     |
+# | it under the terms of the GNU General Public License as published by     |
+# | the Free Software Foundation; either version 2 of the License, or        |
+# | (at your option) any later version.                                      |
+# |                                                                          |
+# | This program is distributed in the hope that it will be useful,          |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of           |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            |
+# | GNU General Public License for more details.                             |
+# |                                                                          |
+# | You should have received a copy of the GNU General Public License along  |
+# | with this program; if not, write to the Free Software Foundation, Inc.,  |
+# | 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.              |
+# +--------------------------------------------------------------------------+
+
+
+. /etc/rc.d/efw_lib.sh
+
+UPGRADED=/etc/upgrade/upgrade.d
+PRE_HOOKS=/etc/upgrade/pre-upgrade.d
+VERSION_SETTINGS=/usr/lib/efw/version/default/settings
+
+loadSettings /var/efw/main/settings
+
+
+function runHooks() {
+    if [ ! -d "${UPGRADED}" ]; then
+        return
+    fi
+    run-parts --report ${UPGRADED}
+}
+
+
+function runPreHooks() {
+    if [ ! -d "${PRE_HOOKS}" ]; then
+        return
+    fi
+    run-parts --report ${PRE_HOOKS}
+}
+
+
+function bailout() {
+    local MSG="$1"
+    echo "ERROR: $MSG" >&2
+    exit 1
+}
+
+
+function doUpgrade() {
+    echo "+++ Try to upgrade efw-upgrade itself"
+    smart update
+    smart upgrade -y efw-upgrade || \
+        bailout "Error during upgrade of efw-upgrade"
+    echo "+++ Spawn away upgrade process."
+    echo "+++ You can follow the progress by a tail output."
+    $0 upgrade 2>&1 | tee /tmp/efw-upgrade.log
+}
+
+
+function upgrade {
+    test -x /usr/local/bin/rpmlist.sh && \
+        /usr/local/bin/rpmlist.sh
+    echo "+++ Upgrade rpm if necessary"
+    smart upgrade -y rpm || \
+        bailout "Error during upgrade of rpm"
+    echo "+++ Run pre upgrade hooks"
+    runPreHooks || bailout "Error during pre-upgrade hooks"
+    echo "+++ Start upgrading packages"
+    smart upgrade -y || bailout "Error during upgrade"
+    if ! rpm -q community-appliance-community &>/dev/null; then
+        if ! rpm -q efw-community &>/dev/null; then
+            smart install efw-community -y || \
+                bailout "Error during installing efw-community"
+        fi
+    fi
+    echo "+++ Run post upgrade hooks"
+    runHooks || bailout "Error during post-upgrade hooks"
+}
+
+
+function update_username() {
+    echo ""
+    echo "If you haven't registered yet, it's time to join now!"
+    echo "http://www.endian.com/community/register/"
+    echo ""
+    echo "Please enter the email address you used to register and hit [ENTER]:"
+    read COMMUNITY_USERNAME
+    if [ -n "$COMMUNITY_USERNAME" ]; then
+        sed -i '/^COMMUNITY_USERNAME=.*$/d' /var/efw/main/settings
+        echo -e "\nCOMMUNITY_USERNAME=${COMMUNITY_USERNAME}" >> /var/efw/main/settings
+        sed -i '/^\s*$/d' /var/efw/main/settings
+    else
+        echo "ERROR: the email address used to register is required"
+        return 1
+    fi
+    smart channel --remove-all -y
+    return 0
+}
+
+
+function setupchannels() {
+    if [ -f $VERSION_SETTINGS ]; then
+        source $VERSION_SETTINGS
+        echo "+++ Channel for version $MAJOR_VERSION will be added"
+    else
+        bailout "Cannot find the community version"
+    fi
+
+    if [ -z "$COMMUNITY_USERNAME" ] ; then
+        update_username
+    fi
+    if [ -z "$COMMUNITY_USERNAME" ] ; then
+        return 1
+    fi
+
+    if [ -n "$COMMUNITY_USERNAME" ]; then
+        smart channel --remove-all -y
+        smart channel --add efw-community baseurl="http://${COMMUNITY_USERNAME}:community@updates.endian.org/$MAJOR_VERSION/" type=rpm-md -y
+    fi
+    echo "+++ Channel is configured now."
+    echo "+++ Call $0 -s in order to change it."
+    return 0
+}
+
+
+if [ "$1" == "-s" ]; then
+    setupchannels
+elif [ "$1" == "-u" ]; then
+    update_username || exit $?
+elif [ "$1" == "-h" ]; then
+    echo ${0##/*}" Usage:"
+    echo "/${0##/}"
+    echo "Use -s to force channels setup and upgrade."
+    echo "Use -u to change the email address used to register."
+    echo "Use -h show this help."
+    exit
+fi
+
+if [ "$1" == "upgrade" ]; then
+    upgrade
+    exit
+fi
+
+if [ `smart channel --show | grep efw-community` ]; then
+    doUpgrade
+else
+    setupchannels
+    if [ $? -eq 0 ] ; then
+       doUpgrade
+    fi
+fi

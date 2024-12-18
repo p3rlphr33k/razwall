@@ -1,0 +1,28 @@
+#!/usr/bin/perl
+#
+#        +-----------------------------------------------------------------------------+
+#        | RazWall Firewall - 2024                                                     |
+#        | www.RazWall.com		                                                       |
+#        +-----------------------------------------------------------------------------+
+#
+use strict;
+use warnings;
+
+# Simulated function for system initialization
+sub system_init {
+    my (%args) = @_;
+    my $debug = $args{debug} // 0;
+    my $use_syslog = $args{use_syslog} // 0;
+
+    print "System initialization started\n";
+    print "Debug mode: " . ($debug ? "enabled" : "disabled") . "\n";
+    print "Syslog usage: " . ($use_syslog ? "enabled" : "disabled") . "\n";
+
+    # Add system initialization logic here
+    print "System initialization completed\n";
+}
+
+# Main logic
+if (!@ARGV) {
+    system_init(debug => 0, use_syslog => 1);
+}
