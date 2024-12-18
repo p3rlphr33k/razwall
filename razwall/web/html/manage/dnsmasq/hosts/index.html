@@ -1,0 +1,955 @@
+<html class="k-ff k-ff130"><head><link rel="stylesheet" type="text/css" href="/toscawidgets/resources/endian.emi/static/css/notification.css" media="all">
+<script type="text/javascript" src="/include/jquery.min.js"></script>
+<script type="text/javascript" src="/include/toastr.js"></script>
+<script type="text/javascript" src="/toscawidgets/resources/endian.emi/static/js/jquery.emi.toast.js"></script>
+<script type="text/javascript" src="/toscawidgets/resources/endian.emi/static/js/jquery.emi.apply.js"></script>
+<link rel="stylesheet" type="text/css" href="/include/style.css" media="all">
+<link rel="stylesheet" type="text/css" href="/include/kendo.common.min.css" media="all">
+<link rel="stylesheet" type="text/css" href="/include/kendo.common.endian.css" media="all">
+<link rel="stylesheet" type="text/css" href="/include/kendo.custom.css" media="all">
+<script type="text/javascript" src="/include/jquery.cookie.js"></script>
+<script type="text/javascript" src="/toscawidgets/resources/endian.emi/static/js/jquery.emi.gridaction.js"></script>
+<script type="text/javascript" src="/include/kendo.core.min.js"></script>
+<script type="text/javascript" src="/include/kendo.data.min.js"></script>
+<script type="text/javascript" src="/include/kendo.calendar.min.js"></script>
+<script type="text/javascript" src="/include/kendo.popup.min.js"></script>
+<script type="text/javascript" src="/include/kendo.datepicker.min.js"></script>
+<script type="text/javascript" src="/include/kendo.userevents.min.js"></script>
+<script type="text/javascript" src="/include/kendo.numerictextbox.min.js"></script>
+<script type="text/javascript" src="/include/kendo.validator.min.js"></script>
+<script type="text/javascript" src="/include/kendo.binder.min.js"></script>
+<script type="text/javascript" src="/include/kendo.editable.min.js"></script>
+<script type="text/javascript" src="/include/kendo.draganddrop.min.js"></script>
+<script type="text/javascript" src="/include/kendo.window.min.js"></script>
+<script type="text/javascript" src="/include/kendo.list.min.js"></script>
+<script type="text/javascript" src="/include/kendo.dropdownlist.min.js"></script>
+<script type="text/javascript" src="/include/kendo.filtermenu.min.js"></script>
+<script type="text/javascript" src="/include/kendo.menu.min.js"></script>
+<script type="text/javascript" src="/include/kendo.columnmenu.min.js"></script>
+<script type="text/javascript" src="/include/kendo.groupable.min.js"></script>
+<script type="text/javascript" src="/include/kendo.pager.min.js"></script>
+<script type="text/javascript" src="/include/kendo.selectable.min.js"></script>
+<script type="text/javascript" src="/include/kendo.sortable.min.js"></script>
+<script type="text/javascript" src="/include/kendo.reorderable.min.js"></script>
+<script type="text/javascript" src="/include/kendo.resizable.min.js"></script>
+<script type="text/javascript" src="/include/kendo.columnsorter.min.js"></script>
+<script type="text/javascript" src="/include/kendo.grid.min.js"></script>
+        
+        <title>endian.grand-forks.lib.nd.us - Endian Community (64 bit) - Host configuration</title>
+        
+        <script type="text/javascript" src="/include/jquery.stalker.js"></script>
+        <script language="javascript" type="text/javascript">
+$(document).ready(function() {
+    if ($.browser.msie) {
+        $("#main_header_logout").removeAttr("href");
+        $("#main_header_logout").parent().unbind('click').click(function() {
+            $.ajax({
+                url: "/cgi-bin/logout.cgi",
+                username: 'username',
+                password: 'wrong_password_for_username'
+            });
+        document.location = "/";
+        });
+    }
+    $("#menu-top-background").stalker();
+    $("#menu-top").stalker();
+    $("#menu-left").stalker({offset: 35});
+
+    function callReboot(){
+        $.ajax({
+            type: 'POST',
+            url: "/manage/commands/commands.system.reboot",
+            error: function(id, error_type, xhr, ajaxOptions, thrownError) {
+                console.log("js: callReboot error")
+            },
+            success: function () {
+                document.getElementById('page-content').innerHTML = "                    <div id=\"module-content\">                    <div align=\"center\">                    <table width=\"100%\" bgcolor=\"#ffffff\">                    <tbody><tr><td align=\"center\">                    <br><br><img src=\"/images/reboot_splash.png\"><br><br><br>                    </td></tr>                    </tbody></table>                    <br>                    <font size=\"5\">The appliance is being rebooted.</font>                    </div>                    </div>";
+            }
+        });
+    }
+
+    function acknowledgeReboot(){
+        $.ajax({
+            type: 'POST',
+            url: "/manage/commands/commands.system.acknowledge_reboot",
+            error: function(id, error_type, xhr, ajaxOptions, thrownError) {
+                console.log("js: acknowledgeReboot error")
+            }
+        });
+    }
+
+    function pollReboot() {
+        $.ajax({
+            type: 'GET',
+            url: "/manage/commands/commands.system.notify_reboot",
+            success: pollSuccess,
+            error: pollError,
+            dataType: "json"
+        });
+    }
+
+    function pollSuccess(result) {
+        if (result != null) {
+            var status = result['notify_reboot'];
+            if (status == true)
+                makeRebootToast();
+        }
+        setTimeout(pollReboot, 60000);
+    }
+
+    function pollError(id, error_type, xhr, ajaxOptions, thrownError) {
+        setTimeout(pollReboot, 60000);
+    }
+
+    function makeRebootToast(){
+        var toastr_settings = {
+            type: "warning",
+            title: "System reboot required",
+            message: "Reboot is required to complete the installation of software updates.",
+            confirmation_button_label: "Ok, reboot now",
+            confirmation_button: true,
+            confirmation_callback: callReboot,
+            close_callback: acknowledgeReboot,
+            toastr_options: {
+                "closeButton": true,
+                "positionClass": "toast-top-right",
+                "preventDuplicates": true,
+            }
+        };
+
+        $().emitoast(toastr_settings);
+    }
+
+    pollReboot();
+});
+        </script>
+        
+        <link rel="shortcut icon" href="/favicon.ico">
+        <style type="text/css">@import url(/include/menu.css);</style>
+        <style type="text/css">@import url(/include/branding.css);</style>
+        <style type="text/css">@import url(/include/toastr.css);</style>
+        <style type="text/css">
+.state-msg { 
+    margin: 0px;
+    margin-top: 12px; 
+    padding: 5px; 
+    background-color: #f3f3f3; 
+    width: 98%; 
+    border: #cccccc 2px solid; 
+    overflow: hidden; 
+    font-weight: bold;
+    color: #555555; 
+}
+.error-msg { 
+    margin: 0px;
+    margin-top: 12px; 
+    padding: 5px; 
+    background-color: #fff0f0;
+    width: 98%; 
+    border: #d69497 2px solid; 
+    overflow: hidden;
+    font-weight: bold;
+    color: #ca232a; 
+}
+.k-tooltip {
+    margin-top: 10px;
+}
+        </style>
+    </head> 
+    <body class="language-en">
+        <div id="background">
+            <div id="background-overlay"></div>
+        </div>
+        <div id="header-background"></div>
+        <div id="header">
+            <img id="logo" alt="Logo" src="/images/logo_endian.png">
+            <div id="header-icons">
+                <ul>
+                    <li id="logout-icon" onclick="window.location.href='/cgi-bin/logout.cgi';">
+    <a href="/cgi-bin/logout.cgi" onclick="return false;" id="main_header_logout">Logout</a>
+</li>
+                    <li id="help-icon" onclick="javascript:window.open('http://docs.endian.com/3.3/en/network.html#the-network-menu','_blank','height=700,width=1000,location=no,menubar=no,scrollbars=yes');">
+    <a href="#" onclick="return false;">Help</a>
+</li>
+                </ul>
+            </div><!-- header-icons -->
+        </div>
+        <div id="menu-top-background"></div>
+        <div id="menu-top">
+            <ul>
+                <li class="">
+                    <a href="/manage/dashboard">System</a>
+                </li>
+                <li class="">
+                    <a href="/cgi-bin/status.cgi">Status</a>
+                </li>
+                <li class="selected">
+                    <a href="/manage/dnsmasq/hosts">Network</a>
+                </li>
+                <li class="">
+                    <a href="/manage/dhcp/settings">Services</a>
+                </li>
+                <li class="">
+                    <a href="/cgi-bin/dnat.cgi">Firewall</a>
+                </li>
+                <li class="">
+                    <a href="/cgi-bin/proxyconfig.cgi">Proxy</a>
+                </li>
+                <li class="">
+                    <a href="/manage/openvpn">VPN</a>
+                </li>
+                <li class="">
+                    <a href="/cgi-bin/logs_live_list.cgi">Logs and Reports</a>
+                </li>
+            </ul>
+        </div>
+        <!-- header -->
+        <div id="content">
+            <div id="menu-left">
+                <ul>
+                    <li class="selected">
+                        <a href="/manage/dnsmasq/hosts">Edit hosts</a>
+                    </li>
+                    <li class="">
+                        <a href="/cgi-bin/routing.cgi">Routing</a>
+                    </li>
+                    <li class="">
+                        <a href="/cgi-bin/uplinkeditor.cgi">Interfaces</a>
+                    </li>
+                </ul>
+            </div>
+            <div id="page-content">
+                <h2>Host configuration</h2>
+                <div>
+                    
+
+
+    <div class="multi-controller-title">Custom hosts</div>
+    
+
+<div id="controller_hosts">
+    <div align="center"><div id="apply_notification_hosts" class="important-fancy hidden">
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("#apply_notification_hosts").emiapply({
+                action: "apply",
+                controllername: "hosts"
+            });
+        });
+    </script>
+    <div class="content">
+        <table cellpadding="0" cellspacing="0" border="0">
+            <tbody><tr>
+                <td class="sign" valign="middle"><img src="/images/bubble_green_sign.png" alt="" border="0"></td>
+                <td valign="middle">
+                    <div class="text">
+                        
+                    </div>
+                    <input type="button" value="Apply">
+                    <div class="wait hidden"> </div>
+                </td>
+            </tr>
+        </tbody></table>
+    </div>
+    <div class="bottom"></div>
+</div>
+</div>
+    <div align="center"><div id="info_notification_hosts" class="hidden notification-fancy">
+    <script>
+    $(document).ready(function() {
+        $("#info_notification_hosts").click(function() {
+            $(this).hide();
+        });
+    });
+    </script>
+    <div class="content">
+        <table cellpadding="0" cellspacing="0" border="0">
+            <tbody><tr>
+                <td class="sign" valign="middle"><img src="/images/bubble_yellow_sign.png" alt="" border="0"></td>
+                <td class="text" valign="middle"></td>
+            </tr>
+        </tbody></table>
+    </div>
+    <div class="bottom"></div>
+</div></div>
+    <div align="center"><div id="error_notification_hosts" class="hidden error-fancy">
+    <script>
+    $(document).ready(function() {
+        $("#error_notification_hosts").click(function() {
+            $(this).hide();
+        });
+    });
+    </script>
+    <div class="content">
+        <table cellpadding="0" cellspacing="0" border="0">
+            <tbody><tr>
+                <td class="sign" valign="middle"><img src="/images/bubble_red_sign.png" alt="" border="0"></td>
+                <td class="text" valign="middle"></td>
+            </tr>
+        </tbody></table>
+    </div>
+    <div class="bottom"></div>
+</div></div>
+    <div class="editoradd">
+        <a href="?ACTION=edit&amp;CONTROLLERNAME=hosts" name="createrule">Add new host</a>
+    </div>
+       
+<style>
+.kendotoolbar {
+    float: right;
+}
+</style>
+
+
+<div id="hosts_datagrid" data-role="grid" class="k-grid k-widget" style="">
+<div class="k-grid-header" style="padding-right: 0px;"><div class="k-grid-header-wrap" data-role="resizable"><table role="grid" cellspacing="0"><colgroup><col style="width:30px"><col><col><col><col><col></colgroup><thead><tr><th role="columnheader" data-field="ID" class="k-header"><input type="checkbox" onclick="$(this).parents('.k-grid').find('.k-grid-content').find('input[type=checkbox][name=ID]').prop('checked', $(this).prop('checked'));"></th><th role="columnheader" data-field="ip" data-title="IP address" class="k-header k-filterable" data-role="sortable" data-dir="asc" aria-sort="ascending"><a class="k-grid-filter" href="#" tabindex="-1"><span class="k-icon k-filter"></span></a><a class="k-link" href="#">IP address<span class="k-icon k-i-arrow-n"></span></a></th><th role="columnheader" data-field="hostname" data-title="Hostname" class="k-header k-filterable" data-role="sortable"><a class="k-grid-filter" href="#" tabindex="-1"><span class="k-icon k-filter"></span></a><a class="k-link" href="#">Hostname</a></th><th role="columnheader" data-field="domainname" data-title="Domain name" class="k-header k-filterable" data-role="sortable"><a class="k-grid-filter" href="#" tabindex="-1"><span class="k-icon k-filter"></span></a><a class="k-link" href="#">Domain name</a></th><th role="columnheader" data-field="remark" data-title="Remark" class="k-header k-filterable" data-role="sortable"><a class="k-grid-filter" href="#" tabindex="-1"><span class="k-icon k-filter"></span></a><a class="k-link" href="#">Remark</a></th><th role="columnheader" data-field="actions" data-title="Actions" class="k-header">Actions</th></tr></thead></table></div></div><div class="k-grid-content"><table cellspacing="0" role="grid"><colgroup><col style="width:30px"><col><col><col><col><col></colgroup><tbody><tr data-uid="4870cc86-d6d5-4aab-869f-67e513174237" role="row"><td class="checkbox" role="gridcell"><input type="checkbox" name="ID" value="2"></td><td role="gridcell">192.168.19.1</td><td role="gridcell">endian</td><td role="gridcell">grand-forks.lib.nd.us</td><td role="gridcell"></td><td class="actions" role="gridcell"><span><a id="action_hosts_enable_2" class="gridaction" name="action" href="#" title="Disable" onclick=" jQuery('#action_hosts_enable_2').emigridaction({ request_type: 'GET', gridid: 'hosts_datagrid', idfield: 'ID', controllername: 'hosts', link: '/manage/dnsmasq/hosts/json?ACTION=enable&amp;CONTROLLERNAME=hosts&amp;ID=2&amp;enabled=off', errormessage: 'Action could not be performed.', beforeExecute: null, onExecute: null, onSuccess: null, onError: null, onComplete: null, multi: false, all: false}, {}); return false;">
+    <img class="" width="16" height="16" src="/toscawidgets/resources/endian.emi/static/images/action_enable_on.png" alt="Disable" border="0">
+</a>
+<a id="action_hosts_edit_2" class="gridaction" name="action" href="?ACTION=edit&amp;CONTROLLERNAME=hosts&amp;ID=2" title="Edit" onclick="">
+    <img class="" width="16" height="16" src="/toscawidgets/resources/endian.emi/static/images/action_edit.png" alt="Edit" border="0">
+</a>
+<a id="action_hosts_delete_2" class="gridaction" name="action" href="#" title="Delete" onclick="if (! confirm('Do you want to delete this record?')) {return false}; jQuery('#action_hosts_delete_2').emigridaction({ request_type: 'GET', gridid: 'hosts_datagrid', idfield: 'ID', controllername: 'hosts', link: '/manage/dnsmasq/hosts/json?ACTION=delete&amp;CONTROLLERNAME=hosts&amp;ID=2', errormessage: 'Action could not be performed.', beforeExecute: null, onExecute: null, onSuccess: null, onError: null, onComplete: null, multi: false, all: false}, {}); return false;">
+    <img class="" width="16" height="16" src="/toscawidgets/resources/endian.emi/static/images/action_delete.png" alt="Delete" border="0">
+</a></span></td></tr><tr class="k-alt" data-uid="b38601dc-e3cd-4a59-a767-b0712f198af7" role="row"><td class="checkbox" role="gridcell"><input type="checkbox" name="ID" value="1"></td><td role="gridcell">192.168.19.14</td><td role="gridcell">web</td><td role="gridcell">gflibrary.com</td><td role="gridcell"></td><td class="actions" role="gridcell"><span><a id="action_hosts_enable_1" class="gridaction" name="action" href="#" title="Disable" onclick=" jQuery('#action_hosts_enable_1').emigridaction({ request_type: 'GET', gridid: 'hosts_datagrid', idfield: 'ID', controllername: 'hosts', link: '/manage/dnsmasq/hosts/json?ACTION=enable&amp;CONTROLLERNAME=hosts&amp;ID=1&amp;enabled=off', errormessage: 'Action could not be performed.', beforeExecute: null, onExecute: null, onSuccess: null, onError: null, onComplete: null, multi: false, all: false}, {}); return false;">
+    <img class="" width="16" height="16" src="/toscawidgets/resources/endian.emi/static/images/action_enable_on.png" alt="Disable" border="0">
+</a>
+<a id="action_hosts_edit_1" class="gridaction" name="action" href="?ACTION=edit&amp;CONTROLLERNAME=hosts&amp;ID=1" title="Edit" onclick="">
+    <img class="" width="16" height="16" src="/toscawidgets/resources/endian.emi/static/images/action_edit.png" alt="Edit" border="0">
+</a>
+<a id="action_hosts_delete_1" class="gridaction" name="action" href="#" title="Delete" onclick="if (! confirm('Do you want to delete this record?')) {return false}; jQuery('#action_hosts_delete_1').emigridaction({ request_type: 'GET', gridid: 'hosts_datagrid', idfield: 'ID', controllername: 'hosts', link: '/manage/dnsmasq/hosts/json?ACTION=delete&amp;CONTROLLERNAME=hosts&amp;ID=1', errormessage: 'Action could not be performed.', beforeExecute: null, onExecute: null, onSuccess: null, onError: null, onComplete: null, multi: false, all: false}, {}); return false;">
+    <img class="" width="16" height="16" src="/toscawidgets/resources/endian.emi/static/images/action_delete.png" alt="Delete" border="0">
+</a></span></td></tr><tr data-uid="77946fdf-f2cc-4249-88b7-afbc9a438664" role="row"><td class="checkbox" role="gridcell"><input type="checkbox" name="ID" value="4"></td><td role="gridcell">192.168.19.34</td><td role="gridcell">deepfreeze</td><td role="gridcell"></td><td role="gridcell">DEEP FREEZE</td><td class="actions" role="gridcell"><span><a id="action_hosts_enable_4" class="gridaction" name="action" href="#" title="Disable" onclick=" jQuery('#action_hosts_enable_4').emigridaction({ request_type: 'GET', gridid: 'hosts_datagrid', idfield: 'ID', controllername: 'hosts', link: '/manage/dnsmasq/hosts/json?ACTION=enable&amp;CONTROLLERNAME=hosts&amp;ID=4&amp;enabled=off', errormessage: 'Action could not be performed.', beforeExecute: null, onExecute: null, onSuccess: null, onError: null, onComplete: null, multi: false, all: false}, {}); return false;">
+    <img class="" width="16" height="16" src="/toscawidgets/resources/endian.emi/static/images/action_enable_on.png" alt="Disable" border="0">
+</a>
+<a id="action_hosts_edit_4" class="gridaction" name="action" href="?ACTION=edit&amp;CONTROLLERNAME=hosts&amp;ID=4" title="Edit" onclick="">
+    <img class="" width="16" height="16" src="/toscawidgets/resources/endian.emi/static/images/action_edit.png" alt="Edit" border="0">
+</a>
+<a id="action_hosts_delete_4" class="gridaction" name="action" href="#" title="Delete" onclick="if (! confirm('Do you want to delete this record?')) {return false}; jQuery('#action_hosts_delete_4').emigridaction({ request_type: 'GET', gridid: 'hosts_datagrid', idfield: 'ID', controllername: 'hosts', link: '/manage/dnsmasq/hosts/json?ACTION=delete&amp;CONTROLLERNAME=hosts&amp;ID=4', errormessage: 'Action could not be performed.', beforeExecute: null, onExecute: null, onSuccess: null, onError: null, onComplete: null, multi: false, all: false}, {}); return false;">
+    <img class="" width="16" height="16" src="/toscawidgets/resources/endian.emi/static/images/action_delete.png" alt="Delete" border="0">
+</a></span></td></tr><tr class="k-alt" data-uid="888e32c9-776f-4eae-9e7f-45b908155bdb" role="row"><td class="checkbox" role="gridcell"><input type="checkbox" name="ID" value="3"></td><td role="gridcell">192.168.40.10</td><td role="gridcell">gfplserver</td><td role="gridcell"></td><td role="gridcell"></td><td class="actions" role="gridcell"><span><a id="action_hosts_enable_3" class="gridaction" name="action" href="#" title="Disable" onclick=" jQuery('#action_hosts_enable_3').emigridaction({ request_type: 'GET', gridid: 'hosts_datagrid', idfield: 'ID', controllername: 'hosts', link: '/manage/dnsmasq/hosts/json?ACTION=enable&amp;CONTROLLERNAME=hosts&amp;ID=3&amp;enabled=off', errormessage: 'Action could not be performed.', beforeExecute: null, onExecute: null, onSuccess: null, onError: null, onComplete: null, multi: false, all: false}, {}); return false;">
+    <img class="" width="16" height="16" src="/toscawidgets/resources/endian.emi/static/images/action_enable_on.png" alt="Disable" border="0">
+</a>
+<a id="action_hosts_edit_3" class="gridaction" name="action" href="?ACTION=edit&amp;CONTROLLERNAME=hosts&amp;ID=3" title="Edit" onclick="">
+    <img class="" width="16" height="16" src="/toscawidgets/resources/endian.emi/static/images/action_edit.png" alt="Edit" border="0">
+</a>
+<a id="action_hosts_delete_3" class="gridaction" name="action" href="#" title="Delete" onclick="if (! confirm('Do you want to delete this record?')) {return false}; jQuery('#action_hosts_delete_3').emigridaction({ request_type: 'GET', gridid: 'hosts_datagrid', idfield: 'ID', controllername: 'hosts', link: '/manage/dnsmasq/hosts/json?ACTION=delete&amp;CONTROLLERNAME=hosts&amp;ID=3', errormessage: 'Action could not be performed.', beforeExecute: null, onExecute: null, onSuccess: null, onError: null, onComplete: null, multi: false, all: false}, {}); return false;">
+    <img class="" width="16" height="16" src="/toscawidgets/resources/endian.emi/static/images/action_delete.png" alt="Delete" border="0">
+</a></span></td></tr></tbody></table></div><div class="k-pager-wrap k-grid-pager k-widget" data-role="pager"><a href="#" title="Go to the first page" class="k-link k-state-disabled" data-page="1" tabindex="-1"><span class="k-icon k-i-seek-w">Go to the first page</span></a><a href="#" title="Go to the previous page" class="k-link k-state-disabled" data-page="1" tabindex="-1"><span class="k-icon k-i-arrow-w">Go to the previous page</span></a><ul class="k-pager-numbers k-reset"><li><span class="k-state-selected">1</span></li></ul><a href="#" title="Go to the next page" class="k-link k-state-disabled" data-page="1" tabindex="-1"><span class="k-icon k-i-arrow-e">Go to the next page</span></a><a href="#" title="Go to the last page" class="k-link k-state-disabled" data-page="1" tabindex="-1"><span class="k-icon k-i-seek-e">Go to the last page</span></a><a href="#" class="k-pager-refresh k-link" title="Refresh"><span class="k-icon k-i-refresh">Refresh</span></a><span class="k-pager-info k-label">1 - 4 of 4 items</span></div></div>
+
+    
+<script type="text/javascript">
+
+kendo.ui.FilterMenu.prototype.filter = (function (originalFilter) {
+    return function extendedFilter(e) {    
+        var res = $.grep(e.filters, function(item) {
+            return item.value != "";
+        });
+ 
+        if (res.length == 0) {
+            this._reset();
+        } else {
+            originalFilter.apply(this, arguments);
+        }
+    }
+})(kendo.ui.FilterMenu.prototype.filter);
+
+var hosts_datagridDatasource = new kendo.data.DataSource({
+    serverAggregates: true,
+    serverFiltering: true,
+    serverGrouping: true,
+    serverPaging: true,
+    serverSorting: true,
+    transport: {
+        read: {
+            url: "/manage/dnsmasq/hosts/json_grid?controllername=hosts&",
+            type: "POST",
+            contentType: "application/json",
+            cache: false
+        }
+    },
+    sort: {
+        field: "ip",
+        dir: "asc"
+    },
+    pageSize: 20,
+    schema: {
+        type: "json",
+        errors: "error"
+        ,
+        data: "data",
+        total: "records",
+        totalPages: "total"
+    }
+});
+</script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var grid = $("#hosts_datagrid").kendoGrid({
+                dataSource: hosts_datagridDatasource,
+                autoBind: true,
+                scrollable: true,
+                resizable: true,
+
+
+
+
+
+                dataBound: function(e) {
+                    var grid = this;
+                    var dataSource = this.dataSource;
+
+                    var state = kendo.stringify({
+                        page: dataSource.page(),
+                        pageSize: dataSource.pageSize(),
+                        sort: dataSource.sort(),
+                        group: dataSource.group(),
+                        filter: dataSource.filter()
+                    });
+                    $.cookie("kendogrid_state_hosts_datagrid", state);
+                },
+
+                sortable: {
+                    mode: "single",
+                    allowUnsort: false
+                },
+                pageable: {
+                    refresh: true,
+                    pageSize: 20,
+                    messages: {
+                        display: "{0} - {1} of {2} items",
+                        page: "Page",
+                        of: "of {0}",
+                        itemsPerPage: "items per page",
+                        first: "Go to the first page",
+                        last: "Go to the last page",
+                        next: "Go to the next page",
+                        previous: "Go to the previous page",
+                        refresh: "Refresh"
+                    }
+                },
+                columns: [
+                    {
+                        field: "ID",
+                        sortable: false,
+                        title: "",
+                        filterable: false,
+                        headerTemplate: "<input type=\"checkbox\" onclick=\"$(this).parents('.k-grid').find('.k-grid-content').find('input[type=checkbox][name=ID]').prop('checked', $(this).prop('checked'));\" />",
+                        width: "30px",
+                        attributes: {
+                            "class": "checkbox"
+                        },
+                        encoded: false // maybe we can use datasource models in the future
+                    }
+,
+                    {
+                        field: "ip",
+                        sortable: true,
+                        title: "IP address",
+                        filterable: {
+                            extra: true,
+                            operators: {
+                                string: {"contains": "Contains", "doesnotcontain": "Does not contain"}
+                            },
+                            messages: {
+                              and: "and",
+                              or: "or",
+                              isTrue: "True",
+                              isFalse: "False",
+                              info:  "Filter by: ",
+                              selectValue: "Select",
+                              filter: "Apply",
+                              clear: "Clear"
+                            }
+                        },
+                        attributes: {
+                        },
+                        encoded: false // maybe we can use datasource models in the future
+                    }
+,
+                    {
+                        field: "hostname",
+                        sortable: true,
+                        title: "Hostname",
+                        filterable: {
+                            extra: true,
+                            operators: {
+                                string: {"contains": "Contains", "doesnotcontain": "Does not contain"}
+                            },
+                            messages: {
+                              and: "and",
+                              or: "or",
+                              isTrue: "True",
+                              isFalse: "False",
+                              info:  "Filter by: ",
+                              selectValue: "Select",
+                              filter: "Apply",
+                              clear: "Clear"
+                            }
+                        },
+                        attributes: {
+                        },
+                        encoded: false // maybe we can use datasource models in the future
+                    }
+,
+                    {
+                        field: "domainname",
+                        sortable: true,
+                        title: "Domain name",
+                        filterable: {
+                            extra: true,
+                            operators: {
+                                string: {"contains": "Contains", "doesnotcontain": "Does not contain"}
+                            },
+                            messages: {
+                              and: "and",
+                              or: "or",
+                              isTrue: "True",
+                              isFalse: "False",
+                              info:  "Filter by: ",
+                              selectValue: "Select",
+                              filter: "Apply",
+                              clear: "Clear"
+                            }
+                        },
+                        attributes: {
+                        },
+                        encoded: false // maybe we can use datasource models in the future
+                    }
+,
+                    {
+                        field: "remark",
+                        sortable: true,
+                        title: "Remark",
+                        filterable: {
+                            extra: true,
+                            operators: {
+                                string: {"contains": "Contains", "doesnotcontain": "Does not contain"}
+                            },
+                            messages: {
+                              and: "and",
+                              or: "or",
+                              isTrue: "True",
+                              isFalse: "False",
+                              info:  "Filter by: ",
+                              selectValue: "Select",
+                              filter: "Apply",
+                              clear: "Clear"
+                            }
+                        },
+                        attributes: {
+                        },
+                        encoded: false // maybe we can use datasource models in the future
+                    }
+,
+                    {
+                        field: "actions",
+                        sortable: false,
+                        title: "Actions",
+                        filterable: false,
+                        attributes: {
+                            "class": "actions"
+                        },
+                        encoded: false // maybe we can use datasource models in the future
+                    }
+                ],
+                filterable: true
+            });
+            
+
+            $('select#hosts_datagrid_multiaction').change(function() {
+                var select = this;
+                if ($(select).find(':selected')[0].id == 'action_hosts_enable_multi') {
+            var action_id_value = $(select).val();
+            $(select).val(0);
+             jQuery('#action_hosts_enable_multi').emigridaction({ request_type: 'GET', gridid: 'hosts_datagrid', idfield: 'ID', controllername: 'hosts', link: '/manage/dnsmasq/hosts//json?ACTION=enable&CONTROLLERNAME=hosts&enabled=on', errormessage: 'Action could not be performed.', beforeExecute: null, onExecute: null, onSuccess: null, onError: null, onComplete: null, multi: true, all: false}, {}); return false;
+        }
+        
+                if ($(select).find(':selected')[0].id == 'action_hosts_disable_multi') {
+            var action_id_value = $(select).val();
+            $(select).val(0);
+             jQuery('#action_hosts_disable_multi').emigridaction({ request_type: 'GET', gridid: 'hosts_datagrid', idfield: 'ID', controllername: 'hosts', link: '/manage/dnsmasq/hosts//json?ACTION=disable&CONTROLLERNAME=hosts', errormessage: 'Action could not be performed.', beforeExecute: null, onExecute: null, onSuccess: null, onError: null, onComplete: null, multi: true, all: false}, {}); return false;
+        }
+        
+                if ($(select).find(':selected')[0].id == 'action_hosts_delete_multi') {
+            var action_id_value = $(select).val();
+            $(select).val(0);
+            if (! confirm('Do you want to delete the selected records?')) {return false}; jQuery('#action_hosts_delete_multi').emigridaction({ request_type: 'GET', gridid: 'hosts_datagrid', idfield: 'ID', controllername: 'hosts', link: '/manage/dnsmasq/hosts//json?ACTION=delete&CONTROLLERNAME=hosts', errormessage: 'Action could not be performed.', beforeExecute: null, onExecute: null, onSuccess: null, onError: null, onComplete: null, multi: true, all: false}, {}); return false;
+        }
+        
+                if ($(select).find(':selected')[0].id == 'action_hosts_enable_all') {
+            var action_id_value = $(select).val();
+            $(select).val(0);
+             jQuery('#action_hosts_enable_all').emigridaction({ request_type: 'GET', gridid: 'hosts_datagrid', idfield: 'ID', controllername: 'hosts', link: '/manage/dnsmasq/hosts//json?ACTION=enable&CONTROLLERNAME=hosts&enabled=on', errormessage: 'Action could not be performed.', beforeExecute: null, onExecute: null, onSuccess: null, onError: null, onComplete: null, multi: false, all: true}, {}); return false;
+        }
+        
+                if ($(select).find(':selected')[0].id == 'action_hosts_disable_all') {
+            var action_id_value = $(select).val();
+            $(select).val(0);
+             jQuery('#action_hosts_disable_all').emigridaction({ request_type: 'GET', gridid: 'hosts_datagrid', idfield: 'ID', controllername: 'hosts', link: '/manage/dnsmasq/hosts//json?ACTION=disable&CONTROLLERNAME=hosts', errormessage: 'Action could not be performed.', beforeExecute: null, onExecute: null, onSuccess: null, onError: null, onComplete: null, multi: false, all: true}, {}); return false;
+        }
+        
+                if ($(select).find(':selected')[0].id == 'action_hosts_delete_all') {
+            var action_id_value = $(select).val();
+            $(select).val(0);
+            if (! confirm('Do you want to delete all records?')) {return false}; jQuery('#action_hosts_delete_all').emigridaction({ request_type: 'GET', gridid: 'hosts_datagrid', idfield: 'ID', controllername: 'hosts', link: '/manage/dnsmasq/hosts//json?ACTION=delete&CONTROLLERNAME=hosts', errormessage: 'Action could not be performed.', beforeExecute: null, onExecute: null, onSuccess: null, onError: null, onComplete: null, multi: false, all: true}, {}); return false;
+        }
+        
+                $(this).val(0);
+            });
+        }
+    );
+
+
+
+</script>
+
+    
+    <div style="margin-top: 1em">
+        <select id="hosts_datagrid_multiaction">
+            <option>Choose an action</option>
+            <!-- <optgroup> -->
+                <option id="action_hosts_enable_multi">Enable selected</option>
+            
+                <option id="action_hosts_disable_multi">Disable selected</option>
+            
+                <option id="action_hosts_delete_multi">Delete selected</option>
+            
+            <!-- </optgroup> -->
+            <!-- <optgroup> -->
+                <option id="action_hosts_enable_all">Enable all</option>
+            
+                <option id="action_hosts_disable_all">Disable all</option>
+            
+                <option id="action_hosts_delete_all">Delete all</option>
+            
+            <!-- </optgroup> -->
+        </select>
+    </div>
+
+    
+
+<div class="gridlegend" style="margin: 5px;">
+
+    <span style="font-weight: bold;">Legend:</span>
+        <span style="margin: 2px; line-height: 16px;">
+            <img alt="action icon" src="/toscawidgets/resources/endian.emi/static/images/action_enable_on.png">
+            <span>Enabled (click to disable)</span>
+        </span>
+        <span style="margin: 2px; line-height: 16px;">
+            <img alt="action icon" src="/toscawidgets/resources/endian.emi/static/images/action_enable_off.png">
+            <span>Disabled (click to enable)</span>
+        </span>
+        <span style="margin: 2px; line-height: 16px;">
+            <img alt="action icon" src="/toscawidgets/resources/endian.emi/static/images/action_edit.png">
+            <span>Edit</span>
+        </span>
+        <span style="margin: 2px; line-height: 16px;">
+            <img alt="action icon" src="/toscawidgets/resources/endian.emi/static/images/action_delete.png">
+            <span>Delete</span>
+        </span>
+</div>
+
+
+</div>
+
+    <div class="multi-controller-spacer"></div>
+    <div class="multi-controller-title">Hosts for system services</div>
+    
+
+<div id="controller_systemhosts">
+    <div align="center"><div id="apply_notification_systemhosts" class="important-fancy hidden">
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("#apply_notification_systemhosts").emiapply({
+                action: "apply",
+                controllername: "systemhosts"
+            });
+        });
+    </script>
+    <div class="content">
+        <table cellpadding="0" cellspacing="0" border="0">
+            <tbody><tr>
+                <td class="sign" valign="middle"><img src="/images/bubble_green_sign.png" alt="" border="0"></td>
+                <td valign="middle">
+                    <div class="text">
+                        
+                    </div>
+                    <input type="button" value="Apply">
+                    <div class="wait hidden"> </div>
+                </td>
+            </tr>
+        </tbody></table>
+    </div>
+    <div class="bottom"></div>
+</div>
+</div>
+    <div align="center"><div id="info_notification_systemhosts" class="hidden notification-fancy">
+    <script>
+    $(document).ready(function() {
+        $("#info_notification_systemhosts").click(function() {
+            $(this).hide();
+        });
+    });
+    </script>
+    <div class="content">
+        <table cellpadding="0" cellspacing="0" border="0">
+            <tbody><tr>
+                <td class="sign" valign="middle"><img src="/images/bubble_yellow_sign.png" alt="" border="0"></td>
+                <td class="text" valign="middle"></td>
+            </tr>
+        </tbody></table>
+    </div>
+    <div class="bottom"></div>
+</div></div>
+    <div align="center"><div id="error_notification_systemhosts" class="hidden error-fancy">
+    <script>
+    $(document).ready(function() {
+        $("#error_notification_systemhosts").click(function() {
+            $(this).hide();
+        });
+    });
+    </script>
+    <div class="content">
+        <table cellpadding="0" cellspacing="0" border="0">
+            <tbody><tr>
+                <td class="sign" valign="middle"><img src="/images/bubble_red_sign.png" alt="" border="0"></td>
+                <td class="text" valign="middle"></td>
+            </tr>
+        </tbody></table>
+    </div>
+    <div class="bottom"></div>
+</div></div>
+       
+<style>
+.kendotoolbar {
+    float: right;
+}
+</style>
+
+
+<div id="systemhosts_datagrid" data-role="grid" class="k-grid k-widget" style="">
+<div class="k-grid-header" style="padding-right: 0px;"><div class="k-grid-header-wrap" data-role="resizable"><table role="grid" cellspacing="0"><colgroup><col><col><col><col></colgroup><thead><tr><th role="columnheader" data-field="ip" data-title="IP address" class="k-header k-filterable" data-role="sortable" data-dir="asc" aria-sort="ascending"><a class="k-grid-filter" href="#" tabindex="-1"><span class="k-icon k-filter"></span></a><a class="k-link" href="#">IP address<span class="k-icon k-i-arrow-n"></span></a></th><th role="columnheader" data-field="hostname" data-title="Hostname" class="k-header k-filterable" data-role="sortable"><a class="k-grid-filter" href="#" tabindex="-1"><span class="k-icon k-filter"></span></a><a class="k-link" href="#">Hostname</a></th><th role="columnheader" data-field="domainname" data-title="Domain name" class="k-header k-filterable" data-role="sortable"><a class="k-grid-filter" href="#" tabindex="-1"><span class="k-icon k-filter"></span></a><a class="k-link" href="#">Domain name</a></th><th role="columnheader" data-field="remark" data-title="Remark" class="k-header k-filterable" data-role="sortable"><a class="k-grid-filter" href="#" tabindex="-1"><span class="k-icon k-filter"></span></a><a class="k-link" href="#">Remark</a></th></tr></thead></table></div></div><div class="k-grid-content"><table cellspacing="0" role="grid"><colgroup><col><col><col><col></colgroup><tbody><tr data-uid="623712aa-9c15-42f9-ae0f-8e6c6d9b4e44" role="row"><td role="gridcell">127.0.0.1</td><td role="gridcell">localhost</td><td role="gridcell">localhost</td><td role="gridcell"></td></tr><tr class="k-alt" data-uid="456a5665-1762-4a77-b270-5222bb036bcf" role="row"><td role="gridcell">192.168.19.1</td><td role="gridcell">endian</td><td role="gridcell">grand-forks.lib.nd.us</td><td role="gridcell">firewall's GREEN</td></tr><tr data-uid="208997be-2399-478e-8581-1e01525a728d" role="row"><td role="gridcell">192.168.19.1</td><td role="gridcell">spam</td><td role="gridcell">spam</td><td role="gridcell">spam auto-training host</td></tr><tr class="k-alt" data-uid="70f16270-f0d7-4f18-838c-f7e093f083ac" role="row"><td role="gridcell">192.168.19.1</td><td role="gridcell">ham</td><td role="gridcell">ham</td><td role="gridcell">ham auto-training host</td></tr></tbody></table></div><div class="k-pager-wrap k-grid-pager k-widget" data-role="pager"><a href="#" title="Go to the first page" class="k-link k-state-disabled" data-page="1" tabindex="-1"><span class="k-icon k-i-seek-w">Go to the first page</span></a><a href="#" title="Go to the previous page" class="k-link k-state-disabled" data-page="1" tabindex="-1"><span class="k-icon k-i-arrow-w">Go to the previous page</span></a><ul class="k-pager-numbers k-reset"><li><span class="k-state-selected">1</span></li></ul><a href="#" title="Go to the next page" class="k-link k-state-disabled" data-page="1" tabindex="-1"><span class="k-icon k-i-arrow-e">Go to the next page</span></a><a href="#" title="Go to the last page" class="k-link k-state-disabled" data-page="1" tabindex="-1"><span class="k-icon k-i-seek-e">Go to the last page</span></a><a href="#" class="k-pager-refresh k-link" title="Refresh"><span class="k-icon k-i-refresh">Refresh</span></a><span class="k-pager-info k-label">1 - 4 of 4 items</span></div></div>
+
+    
+<script type="text/javascript">
+
+kendo.ui.FilterMenu.prototype.filter = (function (originalFilter) {
+    return function extendedFilter(e) {    
+        var res = $.grep(e.filters, function(item) {
+            return item.value != "";
+        });
+ 
+        if (res.length == 0) {
+            this._reset();
+        } else {
+            originalFilter.apply(this, arguments);
+        }
+    }
+})(kendo.ui.FilterMenu.prototype.filter);
+
+var systemhosts_datagridDatasource = new kendo.data.DataSource({
+    serverAggregates: true,
+    serverFiltering: true,
+    serverGrouping: true,
+    serverPaging: true,
+    serverSorting: true,
+    transport: {
+        read: {
+            url: "/manage/dnsmasq/hosts/json_grid?controllername=systemhosts&",
+            type: "POST",
+            contentType: "application/json",
+            cache: false
+        }
+    },
+    sort: {
+        field: "ip",
+        dir: "asc"
+    },
+    pageSize: 20,
+    schema: {
+        type: "json",
+        errors: "error"
+        ,
+        data: "data",
+        total: "records",
+        totalPages: "total"
+    }
+});
+</script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var grid = $("#systemhosts_datagrid").kendoGrid({
+                dataSource: systemhosts_datagridDatasource,
+                autoBind: true,
+                scrollable: true,
+                resizable: true,
+
+
+
+
+
+                dataBound: function(e) {
+                    var grid = this;
+                    var dataSource = this.dataSource;
+
+                    var state = kendo.stringify({
+                        page: dataSource.page(),
+                        pageSize: dataSource.pageSize(),
+                        sort: dataSource.sort(),
+                        group: dataSource.group(),
+                        filter: dataSource.filter()
+                    });
+                    $.cookie("kendogrid_state_systemhosts_datagrid", state);
+                },
+
+                sortable: {
+                    mode: "single",
+                    allowUnsort: false
+                },
+                pageable: {
+                    refresh: true,
+                    pageSize: 20,
+                    messages: {
+                        display: "{0} - {1} of {2} items",
+                        page: "Page",
+                        of: "of {0}",
+                        itemsPerPage: "items per page",
+                        first: "Go to the first page",
+                        last: "Go to the last page",
+                        next: "Go to the next page",
+                        previous: "Go to the previous page",
+                        refresh: "Refresh"
+                    }
+                },
+                columns: [
+                    {
+                        field: "ip",
+                        sortable: true,
+                        title: "IP address",
+                        filterable: {
+                            extra: true,
+                            operators: {
+                                string: {"contains": "Contains", "doesnotcontain": "Does not contain"}
+                            },
+                            messages: {
+                              and: "and",
+                              or: "or",
+                              isTrue: "True",
+                              isFalse: "False",
+                              info:  "Filter by: ",
+                              selectValue: "Select",
+                              filter: "Apply",
+                              clear: "Clear"
+                            }
+                        },
+                        attributes: {
+                        },
+                        encoded: false // maybe we can use datasource models in the future
+                    }
+,
+                    {
+                        field: "hostname",
+                        sortable: true,
+                        title: "Hostname",
+                        filterable: {
+                            extra: true,
+                            operators: {
+                                string: {"contains": "Contains", "doesnotcontain": "Does not contain"}
+                            },
+                            messages: {
+                              and: "and",
+                              or: "or",
+                              isTrue: "True",
+                              isFalse: "False",
+                              info:  "Filter by: ",
+                              selectValue: "Select",
+                              filter: "Apply",
+                              clear: "Clear"
+                            }
+                        },
+                        attributes: {
+                        },
+                        encoded: false // maybe we can use datasource models in the future
+                    }
+,
+                    {
+                        field: "domainname",
+                        sortable: true,
+                        title: "Domain name",
+                        filterable: {
+                            extra: true,
+                            operators: {
+                                string: {"contains": "Contains", "doesnotcontain": "Does not contain"}
+                            },
+                            messages: {
+                              and: "and",
+                              or: "or",
+                              isTrue: "True",
+                              isFalse: "False",
+                              info:  "Filter by: ",
+                              selectValue: "Select",
+                              filter: "Apply",
+                              clear: "Clear"
+                            }
+                        },
+                        attributes: {
+                        },
+                        encoded: false // maybe we can use datasource models in the future
+                    }
+,
+                    {
+                        field: "remark",
+                        sortable: true,
+                        title: "Remark",
+                        filterable: {
+                            extra: true,
+                            operators: {
+                                string: {"contains": "Contains", "doesnotcontain": "Does not contain"}
+                            },
+                            messages: {
+                              and: "and",
+                              or: "or",
+                              isTrue: "True",
+                              isFalse: "False",
+                              info:  "Filter by: ",
+                              selectValue: "Select",
+                              filter: "Apply",
+                              clear: "Clear"
+                            }
+                        },
+                        attributes: {
+                        },
+                        encoded: false // maybe we can use datasource models in the future
+                    }
+                ],
+                filterable: true
+            });
+            
+
+        }
+    );
+
+
+
+</script>
+
+
+
+
+</div>
+
+
+
+
+                </div>
+                <br>
+            </div>
+            <div class="cb"></div>
+        </div>
+    
+
+
+
+</body></html>

@@ -1,0 +1,11 @@
+CONNTRACK_MAX=/proc/sys/net/netfilter/nf_conntrack_max
+CONNTRACK_BUCKETS=/proc/sys/net/netfilter/nf_conntrack_buckets
+TCP_MAX_SYN_BACKLOG=/proc/sys/net/ipv4/tcp_max_syn_backlog
+SOMAXCONN=/proc/sys/net/core/somaxconn
+IPV4_NEIGH_GC_TRESH1=/proc/sys/net/ipv4/neigh/default/gc_thresh1
+IPV4_NEIGH_GC_TRESH2=/proc/sys/net/ipv4/neigh/default/gc_thresh2
+IPV4_NEIGH_GC_TRESH3=/proc/sys/net/ipv4/neigh/default/gc_thresh3
+IPV6_NEIGH_GC_TRESH1=/proc/sys/net/ipv6/neigh/default/gc_thresh1
+IPV6_NEIGH_GC_TRESH2=/proc/sys/net/ipv6/neigh/default/gc_thresh2
+IPV6_NEIGH_GC_TRESH3=/proc/sys/net/ipv6/neigh/default/gc_thresh3
+TCP_WINDOW_SCALING=/proc/sys/net/ipv4/tcp_window_scaling

@@ -1,25 +1,10 @@
 #
 #        +-----------------------------------------------------------------------------+
-#        | RazWall Firewall                                                             |
-#        +-----------------------------------------------------------------------------+
-#        | Copyright (c) 2024 RazWall                                                  |
-#        |                                                                             |
-#        | This program is free software; you can redistribute it and/or               |
-#        | modify it under the terms of the GNU General Public License                 |
-#        | as published by the Free Software Foundation; either version 2              |
-#        | of the License, or (at your option) any later version.                      |
-#        |                                                                             |
-#        | This program is distributed in the hope that it will be useful,             |
-#        | but WITHOUT ANY WARRANTY; without even the implied warranty of              |
-#        | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               |
-#        | GNU General Public License for more details.                                |
-#        |                                                                             |
-#        | You should have received a copy of the GNU General Public License           |
-#        | along with this program; if not, write to the Free Software                 |
-#        | Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA. |
-#        | http://www.fsf.org/                                                         |
+#        | RazWall Firewall - 2024                                                     |
+#        | www.RazWall.com		                                                       |
 #        +-----------------------------------------------------------------------------+
 #
+
 
 %strings = (
   'nw_adsl_type' => _('ADSL type'),
@@ -44,7 +29,7 @@
   'nw_lan_changed_explain' => _('The IP address of LAN has been changed. After relaunch (about 20 seconds) you can reach the webinterface on the new IP address by following the link'),
   'nw_lan_changed_proxy' => _('Remember to check if IP address blocks of services are still configured as you wish. Mainly check the configuration of "Network based access control" of the HTTP Proxy.'),
   'nw_lan_changed_link' => _('Web interface on the new address'),
-  'nw_lan_descr' => _('trusted, internal network (LAN)'),
+  'nw_lan_descr' => _('trusted internal network (LAN)'),
   'nw_lan' => _('LAN'),
   'nw_hostname' => _('Hostname'),
   'nw_interface' => _('Interfaces'),
@@ -64,6 +49,8 @@
   'nw_cancel' => _('Cancel'),
   'nw_dmz_descr' => _('network segment for servers accessible from internet (DMZ)'),
   'nw_dmz' => _('DMZ'),
+  'nw_other' => _('CUSTOM'),
+  'nw_other_descr' => _('network segment with custom rules'),
   'nw_papchap' => _('PAP or CHAP'),
   'nw_pap' => _('PAP'),
   'nw_port' => _('Port'),

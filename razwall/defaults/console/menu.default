@@ -1,0 +1,6 @@
+0,Shell,/usr/local/bin/console-shell,off,on
+1,Reboot,/usr/local/bin/console-reboot,off,off
+2,Change Root Password,/usr/local/bin/console-change-password,on,off
+3,Change Admin Password,/usr/local/bin/console-change-admin-password,on,off
+4,Restore Factory Default,/usr/local/bin/console-factory-default,off,off
+5,Network Configuration Wizard,/usr/local/bin/netwizard,on,off

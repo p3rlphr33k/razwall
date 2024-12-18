@@ -1,5 +1,5 @@
 function customShowForm() {
-    $(".redtype").hide();
+    $(".wantype").hide();
     $("div.uplinktypes").hide();
     var network_type = $("select[name=NETWORK_TYPE]").val();
     var type = "";
@@ -8,11 +8,11 @@ function customShowForm() {
     var method = $("select[name=METHOD]").attr("value");
     var mac = $("input[name=MACACTIVE]").get(0).checked;
     var checkhosts = $("input[name=LINKCHECK]").get(0).checked;
-    var ips = $("input[name=RED_IPS_ACTIVE]").get(0).checked;
+    var ips = $("input[name=WAN_IPS_ACTIVE]").get(0).checked;
     
     if (network_type == "ROUTED") {
-        $(".redtype").show();
-        type = $("select[name=RED_TYPE]").val();
+        $(".wantype").show();
+        type = $("select[name=WAN_TYPE]").val();
     } else if (network_type == "BRIDGED") {
         type = "STEALTH";
     } else {
@@ -184,12 +184,12 @@ function customResetForm() {
 }
 
 function customLoadForm() {
-    var redips = $("textarea.form[name=RED_IPS]").attr("value");
+    var wanips = $("textarea.form[name=WAN_IPS]").attr("value");
     
-    if (redips == "" || typeof redips == "undefined") {
-        $("input.form[name=RED_IPS_ACTIVE]").get(0).checked = false;
+    if (wanips == "" || typeof wanips == "undefined") {
+        $("input.form[name=WAN_IPS_ACTIVE]").get(0).checked = false;
     } else {
-        $("input.form[name=RED_IPS_ACTIVE]").attr("checked", "checked");
+        $("input.form[name=WAN_IPS_ACTIVE]").attr("checked", "checked");
     }
 }
 
@@ -240,7 +240,7 @@ $(document).ready(function() {
         
         $("#row_" + value).attr("class", "selected");          // set color of current edited row to selected
     });
-    $("input[name=RED_IPS_ACTIVE]").click( function() {
+    $("input[name=WAN_IPS_ACTIVE]").click( function() {
         if ($(this).attr("checked")) {
             $("#uplinkips").show();
         } else {
@@ -271,7 +271,7 @@ $(document).ready(function() {
     $("select[name=NETWORK_TYPE]").change( function() {
         customShowForm();
     });
-    $("select[name=RED_TYPE]").change( function() {
+    $("select[name=WAN_TYPE]").change( function() {
         customShowForm();
     });
     $("select[name=PROTOCOL]").change( function() {

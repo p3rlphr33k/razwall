@@ -30,7 +30,9 @@ RazConnectWS = function(){
 			msgData = msgData.replace("::CPU::","");
 			cpu=parseFloat(msgData);
 			cleanCPU = cpu.toFixed(2);
-			cpuseries.append(new Date().getTime(), parseFloat(cleanCPU));
+			if(cpuseries) {
+				cpuseries.append(new Date().getTime(), parseFloat(cleanCPU));
+			}
 		//}
 	}
 	
@@ -40,7 +42,9 @@ RazConnectWS = function(){
 			msgData = msgData.replace("::MEM::","");
 			mem=parseFloat(msgData);
 			cleanMEM = mem.toFixed(2);
-			memseries.append(new Date().getTime(), parseFloat(cleanMEM));
+			if(memseries) {
+				memseries.append(new Date().getTime(), parseFloat(cleanMEM));
+			}
 		//}
 	}
 	

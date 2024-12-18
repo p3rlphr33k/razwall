@@ -1,23 +1,7 @@
 #
 #        +-----------------------------------------------------------------------------+
-#        | RazWall Firewall                                                             |
-#        +-----------------------------------------------------------------------------+
-#        | Copyright (c) 2024 RazWall                                                  |
-#        |                                                                             |
-#        | This program is free software; you can redistribute it and/or               |
-#        | modify it under the terms of the GNU General Public License                 |
-#        | as published by the Free Software Foundation; either version 2              |
-#        | of the License, or (at your option) any later version.                      |
-#        |                                                                             |
-#        | This program is distributed in the hope that it will be useful,             |
-#        | but WITHOUT ANY WARRANTY; without even the implied warranty of              |
-#        | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               |
-#        | GNU General Public License for more details.                                |
-#        |                                                                             |
-#        | You should have received a copy of the GNU General Public License           |
-#        | along with this program; if not, write to the Free Software                 |
-#        | Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA. |
-#        | http://www.fsf.org/                                                         |
+#        | RazWall Firewall - 2024                                                     |
+#        | www.RazWall.com		                                                       |
 #        +-----------------------------------------------------------------------------+
 #
 
@@ -25,7 +9,7 @@ use CGI();
 use CGI::Cookie;
 use Socket;
 use Time::Local;
-use endian_locale;
+use raz_locale;
 use Net::IPv4Addr qw (:all);
 use HTML::Entities;
 use JSON::XS;
@@ -287,7 +271,7 @@ $CLEAR_PNG = '/images/clear.gif';
 
 $PERSISTENT_DIR = '/usr/lib/efw/';
 $USER_DIR = '/razwall/config/';
-$STATE_DIR = '/var/lib/efw/';
+$STATE_DIR = '/razwall/defaults/';
 $PROVISIONING_DIR = '/var/emc/';
 $VENDOR_DIR = 'vendor';
 $DEFAULT_DIR = 'default';
@@ -562,8 +546,7 @@ sub calcURI() {
     @URI=split ('\?',  $ENV{'REQUEST_URI'} );
 }
 
-sub showhttpheaders
-{
+sub showhttpheaders {
     calcURI();
     checkForLogout();
     genFlavourMenus();
@@ -981,6 +964,7 @@ sub openpage {
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <title>$title</title>
         <link rel="shortcut icon" href="/favicon.ico" />
+		<link rel="stylesheet" type="text/css" href="/css/SocketStatus.css">
         <style type="text/css">\@import url(/include/style.css);</style>
         <style type="text/css">\@import url(/include/menu.css);</style>
         <style type="text/css">\@import url(/include/content.css);</style>
@@ -999,6 +983,7 @@ printf <<END
         <script language="javascript" type="text/javascript" src="/include/jquery.selectboxes.js"></script>
         <script language="javascript" type="text/javascript" src="/include/folding.js"></script>
         <script language="javascript" type="text/javascript" src="/include/form.js"></script>
+		<script type="text/javascript" src="/js/websocket.js"></script>  
         <!-- Include Service Notification API -->
         <script language="javascript" type="text/javascript" src="/include/servicesubscriber.js"></script>
 		<!--
@@ -1058,6 +1043,7 @@ END
         <script type="text/javascript" language="JavaScript" src="/include/updates.js"></script>
     </head>
     <body class="language-$language">
+
 END
 ;
     } else {
@@ -1069,7 +1055,14 @@ END
     }
     printf <<END
 <!-- EFW HEADER -->
-
+	<span id="dummy" style="display:none;height:0px;width:0px;">
+	<audio id="incoming" src="/sounds/sound_1.mp3" preload="true" autobuffer=""></audio>
+	<audio id="outgoing" src="/sounds/sound_2.mp3" preload="true" autobuffer=""></audio>
+	<audio id="login" src="/sounds/sound_3.mp3" preload="true" autobuffer=""></audio>
+	<audio id="logout" src="/sounds/sound_4.mp3" preload="true" autobuffer=""></audio>
+	<audio id="razbot" src="/sounds/sound_5.mp3" preload="true" autobuffer=""></audio>
+	<audio id="error" src="/sounds/sound_6.mp3" preload="true" autobuffer=""></audio>
+	</span> 
 <div id="background">
     <div id="background-overlay"></div>
 </div>
@@ -1078,33 +1071,33 @@ END
 END
 ;
 
-$image_custom = </razwall/web/html/images/product_*.custom.png>;
-$image_vendor = </razwall/web/html/images/product_*.vendor.png>;
+#$image_custom = </razwall/web/html/images/product_*.custom.png>;
+#$image_vendor = </razwall/web/html/images/product_*.vendor.png>;
 $image_orig = </razwall/web/html/images/product_*.png>;
 
-$logo_custom = </razwall/web/html/images/logo_*.custom.png>;
-$logo_vendor = </razwall/web/html/images/logo_*.vendor.png>;
+#$logo_custom = </razwall/web/html/images/logo_*.custom.png>;
+#$logo_vendor = </razwall/web/html/images/logo_*.vendor.png>;
 $logo_orig = </razwall/web/html/images/logo_*.png>;
     
-if ( $logo_custom ) {
-    $logo_path = $logo_custom;
-} elsif ( $logo_vendor ) {
-    $logo_path = $logo_vendor;
-} else {
+#if ( $logo_custom ) {
+#    $logo_path = $logo_custom;
+#} elsif ( $logo_vendor ) {
+#    $logo_path = $logo_vendor;
+#} else {
     $logo_path = $logo_orig;
-}
+#}
 if ( $logo_path ) {
     $filename=substr($logo_path,24);
     print "     <img id=\"logo\" src=\"/images/$filename\" alt=\"Logo\" />";
 };
 
-if ( $image_custom ) {
-    $image_path	= $image_custom;
-} elsif	( $image_vendor ) {
-    $image_path	= $image_vendor;
-} elsif	( $image_orig )	{
+#if ( $image_custom ) {
+#    $image_path	= $image_custom;
+#} elsif	( $image_vendor ) {
+#    $image_path	= $image_vendor;
+#} elsif	( $image_orig )	{
     $image_path	= $image_orig;
-}
+#}
 
 if ( $image_path ) {
     $filename=substr($image_path,24);
@@ -1120,6 +1113,9 @@ printf <<END
     <li id="help-icon" onclick="javascript:window.open('$helpuri','_blank','height=700,width=1000,location=no,menubar=no,scrollbars=yes');">
         <a href="#" onclick="return false;">%s</a>
     </li>
+	<li>
+		<div id="socketStatus" class="socketGreen" onclick="RazConnectWS(); return false;"></div>
+	</li>
 </ul>
 <script language="javascript" type="text/javascript">
 \$(document).ready(function() {
@@ -1213,6 +1209,10 @@ print <<END
             <div class="cb"></div>
           </div><!-- page_content -->
         </div><!-- content -->
+	<script>
+	var RazIP = '192.168.0.15';
+	RazConnectWS();
+	</script>
   </body>
 </html>
 END
@@ -1233,8 +1233,7 @@ sub closebigbox {
     return;
 }
 
-sub openbox
-{
+sub openbox {
     $width = $_[0];
     $align = $_[1];
     $caption = $_[2];
@@ -1270,8 +1269,7 @@ EOF
     ;
 }
 
-sub closebox
-{
+sub closebox {
     printf <<EOF
             </td>
         </tr>
@@ -1282,8 +1280,7 @@ EOF
     ;
 }
 
-sub openeditorbox($$$$@)
-{
+sub openeditorbox($$$$@) {
     my $linktext = shift;
     my $title = shift;
     my $show = shift;
@@ -1344,8 +1341,7 @@ EOF
     ;
 }
 
-sub closeeditorbox
-{
+sub closeeditorbox {
     my $submitvalue = shift;
     my $cancelvalue = shift;
     my $submitname = shift;
@@ -1372,8 +1368,7 @@ EOF
     ;
 }
 
-sub log
-{
+sub log {
 	my $logmessage = $_[0];
 	$logmessage =~ /([\w\W]*)/;
 	$logmessage = $1;
@@ -1384,8 +1379,7 @@ sub log
 	}
 }
 
-sub age
-{
+sub age {
 	my ($dev, $ino, $mode, $nlink, $uid, $gid, $rdev, $size,
 	        $atime, $mtime, $ctime, $blksize, $blocks) = stat $_[0];
 	my $now = time;
@@ -1401,8 +1395,7 @@ sub age
  	return "${days}d ${hours}h ${mins}m ${secs}s";
 }
 
-sub validip
-{
+sub validip {
 	my $ip = $_[0];
 
 	if (!($ip =~ /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/)) {
@@ -1421,8 +1414,7 @@ sub validip
 	}
 }
 
-sub validmask
-{
+sub validmask {
 	my $mask = $_[0];
 	# secord part an ip?
 	if (&validip($mask)) {
@@ -1437,8 +1429,7 @@ sub validmask
 	return 0;
 }
 
-sub validipormask
-{
+sub validipormask {
 	my $ipormask = $_[0];
 
 	# see if it is a IP only.
@@ -1454,8 +1445,7 @@ sub validipormask
 	return &validmask($mask);
 }
 
-sub validipandmask
-{
+sub validipandmask {
 	my $ipandmask = $_[0];
 
 	# split it into number and mask.
@@ -1469,8 +1459,7 @@ sub validipandmask
 	return &validmask($mask);
 }
 
-sub validport
-{
+sub validport {
 	$_ = $_[0];
 
 	if (!/^\d+$/) {
@@ -1516,8 +1505,7 @@ sub validmac($) {
     return 1;
 }
 
-sub validhostname
-{
+sub validhostname {
 	# Checks a hostname against RFC1035
         my $hostname = $_[0];
 
@@ -1537,8 +1525,7 @@ sub validhostname
 	return 1;
 }
 
-sub validdomainname
-{
+sub validdomainname {
 	# Checks a domain name against RFC1035
         my $domainname = $_[0];
 	my @parts = split (/\./, $domainname);	# Split hostname at the '.'
@@ -1561,8 +1548,7 @@ sub validdomainname
 	return 1;
 }
 
-sub validfqdn
-{
+sub validfqdn {
 	# Checks a fully qualified domain name against RFC1035
         my $fqdn = $_[0];
 	my @parts = split (/\./, $fqdn);	# Split hostname at the '.'
@@ -1587,8 +1573,7 @@ sub validfqdn
 	return 1;
 }
 
-sub validportrange # used to check a port range 
-{
+sub validportrange { # used to check a port range  
 	my $port = $_[0]; # port values
 	$port =~ tr/-/:/; # replace all - with colons just in case someone used -
 	my $srcdst = $_[1]; # is it a source or destination port
@@ -1632,8 +1617,7 @@ sub validportrange # used to check a port range
 #       Subnet can be an IP of the subnet: 10.0.0.0 or 10.0.0.1
 #       Everything in dottted notation
 # Return: TRUE/FALSE
-sub IpInSubnet
-{
+sub IpInSubnet {
     $ip = unpack('N', inet_aton(shift));
     $start = unpack('N', inet_aton(shift));
     $mask  = unpack('N', inet_aton(shift));
@@ -1699,8 +1683,7 @@ sub findhasharraykey {
     }
 }
 
-sub cleanhtml
-{
+sub cleanhtml {
 	my $outstring =$_[0];
 	$outstring =~ tr/,/ / if not defined $_[1] or $_[1] ne 'y';
 	$outstring =~ s/&/&amp;/g;
@@ -1710,8 +1693,7 @@ sub cleanhtml
 	$outstring =~ s/>/&gt;/g;
 	return $outstring;
 }
-sub connectionstatus
-{
+sub connectionstatus {
         my $status;
         opendir UPLINKS, "/razwall/config/uplinks" or die "Cannot read uplinks: $!";
                 foreach my $uplink (sort grep !/^\./, readdir UPLINKS) {
@@ -1853,8 +1835,7 @@ sub CheckSortOrder {
 
 }
 
-sub PrintActualLeases
-{
+sub PrintActualLeases {
     if (! -f "/var/lib/dhcp/dhcpd.leases") {
 	return;
     }
@@ -2720,7 +2701,7 @@ sub readplainhash($) {
     # 3) /usr/lib/efw/XXX/vendor/settings
     # 4) /var/emc/XXX/vendor/settings
     # 5) /razwall/config/XXX/vendor/settings
-    # 6) /var/lib/efw/XXX/default/settings
+    # 6) /razwall/defaults/XXX/default/settings
     #
     # - every default and vendor case searches also for ../ and ../../
     #
@@ -2795,10 +2776,10 @@ sub readhash($$) {
     # 2) /razwall/config/XXX/default/settings
     # 3) /usr/lib/efw/XXX/vendor/settings
     # 4) /razwall/config/XXX/vendor/settings
-    # 5) /var/lib/efw/XXX/default/settings
+    # 5) /razwall/defaults/XXX/default/settings
     # 6) /razwall/config/XXX/settings
     # 7) /razwall/config/XXX/settings
-    # 8) /var/lib/efw/XXX/settings
+    # 8) /razwall/defaults/XXX/settings
     #
     # - every default and vendor case searches also for ../ and ../../
     #
@@ -2881,10 +2862,10 @@ sub searchplainfile($) {
     # basic cases:
     #
     # 1) /razwall/config/XXX/settings
-    # 2) /var/lib/efw/XXX/settings
+    # 2) /razwall/defaults/XXX/settings
     # 3) /usr/lib/efw/XXX/default/settings
     # 4) /razwall/config/XXX/default/settings
-    # 5) /var/lib/efw/XXX/default/settings
+    # 5) /razwall/defaults/XXX/default/settings
     #
     # - every default case searches also for ../ and ../../
     #

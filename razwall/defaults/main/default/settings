@@ -1,0 +1,8 @@
+LANGUAGE=en
+WINDOWWITHHOSTNAME=on
+KEYMAP=/usr/share/kbd/keymaps/i386/qwerty/us.map.gz
+TIMEZONE=Europe/Rome
+MAIN_SMARTHOST=
+MAIN_ADMINMAIL=
+MAIN_MAILFROM=
+COUNTRY=Italy

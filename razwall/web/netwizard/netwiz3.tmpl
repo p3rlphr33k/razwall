@@ -105,7 +105,7 @@
   <tr>
     <td colspan="5">&nbsp;</td>
   </tr>
-
+<!--
   <TMPL_IF NW_VAL_HAVE_DMZ>
     <tr>
       <td colspan="5"><b><font color="orange"><TMPL_VAR NAME=nw_dmz></font></b> <font color="#666666">(<TMPL_VAR NAME=nw_dmz_descr>)</font>:</td>
@@ -191,7 +191,9 @@
     <td colspan="5">&nbsp;</td>
   </tr>
   </TMPL_IF>
+-->
 
+<!--
   <TMPL_IF NAME=NW_VAL_HAVE_LAN2>
     <tr>
       <td colspan="5"><b><font color="blue"><TMPL_VAR NAME=nw_lan2></font></b> <font color="#666666">(<TMPL_VAR NAME=nw_lan2_descr>)</font>:</td>
@@ -277,6 +279,17 @@
     <td colspan="5">&nbsp;</td>
   </tr>
   </TMPL_IF>
+-->
+
+<!--NEW LOOP-->
+
+  <TMPL_LOOP NAME=NW_ZONES>
+
+	<TMPL_VAR NAME=DYN_ZONE_CODE>
+
+  </TMPL_LOOP>
+
+ <!--END NEW LOOP-->
 
     <tr>
       <td><TMPL_VAR NAME=nw_hostname>:</td>

@@ -4,7 +4,8 @@
   <font color="red"><TMPL_VAR NAME=NW_VAL_error_message></font>
 </TMPL_IF>
 <br>
-<table border="0">
+
+<!--table border="0">
   <tr>
     <td><b><font color="orange"><TMPL_VAR NAME=nw_dmz></font></b>:</td>
     <td>
@@ -17,20 +18,69 @@
       <font color="#666666"><TMPL_VAR NAME=nw_lan2_descr></font>
     </td>
   </tr>
+</table-->
+
+<table border="0">
+  <tr>
+    <td><b><font color="green"><TMPL_VAR NAME=nw_lan></font></b>:</td>
+    <td>
+      <font color="#666666"><TMPL_VAR NAME=nw_lan_descr></font>
+    </td>
+  </tr>
+  <tr>
+    <td><b><font color="orange"><TMPL_VAR NAME=nw_dmz></font></b>:</td>
+    <td>
+      <font color="#666666"><TMPL_VAR NAME=nw_dmz_descr></font>
+    </td>
+  </tr>
+  <tr>
+    <td><b><font color="blue"><TMPL_VAR NAME=nw_lan2></font></b>:</td>
+    <td>
+      <font color="#666666"><TMPL_VAR NAME=nw_lan2_descr></font>
+    </td>
+  </tr>
+  <tr>
+    <td><b><font color="purple"><TMPL_VAR NAME=nw_other></font></b>:</td>
+    <td>
+      <font color="#666666"><TMPL_VAR NAME=nw_other_descr></font>
+    </td>
+  </tr>
 </table>
 
 <form action="<TMPL_VAR NAME=NW_VAL_self>" method="post">
   <input type="hidden" name="session_id" value="<TMPL_VAR NAME=NW_VAL_session_id>">
   <input type="hidden" name="step" value="<TMPL_VAR NAME=NW_VAL_step>">
-
+  <input type="hidden" name="ifaceCount" value="<TMPL_VAR NAME=NW_VAL_if_count>">
+  <hr>
   <table border="0">
-  <TMPL_LOOP NAME=NW_VAL_ZONES_LOOP>
-    <tr>
-      <td>
-        <input type="radio" name="ZONES" value="<TMPL_VAR NAME=ZONES_LOOP_NAME>" <TMPL_VAR NAME=ZONES_LOOP_SELECTED>><TMPL_VAR NAME=ZONES_LOOP_CAPTION></input>
-      </td>
-    </tr>
-  </TMPL_LOOP>
+
+<script language="javascript">
+// autoInc = Auto increment counter for dynamic zone creation inputs
+var ethCount = <TMPL_VAR NAME=NW_VAL_if_count>;	// Network interface count
+var avaCount = 0;	// Interface availability counter (starting at zero)
+var minUsed = 1;	// Minimum used interfaces to begin with starts at 1 (LAN)
+
+if(ethCount > minUsed) {	// if the Interface count is greater than minimum setup requirement
+	avaCount = ethCount-minUsed;	//	Calculate the avaialable interfaces (interfaces minus minimum allocated)
+}
+
+document.writeln('<tr><td>Available Interface for zone assignment: </td><td>' + avaCount + '</td></tr></table><hr>');	// print availalbe interfaces
+
+document.writeln('<table border="0" width="400px">');
+if(avaCount > 0) { // if the avaialble is greater than zero, print inputs to add more zones!
+	for(var autoInc=0; autoInc < avaCount; autoInc++) {
+		document.writeln('<tr><td><input type="checkbox" name="nw_zone_' + autoInc + '_enable"></td>');	// print new zone checkbox	
+		document.writeln('<td>Add zone ' + autoInc + ': </td><td><input type="text" name="nw_zone_' + autoInc + '_name" placeholder="zone ' + autoInc + ' name"></td>');	// print new zone input	
+		document.writeln('<td>Zone ' + autoInc + ' type: </td><td><select name="nw_zone_' + autoInc + '_type">');
+		document.writeln('<option><TMPL_VAR NAME=nw_lan></option>');
+		document.writeln('<option><TMPL_VAR NAME=nw_dmz></option>');
+		document.writeln('<option><TMPL_VAR NAME=nw_lan2></option>');
+		document.writeln('<option><TMPL_VAR NAME=nw_other></option>');
+		document.writeln('</select></td></tr>');	// print new zone input	
+	}
+}
+</script>
+   
   </table>
   <br>
   <br>

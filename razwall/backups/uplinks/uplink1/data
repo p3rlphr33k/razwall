@@ -1,0 +1,11 @@
+red_type=DHCP
+interface=eth2
+gateway=10.236.4.1
+broadcast_address=10.236.4.255
+network_number=10.236.4.0
+cidr=24
+ip_address=10.236.4.253
+ips=10.236.4.253/24
+domain_name_servers=208.67.222.222 208.67.220.220
+interface_mac=00:50:56:85:29:2B
+interface_mtu=1500

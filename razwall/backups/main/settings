@@ -1,0 +1,4 @@
+MAIN_ADMINMAIL=bryan.king@gflibrary.com
+MAIN_SMARTHOST=192.168.19.19
+MAIN_MAILFROM=administrator@gflibrary.com
+COMMUNITY_USERNAME=bryan.donarski@gflibrary.com
