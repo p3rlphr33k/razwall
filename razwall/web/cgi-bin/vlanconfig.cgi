@@ -1,15 +1,9 @@
 #!/usr/bin/perl
-
 #
 #        +-----------------------------------------------------------------------------+
-#        | Endian Firewall                                                             |
+#        | RazWall Firewall                                                             |
 #        +-----------------------------------------------------------------------------+
-#        | Copyright (c) 2005-2006 Endian                                              |
-#        |         Endian GmbH/Srl                                                     |
-#        |         Bergweg 41 Via Monte                                                |
-#        |         39057 Eppan/Appiano                                                 |
-#        |         ITALIEN/ITALIA                                                      |
-#        |         info@endian.it                                                      |
+#        | Copyright (c) 2024 RazWall                                                  |
 #        |                                                                             |
 #        | This program is free software; you can redistribute it and/or               |
 #        | modify it under the terms of the GNU General Public License                 |
@@ -27,14 +21,13 @@
 #        | http://www.fsf.org/                                                         |
 #        +-----------------------------------------------------------------------------+
 #
-#
 
  
 require 'header.pl';
-require 'ethconfig.pl';
+require 'razinc.pl';
 
 my $reload_from_wizard = '/usr/local/bin/restart_from_wizard';
-my $ethernet_dir = '/var/efw/ethernet/';
+my $ethernet_dir = '/razwall/config/ethernet/';
 my $needreload = "${swroot}/outgoing/vlanneedreload";
 
 my (%par, %netsettings);
@@ -97,7 +90,7 @@ END
 , _('Do you really want to remove VLAN %s?', $vid)
 , _('Remove'),
 _('Remove'),
-($zone eq 'RED') ? "display: none" : ""
+($zone eq 'WAN') ? "display: none" : ""
 ;
 	$i++;
     }
@@ -150,7 +143,7 @@ END
 
     my $allzones = validzones();
     foreach my $zone (sort @$allzones) {
-	next if ($zone eq 'RED');
+	next if ($zone eq 'WAN');
         print "<option value='$zone'>". $strings_zone{$zone} ."</option>";
     }
 

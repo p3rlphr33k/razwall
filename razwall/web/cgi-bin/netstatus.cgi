@@ -1,16 +1,29 @@
 #!/usr/bin/perl
 #
-# SmoothWall CGIs
-#
-# This code is distributed under the terms of the GPL
-#
-# (c) The SmoothWall Team
-#
-# $Id: netstatus.cgi,v 1.9.2.11 2004/11/12 17:17:13 gespinasse Exp $
+#        +-----------------------------------------------------------------------------+
+#        | RazWall Firewall                                                             |
+#        +-----------------------------------------------------------------------------+
+#        | Copyright (c) 2024 RazWall                                                  |
+#        |                                                                             |
+#        | This program is free software; you can redistribute it and/or               |
+#        | modify it under the terms of the GNU General Public License                 |
+#        | as published by the Free Software Foundation; either version 2              |
+#        | of the License, or (at your option) any later version.                      |
+#        |                                                                             |
+#        | This program is distributed in the hope that it will be useful,             |
+#        | but WITHOUT ANY WARRANTY; without even the implied warranty of              |
+#        | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               |
+#        | GNU General Public License for more details.                                |
+#        |                                                                             |
+#        | You should have received a copy of the GNU General Public License           |
+#        | along with this program; if not, write to the Free Software                 |
+#        | Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA. |
+#        | http://www.fsf.org/                                                         |
+#        +-----------------------------------------------------------------------------+
 #
 
 require 'header.pl';
-require '/razwall/web/cgi-bin/ethconfig.pl';
+require 'razinc.pl';
 
 use POSIX qw(strftime);
 
@@ -61,11 +74,11 @@ my (%dhcpsettings, %netsettings, %openvpnsettings, %dhcpinfo, %pppsettings, $out
 &openbigbox($errormessage, $warnmessage, $notemessage);
 
 
-my ($ref, $ref1, $ref2) = get_red_ifaces_by_type('DHCP');
+my ($ref, $ref1, $ref2) = get_wan_ifaces_by_type('DHCP');
 my @dhcpifaces = @$ref;
 my @dhcplinks = @$ref1;
 
-($ref, $ref1, $ref2) = get_red_ifaces_by_type('ADSL');
+($ref, $ref1, $ref2) = get_wan_ifaces_by_type('ADSL');
 my @adslifaces = @$ref;
 my @adsllinks = @$ref;
 my @adslconfigs = @$ref;
@@ -81,9 +94,9 @@ _('Interfaces')
 ;
 
 if ($#dhcpifaces >=0) {
-    print "<a href='#reddhcp'>RED  "._('DHCP configuration')."</a> |\n";
+    print "<a href='#wandhcp'>WAN  "._('DHCP configuration')."</a> |\n";
 }
-if ($dhcpsettings{'ENABLE_GREEN'} eq 'on' || $dhcpsettings{'ENABLE_BLUE'} eq 'on') {
+if ($dhcpsettings{'ENABLE_LAN'} eq 'on' || $dhcpsettings{'ENABLE_LAN2'} eq 'on') {
     print "<a href='#leases'>"._('Current dynamic leases')."</a> |\n";
 }
 if ($#adslconfigs >=0) {
@@ -109,7 +122,7 @@ print "</a>";
 $output = `/sbin/ip addr show`;
 $output = &cleanhtml($output,"y");
 
-@itfs = ('ORANGE','BLUE','GREEN');
+@itfs = ('DMZ','LAN2','LAN');
 foreach my $itf (@itfs) {
     my $lc_itf=lc($itf);
     my $bridge = $netsettings{"${itf}_DEV"};
@@ -158,11 +171,11 @@ foreach my $dev (@purpledev) {
     $output =~ s/$dev(\d*)/<b style="color: $colour${lc_itf};">${dev}\1<\/b>/g;
 }
 
-my $redifs = get_red_ifaces();
-foreach my $line (@$redifs) {
+my $wanifs = get_wan_ifaces();
+foreach my $line (@$wanifs) {
     chomp($line);
     next if $line =~ /^$/;
-    my $lc_itf='red';
+    my $lc_itf='wan';
     $output =~ s/$line(:\d+)?/<b style="color: $colour${lc_itf};">${line}\1<\/b>/g;
 }
 
@@ -172,14 +185,14 @@ print "<pre>$output</pre>\n";
 
 
 if ($#dhcpifaces >=0) {
-    print "<a name='reddhcp'></a>\n";
+    print "<a name='wandhcp'></a>\n";
 
     my $i=0;
     foreach my $dev (@dhcpifaces) {
 	my $uplink = $dhcplinks[$i];
 	$i++;
 	my %dhcpinfo = ();
-	&openbox('100%', 'left', "RED "._('DHCP configuration')." ($uplink)");
+	&openbox('100%', 'left', "WAN "._('DHCP configuration')." ($uplink)");
 	print "</a>";
 	if (-s "/var/lib/dhclient/dhclient.$dev.info") {
 	    &readhash("/var/lib/dhclient/dhclient.$dev.info", \%dhcpinfo);
@@ -212,7 +225,7 @@ _('Default lease time')
     }
 }
 
-if ($dhcpsettings{'ENABLE_GREEN'} eq 'on' || $dhcpsettings{'ENABLE_BLUE'} eq 'on') {
+if ($dhcpsettings{'ENABLE_LAN'} eq 'on' || $dhcpsettings{'ENABLE_LAN2'} eq 'on') {
 
 	print "<a name='leases'></a>";
 	&CheckSortOrder;

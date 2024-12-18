@@ -1,15 +1,9 @@
 #!/usr/bin/perl
-
 #
 #        +-----------------------------------------------------------------------------+
-#        | Endian Firewall                                                             |
+#        | RazWall Firewall                                                             |
 #        +-----------------------------------------------------------------------------+
-#        | Copyright (c) 2005-2006 Endian                                              |
-#        |         Endian GmbH/Srl                                                     |
-#        |         Bergweg 41 Via Monte                                                |
-#        |         39057 Eppan/Appiano                                                 |
-#        |         ITALIEN/ITALIA                                                      |
-#        |         info@endian.it                                                      |
+#        | Copyright (c) 2024 RazWall                                                  |
 #        |                                                                             |
 #        | This program is free software; you can redistribute it and/or               |
 #        | modify it under the terms of the GNU General Public License                 |
@@ -29,7 +23,7 @@
 #
 
 require 'header.pl';
-require 'ethconfig.pl';
+require 'razinc.pl';
 my $l2tp = 0;
 eval {
     require l2tplib;
@@ -73,9 +67,9 @@ sub have_net($) {
 
     # AAAAAAARGH! dumb fools
     my %net_config = (
-        'GREEN' => [1,1,1,1,1,1,1,1,1,1],
-        'ORANGE' => [0,1,0,3,0,5,0,7,0,0],
-        'BLUE' => [0,0,0,0,4,5,6,7,0,0]
+        'LAN' => [1,1,1,1,1,1,1,1,1,1],
+        'DMZ' => [0,1,0,3,0,5,0,7,0,0],
+        'LAN2' => [0,0,0,0,4,5,6,7,0,0]
     );
 
     if ($net_config{$net}[$ether{'CONFIG_TYPE'}] > 0) {
@@ -85,7 +79,7 @@ sub have_net($) {
 }
 
 sub configure_nets() {
-    my @totest = ('GREEN', 'BLUE', 'ORANGE');
+    my @totest = ('LAN', 'LAN2', 'DMZ');
 
     foreach (@totest) {
         my $thisnet = $_;
@@ -368,7 +362,7 @@ sub check_values($$$$$$$$$$) {
     foreach my $item (split(/&/, $snat_to)) {
         next if ($item =~ /^UPLINK:/);
         next if ($item =~ /^VPN:/);
-        next if ($item =~ /^GREEN|ORANGE|BLUE/);
+        next if ($item =~ /^LAN|DMZ|LAN2/);
         next if ($item =~ /^L2TPDEVICE:/);
         next if ($item =~ /^$/);
         if (!is_ipaddress($item)) {
@@ -540,7 +534,7 @@ sub generate_addressing($$$$) {
         }
         elsif ($item =~ /^UPLINK:(.*)$/) {
             my $ul = get_uplink_label($1);
-            push(@addr_values, "<font color='". $zonecolors{'RED'} ."'>"._('Uplink')." ".$ul->{'description'}."</font>");
+            push(@addr_values, "<font color='". $zonecolors{'WAN'} ."'>"._('Uplink')." ".$ul->{'description'}."</font>");
         }
         elsif ($item =~ /^L2TPDEVICE:(.*)$/) {
             my $user = $1;
@@ -1299,7 +1293,7 @@ EOF
                                     <option value='$key' $selected{'dst_dev'}{$key}>%s $desc [%s]</option>
 EOF
 , _('Uplink')
-, _('RED')
+, _('WAN')
 ;
     }
     printf <<EOF
@@ -1465,7 +1459,7 @@ EOF
         eval {
             my %ulhash;
             &readhash("${swroot}/uplinks/$name/settings", \%ul);
-            foreach my $ipcidr (split(/,/, $ul{'RED_IPS'})) {
+            foreach my $ipcidr (split(/,/, $ul{'WAN_IPS'})) {
                 my ($ip) = split(/\//, $ipcidr);
                 next if ($ip =~ /^$/);
                 printf <<EOF
@@ -1706,7 +1700,7 @@ my $extraheader = '<script language="JavaScript" src="/include/firewall_type.js"
 
 init_ethconfig();
 configure_nets();
-($devices, $deviceshash) = list_devices_description(3, 'GREEN|ORANGE|BLUE', 0);
+($devices, $deviceshash) = list_devices_description(3, 'LAN|DMZ|LAN2', 0);
 save();
 
 if ($reload) {

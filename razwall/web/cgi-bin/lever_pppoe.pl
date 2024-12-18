@@ -1,13 +1,8 @@
 #
 #        +-----------------------------------------------------------------------------+
-#        | Endian Firewall                                                             |
+#        | RazWall Firewall                                                             |
 #        +-----------------------------------------------------------------------------+
-#        | Copyright (c) 2005-2006 Endian                                              |
-#        |         Endian GmbH/Srl                                                     |
-#        |         Bergweg 41 Via Monte                                                |
-#        |         39057 Eppan/Appiano                                                 |
-#        |         ITALIEN/ITALIA                                                      |
-#        |         info@endian.it                                                      |
+#        | Copyright (c) 2024 RazWall                                                  |
 #        |                                                                             |
 #        | This program is free software; you can redistribute it and/or               |
 #        | modify it under the terms of the GNU General Public License                 |
@@ -26,9 +21,9 @@
 #        +-----------------------------------------------------------------------------+
 #
 
-require '/razwall/web/cgi-bin/ifacetools.pl';
-require '/razwall/web/cgi-bin/modemtools.pl';
-require '/razwall/web/cgi-bin/redtools.pl';
+require 'modemtools.pl';
+require 'razinc.pl';
+require 'wantools.pl';
 
 my %substeps = ();
 my $session = 0;
@@ -49,7 +44,7 @@ my @pppoe_keys=(
 
 		'MTU',
 
-        'RED_IPS',
+        'WAN_IPS',
 
 		'DNS1',
 		'DNS2',
@@ -64,8 +59,8 @@ my @pppoe_keys=(
 
 		'BACKUPPROFILE',
 		'ENABLED',
-		'RED_DEV',
-		'RED_TYPE',
+		'WAN_DEV',
+		'WAN_TYPE',
 
 		'CHECKHOSTS',
 		'AUTOSTART',
@@ -106,9 +101,9 @@ sub lever_prepare_values() {
         else {
             $session->{'DNS_N'} = '1';
         }
-	$tpl_ph->{'IFACE_RED_LOOP'} = create_ifaces_list('RED');
-	$tpl_ph->{'DISPLAY_RED_ADDITIONAL'} = $session->{'RED_IPS'};
-	$tpl_ph->{'DISPLAY_RED_ADDITIONAL'} =~ s/,/\n/g;
+	$tpl_ph->{'IFACE_WAN_LOOP'} = create_ifaces_list('WAN');
+	$tpl_ph->{'DISPLAY_WAN_ADDITIONAL'} = $session->{'WAN_IPS'};
+	$tpl_ph->{'DISPLAY_WAN_ADDITIONAL'} =~ s/,/\n/g;
 	return;
     }
 
@@ -127,15 +122,15 @@ sub lever_savedata() {
 
     if ($substep eq '1') {
 
-	my $ifacelist = ifnum2device($par->{'RED_DEVICES'});
-	my $reterr = check_iface_free($ifacelist, 'RED');
+	my $ifacelist = ifnum2device($par->{'WAN_DEVICES'});
+	my $reterr = check_iface_free($ifacelist, 'WAN');
 	if ($reterr) {
 	    $ret .= $reterr;
 	} else {
-	    $session->{'RED_DEVICES'} = $ifacelist;
+	    $session->{'WAN_DEVICES'} = $ifacelist;
 	}
         if ($ifacelist =~ /^$/) {
-            my $zone = _('RED');
+            my $zone = _('WAN');
 	    $err .= _('Please select at least one interface for zone %s!', $zone).'<BR><BR>';
         }
 
@@ -149,12 +144,12 @@ sub lever_savedata() {
 	} else {
 	    $session->{'CONCENTRATORNAME'} = '__EMPTY__';
 	}
-	my ($ok_ips, $nok_ips) = createIPS("", $par->{'DISPLAY_RED_ADDITIONAL'});
+	my ($ok_ips, $nok_ips) = createIPS("", $par->{'DISPLAY_WAN_ADDITIONAL'});
 	if ($nok_ips eq '') {
-	    $session->{'RED_IPS'} = $ok_ips;
+	    $session->{'WAN_IPS'} = $ok_ips;
 	} else {
 	    foreach my $nokip (split(/,/, $nok_ips)) {
-		$ret .= _('The RED IP address or network mask "%s" is not correct.', $nokip).'<BR>';
+		$ret .= _('The WAN IP address or network mask "%s" is not correct.', $nokip).'<BR>';
 	    }
 	}
 	if ($par->{'USERNAME'} eq '') {
@@ -178,7 +173,7 @@ sub lever_savedata() {
   	    $session->{'MTU'} = '__EMPTY__';
         }
 
-	set_red_default("");
+	set_wan_default("");
 
 	return $ret;
     }
@@ -200,10 +195,10 @@ sub alter_ppp_settings($) {
 
 
 sub lever_apply() {
-    $session->{'RED_DEV'} = pick_device($session->{'RED_DEVICES'});
+    $session->{'WAN_DEV'} = pick_device($session->{'WAN_DEVICES'});
 
     my $ppp_settings = alter_ppp_settings(select_from_hash(\@pppoe_keys, $session));
-    save_red('main', $ppp_settings);
+    save_wan('main', $ppp_settings);
     return;
 }
 

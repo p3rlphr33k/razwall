@@ -1,17 +1,9 @@
 #!/usr/bin/perl
 #
-# SMTP Proxy CGI for Endian Firewall
-#
-#
 #        +-----------------------------------------------------------------------------+
-#        | Endian Firewall                                                             |
+#        | RazWall Firewall                                                             |
 #        +-----------------------------------------------------------------------------+
-#        | Copyright (c) 2005-2006 Endian                                              |
-#        |         Endian GmbH/Srl                                                     |
-#        |         Bergweg 41 Via Monte                                                |
-#        |         39057 Eppan/Appiano                                                 |
-#        |         ITALIEN/ITALIA                                                      |
-#        |         info@endian.it                                                      |
+#        | Copyright (c) 2024 RazWall                                                  |
 #        |                                                                             |
 #        | This program is free software; you can redistribute it and/or               |
 #        | modify it under the terms of the GNU General Public License                 |
@@ -29,13 +21,12 @@
 #        | http://www.fsf.org/                                                         |
 #        +-----------------------------------------------------------------------------+
 #
-
 # -------------------------------------------------------------
 # some definitions
 # -------------------------------------------------------------
 
 require 'header23.pl';
-require './endianinc.pl';
+require 'razinc.pl';
 
 $flagdir                = "${swroot}/smtpscan";
 $proxyrestart           = "$flagdir/restartproxy";

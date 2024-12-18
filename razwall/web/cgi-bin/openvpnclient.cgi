@@ -1,32 +1,25 @@
 #!/usr/bin/perl
 #
-# openvpn client CGI for Endian Firewall
-#
-
-#
-# +--------------------------------------------------------------------------+
-# | Endian Firewall                                                          |
-# +--------------------------------------------------------------------------+
-# | Copyright (c) 2005-2016 Endian S.p.A. <info@endian.com>                  |
-# |         Endian S.p.A.                                                    |
-# |         via Pillhof 47                                                   |
-# |         39057 Appiano (BZ)                                               |
-# |         Italy                                                            |
-# |                                                                          |
-# | This program is free software; you can redistribute it and/or modify     |
-# | it under the terms of the GNU General Public License as published by     |
-# | the Free Software Foundation; either version 2 of the License, or        |
-# | (at your option) any later version.                                      |
-# |                                                                          |
-# | This program is distributed in the hope that it will be useful,          |
-# | but WITHOUT ANY WARRANTY; without even the implied warranty of           |
-# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            |
-# | GNU General Public License for more details.                             |
-# |                                                                          |
-# | You should have received a copy of the GNU General Public License along  |
-# | with this program; if not, write to the Free Software Foundation, Inc.,  |
-# | 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.              |
-# +--------------------------------------------------------------------------+
+#        +-----------------------------------------------------------------------------+
+#        | RazWall Firewall                                                             |
+#        +-----------------------------------------------------------------------------+
+#        | Copyright (c) 2024 RazWall                                                  |
+#        |                                                                             |
+#        | This program is free software; you can redistribute it and/or               |
+#        | modify it under the terms of the GNU General Public License                 |
+#        | as published by the Free Software Foundation; either version 2              |
+#        | of the License, or (at your option) any later version.                      |
+#        |                                                                             |
+#        | This program is distributed in the hope that it will be useful,             |
+#        | but WITHOUT ANY WARRANTY; without even the implied warranty of              |
+#        | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               |
+#        | GNU General Public License for more details.                                |
+#        |                                                                             |
+#        | You should have received a copy of the GNU General Public License           |
+#        | along with this program; if not, write to the Free Software                 |
+#        | Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA. |
+#        | http://www.fsf.org/                                                         |
+#        +-----------------------------------------------------------------------------+
 #
 
 # -------------------------------------------------------------
@@ -107,9 +100,9 @@ sub have_net($) {
 
     # AAAAAAARGH! dumb fools
     my %net_config = (
-        'GREEN' => [1,1,1,1,1,1,1,1,1,1],
-        'ORANGE' => [0,1,0,3,0,5,0,7,0,0],
-        'BLUE' => [0,0,0,0,4,5,6,7,0,0]
+        'LAN' => [1,1,1,1,1,1,1,1,1,1],
+        'DMZ' => [0,1,0,3,0,5,0,7,0,0],
+        'LAN2' => [0,0,0,0,4,5,6,7,0,0]
     );
 
     if ($net_config{$net}[$ether->{'CONFIG_TYPE'}] > 0) {
@@ -119,7 +112,7 @@ sub have_net($) {
 }
 
 sub configure_nets() {
-    my @totest = ('GREEN', 'BLUE', 'ORANGE');
+    my @totest = ('LAN', 'LAN2', 'DMZ');
 
     foreach (@totest) {
         my $thisnet = $_;
@@ -208,7 +201,7 @@ _('Actions')
 	my $drop_dhcp = $conf->{'BLOCKDHCP'};
 	my $bridge = $conf->{'BRIDGE'};
 	if (! $bridge) {
-	    $bridge = 'GREEN';
+	    $bridge = 'LAN';
 	}
 	my $nat = $conf->{'NAT_OUT'};
 	my $bgcolor = setbgcolor(($par{'action'} eq 'edit'), $line, $line);
@@ -647,7 +640,7 @@ sub show_add($$) {
         openbox('100%', 'left', _('Add VPN tunnel'));
 	 	$enabled = 'on';
 		$config{'ROUTETYPE'} = 'routed';
-		$config{'BRIDGE'} = 'GREEN';
+		$config{'BRIDGE'} = 'LAN';
 		$config{'PROTOCOL'} = 'udp';
     }
 
@@ -659,7 +652,7 @@ sub show_add($$) {
         }
     }
     if ($config{'BRIDGE'} =~ /^$/) {
-		$config{'BRIDGE'} = 'GREEN';
+		$config{'BRIDGE'} = 'LAN';
     }
 	if (!$config{'DEV_TYPE'} || $config{'DEV_TYPE'} =~ /^$/) {
 		$config{'DEV_TYPE'} = 'tap';
@@ -1192,9 +1185,9 @@ sub checkremote($) {
 
     if (($remote =~ /^localhost/) || 
 		($remote =~ /^127.0.0/) ||
-		($remote =~ /^$ether->{'GREEN_ADDRESS'}(:[0-9]+)?$/) ||
-		($remote =~ /^$ether->{'BLUE_ADDRESS'}(:[0-9]+)?$/) ||
-		($remote =~ /^$ether->{'ORANGE_ADDRESS'}(:[0-9]+)?$/)) {
+		($remote =~ /^$ether->{'LAN_ADDRESS'}(:[0-9]+)?$/) ||
+		($remote =~ /^$ether->{'LAN2_ADDRESS'}(:[0-9]+)?$/) ||
+		($remote =~ /^$ether->{'DMZ_ADDRESS'}(:[0-9]+)?$/)) {
 		return _('Cannot create an openvpn connection to myself!');
     }
 

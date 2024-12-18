@@ -1,12 +1,8 @@
+#
 #        +-----------------------------------------------------------------------------+
-#        | Endian Firewall                                                             |
+#        | RazWall Firewall                                                             |
 #        +-----------------------------------------------------------------------------+
-#        | Copyright (c) 2005-2006 Endian                                              |
-#        |         Endian GmbH/Srl                                                     |
-#        |         Bergweg 41 Via Monte                                                |
-#        |         39057 Eppan/Appiano                                                 |
-#        |         ITALIEN/ITALIA                                                      |
-#        |         info@endian.it                                                      |
+#        | Copyright (c) 2024 RazWall                                                  |
 #        |                                                                             |
 #        | This program is free software; you can redistribute it and/or               |
 #        | modify it under the terms of the GNU General Public License                 |
@@ -25,6 +21,6 @@
 #        +-----------------------------------------------------------------------------+
 #
 require 'header.pl';
-require '/razwall/web/cgi-bin/endianinc.pl';
+require 'razinc.pl';
 my $vpn = ['openvpn', '/var/run/openvpn/openvpn.pid', ''];
 register_status(_('OpenVPN server'), $vpn);

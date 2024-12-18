@@ -22,7 +22,7 @@
 #        +-----------------------------------------------------------------------------+
 #
 
-require '/razwall/web/cgi-bin/netwizard_tools.pl';
+require 'razinc.pl';
 require 'header.pl';
 
 my $uplinks = 'uplinks/';

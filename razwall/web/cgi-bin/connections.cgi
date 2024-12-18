@@ -1,13 +1,28 @@
 #!/usr/bin/perl
 #
-# (c) 2001 Jack Beglinger <jackb_guppy@yahoo.com>
-#
-# (c) 2003 Dave Roberts <countzerouk@hotmail.com> - colour coded netfilter/iptables rewrite for 1.3
-#
-# $Id: connections.cgi,v 1.6.2.4 2004/10/07 07:24:07 eoberlander Exp $
+#        +-----------------------------------------------------------------------------+
+#        | RazWall Firewall                                                             |
+#        +-----------------------------------------------------------------------------+
+#        | Copyright (c) 2024 RazWall                                                  |
+#        |                                                                             |
+#        | This program is free software; you can redistribute it and/or               |
+#        | modify it under the terms of the GNU General Public License                 |
+#        | as published by the Free Software Foundation; either version 2              |
+#        | of the License, or (at your option) any later version.                      |
+#        |                                                                             |
+#        | This program is distributed in the hope that it will be useful,             |
+#        | but WITHOUT ANY WARRANTY; without even the implied warranty of              |
+#        | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               |
+#        | GNU General Public License for more details.                                |
+#        |                                                                             |
+#        | You should have received a copy of the GNU General Public License           |
+#        | along with this program; if not, write to the Free Software                 |
+#        | Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA. |
+#        | http://www.fsf.org/                                                         |
+#        +-----------------------------------------------------------------------------+
 #
 
-# Setup GREEN, ORANGE, IPCOP, VPN CIDR networks, masklengths and colours only once
+# Setup LAN, DMZ, IPCOP, VPN CIDR networks, masklengths and colours only once
 
 my @network;
 my @masklen;
@@ -25,17 +40,17 @@ my %netsettings;
 &readhash("${swroot}/ethernet/settings", \%netsettings);
 
 # Add Green Firewall Interface
-push(@network, $netsettings{'GREEN_ADDRESS'});
+push(@network, $netsettings{'LAN_ADDRESS'});
 push(@masklen, "255.255.255.255" );
 push(@colour, $colourfw );
 
 # Add Green Network to Array
-push(@network, $netsettings{'GREEN_NETADDRESS'});
-push(@masklen, $netsettings{'GREEN_NETMASK'} );
+push(@network, $netsettings{'LAN_NETADDRESS'});
+push(@masklen, $netsettings{'LAN_NETMASK'} );
 push(@colour, $colourgreen );
 
 # Add Green Routes to Array
-my @routes = `/sbin/route -n | /bin/grep $netsettings{'GREEN_DEV'}`;
+my @routes = `/sbin/route -n | /bin/grep $netsettings{'LAN_DEV'}`;
 foreach my $route (@routes) {
     chomp($route);
     my @temp = split(/[\t ]+/, $route);
@@ -54,12 +69,12 @@ push(@masklen, '255.255.255.255' );
 push(@colour, $colourfw );
 
 # Add Orange Network
-if (orange_used()) {
-    push(@network, $netsettings{'ORANGE_NETADDRESS'});
-    push(@masklen, $netsettings{'ORANGE_NETMASK'} );
+if (dmz_used()) {
+    push(@network, $netsettings{'DMZ_NETADDRESS'});
+    push(@masklen, $netsettings{'DMZ_NETMASK'} );
     push(@colour, $colourorange );
     # Add Orange Routes to Array
-    @routes = `/sbin/route -n | /bin/grep $netsettings{'ORANGE_DEV'}`;
+    @routes = `/sbin/route -n | /bin/grep $netsettings{'DMZ_DEV'}`;
     foreach my $route (@routes) {
         chomp($route);
         my @temp = split(/[\t ]+/, $route);
@@ -70,12 +85,12 @@ if (orange_used()) {
 }
 
 # Add Blue Network
-if (blue_used()) {
-    push(@network, $netsettings{'BLUE_NETADDRESS'});
-    push(@masklen, $netsettings{'BLUE_NETMASK'} );
+if (lan2_used()) {
+    push(@network, $netsettings{'LAN2_NETADDRESS'});
+    push(@masklen, $netsettings{'LAN2_NETMASK'} );
     push(@colour, $colourblue );
     # Add Blue Routes to Array
-    @routes = `/sbin/route -n | /bin/grep $netsettings{'BLUE_DEV'}`;
+    @routes = `/sbin/route -n | /bin/grep $netsettings{'LAN2_DEV'}`;
     foreach my $route (@routes) {
         chomp($route);
         my @temp = split(/[\t ]+/, $route);

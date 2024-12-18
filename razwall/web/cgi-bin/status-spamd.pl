@@ -1,12 +1,8 @@
+#
 #        +-----------------------------------------------------------------------------+
-#        | Endian Firewall                                                             |
+#        | RazWall Firewall                                                             |
 #        +-----------------------------------------------------------------------------+
-#        | Copyright (c) 2005-2006 Endian                                              |
-#        |         Endian GmbH/Srl                                                     |
-#        |         Bergweg 41 Via Monte                                                |
-#        |         39057 Eppan/Appiano                                                 |
-#        |         ITALIEN/ITALIA                                                      |
-#        |         info@endian.it                                                      |
+#        | Copyright (c) 2024 RazWall                                                  |
 #        |                                                                             |
 #        | This program is free software; you can redistribute it and/or               |
 #        | modify it under the terms of the GNU General Public License                 |
@@ -23,9 +19,9 @@
 #        | Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA. |
 #        | http://www.fsf.org/                                                         |
 #        +-----------------------------------------------------------------------------+
-
+#
 require 'header.pl';
-require '/razwall/web/cgi-bin/endianinc.pl';
+require 'razinc.pl';
 
 my $spamd = ['usr/bin/spamd ', '/var/run/spamd/spamd.pid', ''];
 register_status(_('Spam filter for POP3 (spamd)'), $spamd);

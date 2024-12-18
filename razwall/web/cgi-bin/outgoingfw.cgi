@@ -1,30 +1,28 @@
 #!/usr/bin/perl
-# +--------------------------------------------------------------------------+
-# | Endian Firewall                                                          |
-# +--------------------------------------------------------------------------+
-# | Copyright (c) 2005-2016 Endian S.p.A. <info@endian.com>                  |
-# |         Endian S.p.A.                                                    |
-# |         via Pillhof 47                                                   |
-# |         39057 Appiano (BZ)                                               |
-# |         Italy                                                            |
-# |                                                                          |
-# | This program is free software; you can redistribute it and/or modify     |
-# | it under the terms of the GNU General Public License as published by     |
-# | the Free Software Foundation; either version 2 of the License, or        |
-# | (at your option) any later version.                                      |
-# |                                                                          |
-# | This program is distributed in the hope that it will be useful,          |
-# | but WITHOUT ANY WARRANTY; without even the implied warranty of           |
-# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            |
-# | GNU General Public License for more details.                             |
-# |                                                                          |
-# | You should have received a copy of the GNU General Public License along  |
-# | with this program; if not, write to the Free Software Foundation, Inc.,  |
-# | 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.              |
-# +--------------------------------------------------------------------------+
-
+#
+#        +-----------------------------------------------------------------------------+
+#        | RazWall Firewall                                                             |
+#        +-----------------------------------------------------------------------------+
+#        | Copyright (c) 2024 RazWall                                                  |
+#        |                                                                             |
+#        | This program is free software; you can redistribute it and/or               |
+#        | modify it under the terms of the GNU General Public License                 |
+#        | as published by the Free Software Foundation; either version 2              |
+#        | of the License, or (at your option) any later version.                      |
+#        |                                                                             |
+#        | This program is distributed in the hope that it will be useful,             |
+#        | but WITHOUT ANY WARRANTY; without even the implied warranty of              |
+#        | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               |
+#        | GNU General Public License for more details.                                |
+#        |                                                                             |
+#        | You should have received a copy of the GNU General Public License           |
+#        | along with this program; if not, write to the Free Software                 |
+#        | Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA. |
+#        | http://www.fsf.org/                                                         |
+#        +-----------------------------------------------------------------------------+
+#
 require 'header.pl';
-require 'ethconfig.pl';
+require 'razinc.pl';
 
 foreach my $regfile (glob("/razwall/web/cgi-bin/fw-all-*.pl")) {
     require $regfile;
@@ -68,7 +66,7 @@ my %ifacesdata = ();
 my $ifacesdata = \%ifacesdata;
 
 my $services_file = '/usr/lib/efw/outgoing/services';
-my $services_custom_file = '/var/efw/outgoing/services.custom';
+my $services_custom_file = '/razwall/config/outgoing/services.custom';
 
 &readhash($ethernet_settings, \%ether);
 &readhash($outgoing_settings, \%outgoing);
@@ -78,9 +76,9 @@ sub have_net($) {
 
     # AAAAAAARGH! dumb fools
     my %net_config = (
-    'GREEN' => [1,1,1,1,1,1,1,1,1,1],
-    'ORANGE' => [0,1,0,3,0,5,0,7,0,0],
-    'BLUE' => [0,0,0,0,4,5,6,7,0,0]
+    'LAN' => [1,1,1,1,1,1,1,1,1,1],
+    'DMZ' => [0,1,0,3,0,5,0,7,0,0],
+    'LAN2' => [0,0,0,0,4,5,6,7,0,0]
     );
 
     if ($net_config{$net}[$ether{'CONFIG_TYPE'}] > 0) {
@@ -90,7 +88,7 @@ sub have_net($) {
 }
 
 sub configure_nets() {
-    my @totest = ('GREEN', 'BLUE', 'ORANGE');
+    my @totest = ('LAN', 'LAN2', 'DMZ');
 
     foreach (@totest) {
         my $thisnet = $_;
@@ -732,7 +730,7 @@ END
             my $bgcolor = setbgcolor($is_editing, $line, $i);
             my $dest_long_value = generate_addressing($destination, $dst_dev, '', $i);
             if ($dest_long_value =~ /(?:^|&)ANY/) {
-                $dest_long_value = "<font color='". $zonecolors{'RED'} ."'>".$strings_zone{'RED'}."</font>";
+                $dest_long_value = "<font color='". $zonecolors{'WAN'} ."'>".$strings_zone{'WAN'}."</font>";
             }
             my $src_long_value = generate_addressing($source, $src_dev, $mac, $i);
             if ($src_long_value =~ /(?:^|&)ANY/) {
@@ -1286,10 +1284,10 @@ EOF
 EOF
     , _('Destination')
     , _('Type')
-    , _('RED')
+    , _('WAN')
     , _('Uplink')
     , _('Network/IP')
-    , _('This rule will match the entire RED')
+    , _('This rule will match the entire WAN')
     , _('Select uplink')
     , _('Insert network/IPs (one per line)')
     ;
@@ -1599,7 +1597,7 @@ my $extraheader = '<script language="JavaScript" src="/include/firewall_type.js"
 
 init_ethconfig();
 configure_nets();
-($devices, $deviceshash) = list_devices_description(3, 'GREEN|ORANGE|BLUE', 0);
+($devices, $deviceshash) = list_devices_description(3, 'LAN|DMZ|LAN2', 0);
 save();
 
 if ($reload) {

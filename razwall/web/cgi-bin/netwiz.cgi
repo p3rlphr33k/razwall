@@ -1,14 +1,9 @@
 #!/usr/bin/perl
 #
 #        +-----------------------------------------------------------------------------+
-#        | Endian Firewall                                                             |
+#        | RazWall Firewall                                                             |
 #        +-----------------------------------------------------------------------------+
-#        | Copyright (c) 2005-2006 Endian                                              |
-#        |         Endian GmbH/Srl                                                     |
-#        |         Bergweg 41 Via Monte                                                |
-#        |         39057 Eppan/Appiano                                                 |
-#        |         ITALIEN/ITALIA                                                      |
-#        |         info@endian.it                                                      |
+#        | Copyright (c) 2024 RazWall                                                  |
 #        |                                                                             |
 #        | This program is free software; you can redistribute it and/or               |
 #        | modify it under the terms of the GNU General Public License                 |
@@ -38,11 +33,9 @@ use Net::IPv4Addr qw (:all);
 require 'header.pl' if (-e 'header.pl');  # if called from ipcop, header-pl is
                                           # already included.
 
-require '/razwall/web/cgi-bin/netwizard_tools.pl';
-require '/razwall/web/cgi-bin/ifacetools.pl';
-require '/razwall/web/cgi-bin/ethconfig.pl';
-require '/razwall/web/cgi-bin/redtools.pl';
-require '/razwall/web/cgi-bin/strings.pl';
+require 'razinc.pl';
+require 'wantools.pl';
+require 'strings.pl';
 
 my %par;
 getcgihash(\%par);
@@ -82,7 +75,7 @@ my $main_settings_file = 'main/settings';
 my $host_settings_file = 'host/settings';
 my $dhcp_settings_file = 'dhcp/settings';
 my $wizard_settings_file = 'wizard/settings';
-my $autoconnect_file = '/var/efw/ethernet/noautoconnect';
+my $autoconnect_file = '/razwall/config/ethernet/noautoconnect';
 my $hotspot_settings_file = 'hotspot/settings';
 
 my $refresh = '45';
@@ -100,29 +93,29 @@ if ($0 =~ /step2\/*(netwiz|wizard).cgi/) {
 
 my @eth_keys=('CONFIG_TYPE',
 
-	      'GREEN_ADDRESS',
-	      'GREEN_NETMASK',
-	      'GREEN_NETADDRESS',
-	      'GREEN_BROADCAST',
-	      'GREEN_CIDR',
-	      'GREEN_DEV',
-	      'GREEN_IPS',
+	      'LAN_ADDRESS',
+	      'LAN_NETMASK',
+	      'LAN_NETADDRESS',
+	      'LAN_BROADCAST',
+	      'LAN_CIDR',
+	      'LAN_DEV',
+	      'LAN_IPS',
 
-	      'ORANGE_ADDRESS',
-	      'ORANGE_NETMASK',
-	      'ORANGE_NETADDRESS',
-	      'ORANGE_BROADCAST',
-	      'ORANGE_CIDR',
-	      'ORANGE_DEV',
-	      'ORANGE_IPS',
+	      'DMZ_ADDRESS',
+	      'DMZ_NETMASK',
+	      'DMZ_NETADDRESS',
+	      'DMZ_BROADCAST',
+	      'DMZ_CIDR',
+	      'DMZ_DEV',
+	      'DMZ_IPS',
 
-	      'BLUE_ADDRESS',
-	      'BLUE_NETMASK',
-	      'BLUE_NETADDRESS',
-	      'BLUE_BROADCAST',
-	      'BLUE_CIDR',
-	      'BLUE_DEV',
-	      'BLUE_IPS',
+	      'LAN2_ADDRESS',
+	      'LAN2_NETMASK',
+	      'LAN2_NETADDRESS',
+	      'LAN2_BROADCAST',
+	      'LAN2_CIDR',
+	      'LAN2_DEV',
+	      'LAN2_IPS',
 
 	      );
 
@@ -139,11 +132,11 @@ my @host_keys=('HOSTNAME',
 	       'DOMAINNAME',
 	       );
 
-my @dhcp_keys=('ENABLE_GREEN');
+my @dhcp_keys=('ENABLE_LAN');
 
 my @hotspot_keys=('HOTSPOT_ENABLED');
 
-#red  blue orange
+#wan  lan2 dmz
 my %type_config=(
 		 '000' => 0,
 		 '001' => 1,
@@ -162,7 +155,7 @@ my @dns_caption=(_('automatic'),
 my @network_types = (
     {'name' => 'ROUTED',
     'caption' => _("Routed"),
-    'title' => _("Uplink type (<span style=\"color: red;\">RED</span> zone)"),
+    'title' => _("Uplink type (<span style=\"color: red;\">WAN</span> zone)"),
     'description' => _("This is the standard operating mode. Uplinks of the following types can be configured here: %s")},
     {'name' => 'BRIDGED',
     'caption' => _("Bridged"),
@@ -174,7 +167,7 @@ my @network_types = (
     'description' => _("In this operating mode the appliance is part of the local network but does not act as a gateway. Clients like webbrowsers and email clients will have to address the appliance directly. This was previously named Gateway mode.")},
 );
 
-my @red_types = (
+my @wan_types = (
     {'name' => 'DHCP',
     'caption' => _('Ethernet DHCP'),
     'type' => 'ROUTED'},
@@ -250,28 +243,28 @@ sub load_network_items() {
             'NETWORK_LOOP_TITLE'       => $type->{'title'},
             'NETWORK_LOOP_CAPTION'     => $type->{'caption'},
             'NETWORK_LOOP_DESCRIPTION' => $type->{'description'},
-            'NETWORK_LOOP_RED_ITEM'    => '',
+            'NETWORK_LOOP_WAN_ITEM'    => '',
             'NETWORK_LOOP_SELECTED'    => ''
         );
-        my @red_items = @{load_red_items($type->{'name'})};
-        my $red_names = '';
-        foreach (@red_items) {
-            if ($_->{RED_LOOP_SELECTED} eq 'checked') {
+        my @wan_items = @{load_wan_items($type->{'name'})};
+        my $wan_names = '';
+        foreach (@wan_items) {
+            if ($_->{WAN_LOOP_SELECTED} eq 'checked') {
                 $hash{'NETWORK_LOOP_SELECTED'} = 'checked';
             }
-            if ($red_names eq '') {
-                $red_names = $_->{RED_LOOP_CAPTION};
+            if ($wan_names eq '') {
+                $wan_names = $_->{WAN_LOOP_CAPTION};
             } else {
-                $red_names = $red_names . ', ' . $_->{RED_LOOP_CAPTION};
+                $wan_names = $wan_names . ', ' . $_->{WAN_LOOP_CAPTION};
             }
         }
         if ($hash{'NETWORK_LOOP_NAME'} eq 'ROUTED') {
-            $hash{'NETWORK_LOOP_DESCRIPTION'} = $hash{'NETWORK_LOOP_DESCRIPTION'} . $red_names;
+            $hash{'NETWORK_LOOP_DESCRIPTION'} = $hash{'NETWORK_LOOP_DESCRIPTION'} . $wan_names;
         }
-        if (scalar @red_items eq 1) {
-            $hash{'NETWORK_LOOP_RED_ITEM'} = $red_items[0]->{'RED_LOOP_NAME'};
+        if (scalar @wan_items eq 1) {
+            $hash{'NETWORK_LOOP_WAN_ITEM'} = $wan_items[0]->{'WAN_LOOP_NAME'};
         } else {
-            $hash{'NETWORK_LOOP_RED_ITEMS'} = \@red_items;
+            $hash{'NETWORK_LOOP_WAN_ITEMS'} = \@wan_items;
         }
         push(@arr, \%hash);
     }
@@ -279,21 +272,21 @@ sub load_network_items() {
     return \@arr;
 }
 
-sub load_red_items($) {
+sub load_wan_items($) {
     my $network_type = shift;
     my @arr = ();
     my $i = 0;
     
-    foreach my $type (@red_types) {
+    foreach my $type (@wan_types) {
         my $lever_file = 'lever_'.lc($type->{'name'}).'.pl';
         next if (! -e $lever_file);
         next if ($type->{'type'} ne $network_type);
         $i++;
         my %hash = (
-            'RED_LOOP_INDEX'    => $i,
-            'RED_LOOP_NAME'     => $type->{'name'},
-            'RED_LOOP_CAPTION'  => $type->{'caption'},
-            'RED_LOOP_SELECTED' => ($session->{'RED_TYPE'} eq $type->{'name'} ? 'checked':'')
+            'WAN_LOOP_INDEX'    => $i,
+            'WAN_LOOP_NAME'     => $type->{'name'},
+            'WAN_LOOP_CAPTION'  => $type->{'caption'},
+            'WAN_LOOP_SELECTED' => ($session->{'WAN_TYPE'} eq $type->{'name'} ? 'checked':'')
         );
         push(@arr, \%hash);
     }
@@ -333,25 +326,25 @@ sub load_zones_items() {
 	    $caption = _('NONE');
 	}
 	if ($i == 1) {
-            if ((in_list {'BLUE' eq $_} @mandatory_zones)) {
+            if ((in_list {'LAN2' eq $_} @mandatory_zones)) {
                 next;
             }
-	    $name = 'ORANGE';
-	    $caption = _('ORANGE');
+	    $name = 'DMZ';
+	    $caption = _('DMZ');
 	}
 	if ($i == 2) {
-            if ((in_list {'ORANGE' eq $_} @mandatory_zones)) {
+            if ((in_list {'DMZ' eq $_} @mandatory_zones)) {
                 next;
             }
-	    $name = 'BLUE';
-	    $caption = _('BLUE');
+	    $name = 'LAN2';
+	    $caption = _('LAN2');
 	}
 	if ($i == 3) {
-            if ((in_list {'ORANGE_BLUE' eq $_} @mandatory_zones)) {
+            if ((in_list {'DMZ_LAN2' eq $_} @mandatory_zones)) {
                 next;
             }
-	    $name = 'ORANGE_BLUE';
-	    $caption = _('ORANGE & BLUE');
+	    $name = 'DMZ_LAN2';
+	    $caption = _('DMZ & LAN2');
 	}
 
 	my %hash = (
@@ -386,43 +379,43 @@ sub prepare_values() {
 	load_ifaces();
 	return;
     }
-    if (orange_used()) {
-	$tpl_ph->{'HAVE_ORANGE'} = 1;
+    if (dmz_used()) {
+	$tpl_ph->{'HAVE_DMZ'} = 1;
     }
-    if (blue_used()) {
-	$tpl_ph->{'HAVE_BLUE'} = 1;
+    if (lan2_used()) {
+	$tpl_ph->{'HAVE_LAN2'} = 1;
     }
 
     if ($live_data->{'step'} eq '3') {
 
-	my ($primary, $ip, $mask, $cidr) = getPrimaryIP($session->{'GREEN_IPS'});
-	$tpl_ph->{'DISPLAY_GREEN_ADDRESS'} = $ip;
-	$tpl_ph->{'DISPLAY_GREEN_NETMASK_LOOP'} = loadNetmasks($cidr);
+	my ($primary, $ip, $mask, $cidr) = getPrimaryIP($session->{'LAN_IPS'});
+	$tpl_ph->{'DISPLAY_LAN_ADDRESS'} = $ip;
+	$tpl_ph->{'DISPLAY_LAN_NETMASK_LOOP'} = loadNetmasks($cidr);
 
-	$tpl_ph->{'DISPLAY_GREEN_ADDITIONAL'} = getAdditionalIPs($session->{'GREEN_IPS'});
-	$tpl_ph->{'DISPLAY_GREEN_ADDITIONAL'} =~ s/,/\n/g;
+	$tpl_ph->{'DISPLAY_LAN_ADDITIONAL'} = getAdditionalIPs($session->{'LAN_IPS'});
+	$tpl_ph->{'DISPLAY_LAN_ADDITIONAL'} =~ s/,/\n/g;
 
-        $tpl_ph->{'DHCP_ENABLE_GREEN'} = ($session->{'ENABLE_GREEN'} eq 'on' ? 'checked' : '');
+        $tpl_ph->{'DHCP_ENABLE_LAN'} = ($session->{'ENABLE_LAN'} eq 'on' ? 'checked' : '');
 
 	load_ifaces();
-	$tpl_ph->{'IFACE_GREEN_LOOP'} = create_ifaces_list('GREEN');
-	if (orange_used()) {
-	    my ($primary, $ip, $mask, $cidr) = getPrimaryIP($session->{'ORANGE_IPS'});
-	    $tpl_ph->{'DISPLAY_ORANGE_ADDRESS'} = $ip;
-	    $tpl_ph->{'DISPLAY_ORANGE_NETMASK_LOOP'} = loadNetmasks($cidr);
-	    $tpl_ph->{'DISPLAY_ORANGE_ADDITIONAL'} = getAdditionalIPs($session->{'ORANGE_IPS'});
-	    $tpl_ph->{'DISPLAY_ORANGE_ADDITIONAL'} =~ s/,/\n/g;
+	$tpl_ph->{'IFACE_LAN_LOOP'} = create_ifaces_list('LAN');
+	if (dmz_used()) {
+	    my ($primary, $ip, $mask, $cidr) = getPrimaryIP($session->{'DMZ_IPS'});
+	    $tpl_ph->{'DISPLAY_DMZ_ADDRESS'} = $ip;
+	    $tpl_ph->{'DISPLAY_DMZ_NETMASK_LOOP'} = loadNetmasks($cidr);
+	    $tpl_ph->{'DISPLAY_DMZ_ADDITIONAL'} = getAdditionalIPs($session->{'DMZ_IPS'});
+	    $tpl_ph->{'DISPLAY_DMZ_ADDITIONAL'} =~ s/,/\n/g;
 
-	    $tpl_ph->{'IFACE_ORANGE_LOOP'} = create_ifaces_list('ORANGE');
+	    $tpl_ph->{'IFACE_DMZ_LOOP'} = create_ifaces_list('DMZ');
 	}
-	if (blue_used()) {
-	    my ($primary, $ip, $mask, $cidr) = getPrimaryIP($session->{'BLUE_IPS'});
-	    $tpl_ph->{'DISPLAY_BLUE_ADDRESS'} = $ip;
-	    $tpl_ph->{'DISPLAY_BLUE_NETMASK_LOOP'} = loadNetmasks($cidr);
-	    $tpl_ph->{'DISPLAY_BLUE_ADDITIONAL'} = getAdditionalIPs($session->{'BLUE_IPS'});
-	    $tpl_ph->{'DISPLAY_BLUE_ADDITIONAL'} =~ s/,/\n/g;
+	if (lan2_used()) {
+	    my ($primary, $ip, $mask, $cidr) = getPrimaryIP($session->{'LAN2_IPS'});
+	    $tpl_ph->{'DISPLAY_LAN2_ADDRESS'} = $ip;
+	    $tpl_ph->{'DISPLAY_LAN2_NETMASK_LOOP'} = loadNetmasks($cidr);
+	    $tpl_ph->{'DISPLAY_LAN2_ADDITIONAL'} = getAdditionalIPs($session->{'LAN2_IPS'});
+	    $tpl_ph->{'DISPLAY_LAN2_ADDITIONAL'} =~ s/,/\n/g;
 
-	    $tpl_ph->{'IFACE_BLUE_LOOP'} = create_ifaces_list('BLUE');
+	    $tpl_ph->{'IFACE_LAN2_LOOP'} = create_ifaces_list('LAN2');
 	}
 	return;
     }
@@ -444,19 +437,19 @@ sub prepare_values() {
 	}
     }
     if ($live_data->{'step'} eq '8') {
-	my ($primary,$ip,$mask,$cidr) = getPrimaryIP($session->{'GREEN_IPS'});
-	$tpl_ph->{'GREEN_LINK'} = 'https://'.$ip.':10443/cgi-bin/index.cgi';
+	my ($primary,$ip,$mask,$cidr) = getPrimaryIP($session->{'LAN_IPS'});
+	$tpl_ph->{'LAN_LINK'} = 'https://'.$ip.':10443/cgi-bin/index.cgi';
     }
 }
 
 sub set_config_type() {
-    my $red = $session->{'RED_TYPE'};
+    my $wan = $session->{'WAN_TYPE'};
     my $zones = $session->{'ZONES'};
-    my $has_red = ($red =~ /ADSL|ISDN/ ? 0:1);
-    my $has_blue = ($zones =~ /BLUE/? 1:0);
-    my $has_orange = ($zones =~ /ORANGE/? 1:0);
+    my $has_wan = ($wan =~ /ADSL|ISDN/ ? 0:1);
+    my $has_lan2 = ($zones =~ /LAN2/? 1:0);
+    my $has_dmz = ($zones =~ /DMZ/? 1:0);
 
-    $session->{'CONFIG_TYPE'} = $type_config{"$has_red$has_blue$has_orange"};
+    $session->{'CONFIG_TYPE'} = $type_config{"$has_wan$has_lan2$has_dmz"};
 }
 
 # check parameters according to step,
@@ -467,20 +460,20 @@ sub checkpar2session
     ############ step 1
 
     if ($live_data->{'step'} eq '1') {
-	my $red_type = $par{'RED_TYPE'};
-	if (defined($red_type) && ($red_type =~ /(?:STATIC|DHCP|ADSL|PPPOE|NONE|STEALTH|ISDN|ANALOG|MODEM)/)) {
-	    $session->{'RED_TYPE'} = $red_type;
+	my $wan_type = $par{'WAN_TYPE'};
+	if (defined($wan_type) && ($wan_type =~ /(?:STATIC|DHCP|ADSL|PPPOE|NONE|STEALTH|ISDN|ANALOG|MODEM)/)) {
+	    $session->{'WAN_TYPE'} = $wan_type;
 	    set_config_type();
 	    return;
 	}
-	return _('Please select a type of RED interface!');
+	return _('Please select a type of WAN interface!');
     }
 
     ############ step 2
 
     if ($live_data->{'step'} eq '2') {
 	my $zones = $par{'ZONES'};
-	if (defined($zones) && ($zones =~ /(?:NONE|BLUE|ORANGE|ORANGE_BLUE)/)) {
+	if (defined($zones) && ($zones =~ /(?:NONE|LAN2|DMZ|DMZ_LAN2)/)) {
 	    $session->{'ZONES'} = $zones;
 	    set_config_type();
 	    return;
@@ -517,113 +510,113 @@ sub checkpar2session
 	    $session->{'DOMAINNAME'} = $par{'DOMAINNAME'};
 	}
 
-	my $ifacelist = ifnum2device($par{'GREEN_DEVICES'});
-	$session->{'GREEN_DEVICES'} = $ifacelist;
+	my $ifacelist = ifnum2device($par{'LAN_DEVICES'});
+	$session->{'LAN_DEVICES'} = $ifacelist;
         if ($ifacelist =~ /^$/) {
-            my $zone = _('GREEN');
+            my $zone = _('LAN');
 	    $err .= _('Please select at least one interface for zone %s!', $zone).'<BR><BR>';
         }
 
-        if ($par{'DHCP_ENABLE_GREEN'} eq 'on') {
-            $session->{'ENABLE_GREEN'} = 'on';
+        if ($par{'DHCP_ENABLE_LAN'} eq 'on') {
+            $session->{'ENABLE_LAN'} = 'on';
         } else {
-            $session->{'ENABLE_GREEN'} = 'off';
+            $session->{'ENABLE_LAN'} = 'off';
         }
 
-	if (orange_used()) {
-	    my $ifacelist = ifnum2device($par{'ORANGE_DEVICES'});
-	    my $reterr = check_iface_free($ifacelist, 'ORANGE');
+	if (dmz_used()) {
+	    my $ifacelist = ifnum2device($par{'DMZ_DEVICES'});
+	    my $reterr = check_iface_free($ifacelist, 'DMZ');
 	    if ($reterr) {
 		$err .= $reterr;
 	    } else {
-		$session->{'ORANGE_DEVICES'} = $ifacelist;
+		$session->{'DMZ_DEVICES'} = $ifacelist;
 	    }
             # if ($ifacelist =~ /^$/) {
-            #     my $zone = _('ORANGE');
+            #     my $zone = _('DMZ');
 	        #     $err .= _('Please select at least one interface for zone %s!', $zone).'<BR><BR>';
             # }
 	} else {
-	    $session->{'ORANGE_DEVICES'} = unset;
+	    $session->{'DMZ_DEVICES'} = unset;
 	}
-	if (blue_used()) {
-	    my $ifacelist = ifnum2device($par{'BLUE_DEVICES'});
-	    my $reterr = check_iface_free($ifacelist, 'BLUE');
+	if (lan2_used()) {
+	    my $ifacelist = ifnum2device($par{'LAN2_DEVICES'});
+	    my $reterr = check_iface_free($ifacelist, 'LAN2');
 	    if ($reterr) {
 		$err .= $reterr;
 	    } else {
-		$session->{'BLUE_DEVICES'} = $ifacelist;
+		$session->{'LAN2_DEVICES'} = $ifacelist;
 	    }
             # if ($ifacelist =~ /^$/) {
-            #     my $zone = _('BLUE');
+            #     my $zone = _('LAN2');
 	        #     $err .= _('Please select at least one interface for zone %s!', $zone).'<BR><BR>';
             # }
 	} else {
-	    $session->{'BLUE_DEVICES'} = unset;
+	    $session->{'LAN2_DEVICES'} = unset;
 	}
 
-	my ($ok_ips, $nok_ips) = createIPS($par{'DISPLAY_GREEN_ADDRESS'}.'/'.$par{'DISPLAY_GREEN_NETMASK'}, $par{'DISPLAY_GREEN_ADDITIONAL'});
+	my ($ok_ips, $nok_ips) = createIPS($par{'DISPLAY_LAN_ADDRESS'}.'/'.$par{'DISPLAY_LAN_NETMASK'}, $par{'DISPLAY_LAN_ADDITIONAL'});
 	if ($nok_ips ne '') {
 	    foreach my $nokip (split(/,/, $nok_ips)) {
-		$err .= _('The GREEN IP address or network mask "%s" is not correct.', $nokip).'<BR>';
+		$err .= _('The LAN IP address or network mask "%s" is not correct.', $nokip).'<BR>';
 	    }
 	} else {
 	    my ($primary, $ip, $mask, $cidr) = getPrimaryIP($ok_ips);
-	    my ($oldprimary, $oldip, $oldmask, $oldcidr) = getPrimaryIP($session->{'GREEN_IPS'});
+	    my ($oldprimary, $oldip, $oldmask, $oldcidr) = getPrimaryIP($session->{'LAN_IPS'});
 	    
 	    if ($ip ne $oldip) {
-		$session->{'green_changed'} = 1;
+		$session->{'lan_changed'} = 1;
 	    }
 
-	    $session->{'GREEN_IPS'} = $ok_ips;
+	    $session->{'LAN_IPS'} = $ok_ips;
 
-	    foreach my $invalid (@{checkNetaddress($session->{'GREEN_IPS'})}) {
-		$err .= _("The GREEN IP address '%s' is the same as its network address, which is not allowed!", $invalid)."<BR><BR>";
+	    foreach my $invalid (@{checkNetaddress($session->{'LAN_IPS'})}) {
+		$err .= _("The LAN IP address '%s' is the same as its network address, which is not allowed!", $invalid)."<BR><BR>";
 	    }
-	    foreach my $invalid (@{checkBroadcast($session->{'GREEN_IPS'})}) {
-		$err .= _("The GREEN IP address '%s' is the same as its broadcast address, which is not allowed!", $invalid)."<BR><BR>";
+	    foreach my $invalid (@{checkBroadcast($session->{'LAN_IPS'})}) {
+		$err .= _("The LAN IP address '%s' is the same as its broadcast address, which is not allowed!", $invalid)."<BR><BR>";
 	    }
-	    foreach my $invalid (@{checkInvalidMask($session->{'GREEN_IPS'})}) {
-		$err .= _("The network mask of the GREEN IP address '%s' addresses only 1 IP address, which will lock you out if applied. Choose another one!", $invalid)."<BR><BR>";
+	    foreach my $invalid (@{checkInvalidMask($session->{'LAN_IPS'})}) {
+		$err .= _("The network mask of the LAN IP address '%s' addresses only 1 IP address, which will lock you out if applied. Choose another one!", $invalid)."<BR><BR>";
 	    }
 	}
 
-	if (orange_used()) {
-	    my ($ok_ips, $nok_ips) = createIPS($par{'DISPLAY_ORANGE_ADDRESS'}.'/'.$par{'DISPLAY_ORANGE_NETMASK'}, $par{'DISPLAY_ORANGE_ADDITIONAL'});
+	if (dmz_used()) {
+	    my ($ok_ips, $nok_ips) = createIPS($par{'DISPLAY_DMZ_ADDRESS'}.'/'.$par{'DISPLAY_DMZ_NETMASK'}, $par{'DISPLAY_DMZ_ADDITIONAL'});
 	    if ($nok_ips ne '') {
 		foreach my $nokip (split(/,/, $nok_ips)) {
-		    $err .= _('The ORANGE IP address or network mask "%s" is not correct.', $nokip).'<BR>';
+		    $err .= _('The DMZ IP address or network mask "%s" is not correct.', $nokip).'<BR>';
 		}
 	    } else {
-		$session->{'ORANGE_IPS'} = $ok_ips;
+		$session->{'DMZ_IPS'} = $ok_ips;
 		
-		foreach my $invalid (@{checkNetaddress($session->{'ORANGE_IPS'})}) {
-		    $err .= _("The ORANGE IP address '%s' is the same as its network address, which is not allowed!", $invalid)."<BR><BR>";
+		foreach my $invalid (@{checkNetaddress($session->{'DMZ_IPS'})}) {
+		    $err .= _("The DMZ IP address '%s' is the same as its network address, which is not allowed!", $invalid)."<BR><BR>";
 		}
-		foreach my $invalid (@{checkBroadcast($session->{'ORANGE_IPS'})}) {
-		    $err .= _("The ORANGE IP address '%s' is the same as its broadcast address, which is not allowed!", $invalid)."<BR><BR>";
+		foreach my $invalid (@{checkBroadcast($session->{'DMZ_IPS'})}) {
+		    $err .= _("The DMZ IP address '%s' is the same as its broadcast address, which is not allowed!", $invalid)."<BR><BR>";
 		}
-		foreach my $invalid (@{checkInvalidMask($session->{'ORANGE_IPS'})}) {
-		    $err .= _("The network mask of the ORANGE IP address '%s' addresses only 1 IP address, which will lock you out if applied. Choose another one!", $invalid)."<BR><BR>";
+		foreach my $invalid (@{checkInvalidMask($session->{'DMZ_IPS'})}) {
+		    $err .= _("The network mask of the DMZ IP address '%s' addresses only 1 IP address, which will lock you out if applied. Choose another one!", $invalid)."<BR><BR>";
 		}
 	    }
 	}
-	if (blue_used()) {
-	    my ($ok_ips, $nok_ips) = createIPS($par{'DISPLAY_BLUE_ADDRESS'}.'/'.$par{'DISPLAY_BLUE_NETMASK'}, $par{'DISPLAY_BLUE_ADDITIONAL'});
+	if (lan2_used()) {
+	    my ($ok_ips, $nok_ips) = createIPS($par{'DISPLAY_LAN2_ADDRESS'}.'/'.$par{'DISPLAY_LAN2_NETMASK'}, $par{'DISPLAY_LAN2_ADDITIONAL'});
 	    if ($nok_ips ne '') {
 		foreach my $nokip (split(/,/, $nok_ips)) {
-		    $err .= _('The BLUE IP address or network mask "%s" is not correct.', $nokip).'<BR>';
+		    $err .= _('The LAN2 IP address or network mask "%s" is not correct.', $nokip).'<BR>';
 		}
 	    } else {
-		$session->{'BLUE_IPS'} = $ok_ips;
+		$session->{'LAN2_IPS'} = $ok_ips;
 		
-		foreach my $invalid (@{checkNetaddress($session->{'BLUE_IPS'})}) {
-		    $err .= _("The BLUE IP address '%s' is the same as its network address, which is not allowed!", $invalid)."<BR><BR>";
+		foreach my $invalid (@{checkNetaddress($session->{'LAN2_IPS'})}) {
+		    $err .= _("The LAN2 IP address '%s' is the same as its network address, which is not allowed!", $invalid)."<BR><BR>";
 		}
-		foreach my $invalid (@{checkBroadcast($session->{'BLUE_IPS'})}) {
-		    $err .= _("The BLUE IP address '%s' is the same as its broadcast address, which is not allowed!", $invalid)."<BR><BR>";
+		foreach my $invalid (@{checkBroadcast($session->{'LAN2_IPS'})}) {
+		    $err .= _("The LAN2 IP address '%s' is the same as its broadcast address, which is not allowed!", $invalid)."<BR><BR>";
 		}
-		foreach my $invalid (@{checkInvalidMask($session->{'BLUE_IPS'})}) {
-		    $err .= _("The network mask of the BLUE IP address '%s' addresses only 1 IP address, which will lock you out if applied. Choose another one!", $invalid)."<BR><BR>";
+		foreach my $invalid (@{checkInvalidMask($session->{'LAN2_IPS'})}) {
+		    $err .= _("The network mask of the LAN2 IP address '%s' addresses only 1 IP address, which will lock you out if applied. Choose another one!", $invalid)."<BR><BR>";
 		}
 	    }
 	}
@@ -632,20 +625,20 @@ sub checkpar2session
 	    return $err;
 	}
 
-	if (orange_used()) {
-	    if (network_overlap($session->{'GREEN_IPS'}, $session->{'ORANGE_IPS'})) {
-		$err .= _('The GREEN and ORANGE networks are not distinct.').'<BR><BR>';
+	if (dmz_used()) {
+	    if (network_overlap($session->{'LAN_IPS'}, $session->{'DMZ_IPS'})) {
+		$err .= _('The LAN and DMZ networks are not distinct.').'<BR><BR>';
 	    }
 	}
-	if (blue_used()) {
-	    if (network_overlap($session->{'GREEN_IPS'}, $session->{'BLUE_IPS'})) {
-		$err .= _('The GREEN and BLUE networks are not distinct.').'<BR><BR>';
+	if (lan2_used()) {
+	    if (network_overlap($session->{'LAN_IPS'}, $session->{'LAN2_IPS'})) {
+		$err .= _('The LAN and LAN2 networks are not distinct.').'<BR><BR>';
 		
 	    }
 	}
-	if (blue_used() && orange_used()) {
-	    if (network_overlap($session->{'ORANGE_IPS'}, $session->{'BLUE_IPS'})) {
-		$err .= _('The ORANGE and BLUE networks are not distinct.').'<BR><BR>';
+	if (lan2_used() && dmz_used()) {
+	    if (network_overlap($session->{'DMZ_IPS'}, $session->{'LAN2_IPS'})) {
+		$err .= _('The DMZ and LAN2 networks are not distinct.').'<BR><BR>';
 		
 	    }
 	}
@@ -753,39 +746,39 @@ sub checkpar2session
 sub alter_eth_settings($) {
     my $ref = shift;
     my %config = %$ref;
-    my $next_if = 1; # 0 == green
+    my $next_if = 1; # 0 == lan
     my $fixed = 0;
 
-    my ($primary,$ip,$mask,$cidr) = getPrimaryIP($config{'GREEN_IPS'});
-    $config{'GREEN_ADDRESS'} = $ip;
-    $config{'GREEN_NETMASK'} = $mask;
-    $config{'GREEN_CIDR'} = $cidr;
-    ($config{'GREEN_NETADDRESS'},) = ipv4_network($primary);
-    $config{'GREEN_BROADCAST'} = ipv4_broadcast($primary);
+    my ($primary,$ip,$mask,$cidr) = getPrimaryIP($config{'LAN_IPS'});
+    $config{'LAN_ADDRESS'} = $ip;
+    $config{'LAN_NETMASK'} = $mask;
+    $config{'LAN_CIDR'} = $cidr;
+    ($config{'LAN_NETADDRESS'},) = ipv4_network($primary);
+    $config{'LAN_BROADCAST'} = ipv4_broadcast($primary);
 
-    if (orange_used()) {
-	my ($primary,$ip,$mask,$cidr) = getPrimaryIP($config{'ORANGE_IPS'});
-	$config{'ORANGE_ADDRESS'} = $ip;
-	$config{'ORANGE_NETMASK'} = $mask;
-	$config{'ORANGE_CIDR'} = $cidr;
-	($config{'ORANGE_NETADDRESS'},) = ipv4_network($primary);
-	$config{'ORANGE_BROADCAST'} = ipv4_broadcast($primary);
+    if (dmz_used()) {
+	my ($primary,$ip,$mask,$cidr) = getPrimaryIP($config{'DMZ_IPS'});
+	$config{'DMZ_ADDRESS'} = $ip;
+	$config{'DMZ_NETMASK'} = $mask;
+	$config{'DMZ_CIDR'} = $cidr;
+	($config{'DMZ_NETADDRESS'},) = ipv4_network($primary);
+	$config{'DMZ_BROADCAST'} = ipv4_broadcast($primary);
     }
-    if (blue_used()) {
-	my ($primary,$ip,$mask,$cidr) = getPrimaryIP($config{'BLUE_IPS'});
-	$config{'BLUE_ADDRESS'} = $ip;
-	$config{'BLUE_NETMASK'} = $mask;
-	$config{'BLUE_CIDR'} = $cidr;
-	($config{'BLUE_NETADDRESS'},) = ipv4_network($primary);
-	$config{'BLUE_BROADCAST'} = ipv4_broadcast($primary);
+    if (lan2_used()) {
+	my ($primary,$ip,$mask,$cidr) = getPrimaryIP($config{'LAN2_IPS'});
+	$config{'LAN2_ADDRESS'} = $ip;
+	$config{'LAN2_NETMASK'} = $mask;
+	$config{'LAN2_CIDR'} = $cidr;
+	($config{'LAN2_NETADDRESS'},) = ipv4_network($primary);
+	$config{'LAN2_BROADCAST'} = ipv4_broadcast($primary);
     }
     return \%config;
 }
 
 sub apply() {
     satanize($session);
-    if ($session->{'RED_DEV'}) {
-	disable_conflicting_uplinks($session->{'RED_DEV'});
+    if ($session->{'WAN_DEV'}) {
+	disable_conflicting_uplinks($session->{'WAN_DEV'});
     }
     my $eth_settings = alter_eth_settings(select_from_hash(\@eth_keys, $session));
     writehash($ethernet_settings, $eth_settings);
@@ -796,7 +789,7 @@ sub apply() {
     #    writehash($hotspot_settings_file, select_from_hash(\@hotspot_keys, $session));
     #}
     write_bridges();
-    set_red_default("");
+    set_wan_default("");
 
     if ($lever ne '') {
 	lever_apply();
@@ -832,8 +825,8 @@ sub load_values {
     load_all_keys($settings, \@dhcp_keys, $dhcp_settings, 0, 0);
 
     if ($pagename eq "firstwizard") {
-        # enable DHCP server on green at the first netwizard
-        $session->{'ENABLE_GREEN'} = 'on';
+        # enable DHCP server on lan at the first netwizard
+        $session->{'ENABLE_LAN'} = 'on';
     }
 
     my $hotspot_settings_hash = ();
@@ -842,23 +835,23 @@ sub load_values {
     load_all_keys($session, \@hotspot_keys, $hotspot_settings, 0, 0);
     load_all_keys($settings, \@hotspot_keys, $hotspot_settings, 0, 0);
 
-    if (orange_used()) {
-	$session->{'ZONES'} = 'ORANGE';
+    if (dmz_used()) {
+	$session->{'ZONES'} = 'DMZ';
     }
-    if (blue_used()) {
-	$session->{'ZONES'} = 'BLUE';
+    if (lan2_used()) {
+	$session->{'ZONES'} = 'LAN2';
     }
-    if (orange_used() && blue_used()) {
-	$session->{'ZONES'} = 'ORANGE_BLUE';
+    if (dmz_used() && lan2_used()) {
+	$session->{'ZONES'} = 'DMZ_LAN2';
     }
-    if (! orange_used() && ! blue_used()) {
+    if (! dmz_used() && ! lan2_used()) {
 	$session->{'ZONES'} = 'NONE';
     }
-    $session->{'GREEN_DEV'} = 'br0';
-    $session->{'ORANGE_DEV'} = 'br1';
-    $session->{'BLUE_DEV'} = 'br2';
+    $session->{'LAN_DEV'} = 'br0';
+    $session->{'DMZ_DEV'} = 'br1';
+    $session->{'LAN2_DEV'} = 'br2';
 
-    load_red('MAIN');
+    load_wan('MAIN');
     if ($lever ne '') {
 	lever_load();
     }
@@ -893,7 +886,7 @@ sub set_lever() {
 	$lever = $session->{'lever'};
 	return;
     }
-    $lever = lc($session->{'RED_TYPE'});
+    $lever = lc($session->{'WAN_TYPE'});
     $session->{'lever'} = $lever;
 }
 
@@ -925,14 +918,14 @@ sub state_machine() {
 	return;
     }
 
-    # Check if the hotspot is active and if a BLUE zone is enabled.
+    # Check if the hotspot is active and if a LAN2 zone is enabled.
     $tpl_ph->{'warning_message'} = '';
 
     if ($settings->{'HOTSPOT_ENABLED'} eq 'on') {
         #$session->{'HOTSPOT_ENABLED'} = $settings->{'HOTSPOT_ENABLED'};
-        if ($par{'ZONES'} ne 'BLUE' && $par{'ZONES'} ne 'ORANGE_BLUE') {
+        if ($par{'ZONES'} ne 'LAN2' && $par{'ZONES'} ne 'DMZ_LAN2') {
             #$session->{'HOTSPOT_ENABLED'} = 'off';
-            $tpl_ph->{'warning_message'} = _('WARNING: no BLUE zone selected; the hotspot will be turned off');
+            $tpl_ph->{'warning_message'} = _('WARNING: no LAN2 zone selected; the hotspot will be turned off');
 	}
     }
 
@@ -953,7 +946,7 @@ sub state_machine() {
 	# prev -> forget parameters, go the previous page
 	$direction = -1;
     } elsif (defined($par{'cancel'})) {
-	my ($primary, $ip, $mask, $cidr) = getPrimaryIP($session->{'GREEN_IPS'});
+	my ($primary, $ip, $mask, $cidr) = getPrimaryIP($session->{'LAN_IPS'});
         $header = '<meta http-equiv="refresh" content="'.$refresh.'; URL=https://'.$ip.':10443/cgi-bin/main.cgi">';
     } else {
 	die('no "next" or "prev" defined');
@@ -1015,7 +1008,7 @@ sub print_template($) {
     init($config_base);
     init_session();
     init_ifacetools($session, \%par);
-    init_redtools($session, $settings);
+    init_wantools($session, $settings);
     init_ethconfig();
 
     load_values();
@@ -1035,10 +1028,10 @@ sub print_template($) {
     my $header = '';
 
     if ($reload eq 'YES DO IT') {
-	my ($primary,$ip,$mask,$cidr) = getPrimaryIP($session->{'GREEN_IPS'});
+	my ($primary,$ip,$mask,$cidr) = getPrimaryIP($session->{'LAN_IPS'});
         if ($pagename eq "firstwizard") {
 	    my %wizardhash;
-	    my $wizardfile = "/var/efw/wizard/settings";
+	    my $wizardfile = "/razwall/config/wizard/settings";
 	    readhash($wizardfile, \%wizardhash);
 	    my $state = uc($wizardhash{'WIZARD_STATE'});
 	    my $next = uc($wizardhash{"WIZARD_NEXT_$state"});

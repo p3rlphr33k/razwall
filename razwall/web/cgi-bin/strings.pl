@@ -1,13 +1,8 @@
 #
 #        +-----------------------------------------------------------------------------+
-#        | Endian Firewall                                                             |
+#        | RazWall Firewall                                                             |
 #        +-----------------------------------------------------------------------------+
-#        | Copyright (c) 2005-2006 Endian                                              |
-#        |         Endian GmbH/Srl                                                     |
-#        |         Bergweg 41 Via Monte                                                |
-#        |         39057 Eppan/Appiano                                                 |
-#        |         ITALIEN/ITALIA                                                      |
-#        |         info@endian.it                                                      |
+#        | Copyright (c) 2024 RazWall                                                  |
 #        |                                                                             |
 #        | This program is free software; you can redistribute it and/or               |
 #        | modify it under the terms of the GNU General Public License                 |
@@ -30,8 +25,8 @@
   'nw_adsl_type' => _('ADSL type'),
   'nw_auth_method' => _('Authentication method'),
   'nw_automatic' => _('automatic'),
-  'nw_blue_descr' => _('network segment for wireless clients (WIFI)'),
-  'nw_blue' => _('BLUE'),
+  'nw_lan2_descr' => _('network segment for wireless clients (WIFI)'),
+  'nw_lan2' => _('LAN2'),
   'nw_chap' => _('CHAP'),
   'nw_concentrator_name' => _('Concentrator name'),
   'nw_description' => _('Description'),
@@ -46,11 +41,11 @@
   'nw_field_blank' => _('This field may be blank.'),
   'nw_final_msg' => _('Congratulations!<br>Network setup is ready, click Ok to apply the new configuration.'),
   'nw_gateway' => _('Default gateway'),
-  'nw_green_changed_explain' => _('The IP address of GREEN has been changed. After relaunch (about 20 seconds) you can reach the webinterface on the new IP address by following the link'),
-  'nw_green_changed_proxy' => _('Remember to check if IP address blocks of services are still configured as you wish. Mainly check the configuration of "Network based access control" of the HTTP Proxy.'),
-  'nw_green_changed_link' => _('Web interface on the new address'),
-  'nw_green_descr' => _('trusted, internal network (LAN)'),
-  'nw_green' => _('GREEN'),
+  'nw_lan_changed_explain' => _('The IP address of LAN has been changed. After relaunch (about 20 seconds) you can reach the webinterface on the new IP address by following the link'),
+  'nw_lan_changed_proxy' => _('Remember to check if IP address blocks of services are still configured as you wish. Mainly check the configuration of "Network based access control" of the HTTP Proxy.'),
+  'nw_lan_changed_link' => _('Web interface on the new address'),
+  'nw_lan_descr' => _('trusted, internal network (LAN)'),
+  'nw_lan' => _('LAN'),
   'nw_hostname' => _('Hostname'),
   'nw_interface' => _('Interfaces'),
   'nr_interfaces' => _('Number of interfaces'),
@@ -67,8 +62,8 @@
   'nw_mtu' => _('MTU'),
   'nw_next' => _('>>>'),
   'nw_cancel' => _('Cancel'),
-  'nw_orange_descr' => _('network segment for servers accessible from internet (DMZ)'),
-  'nw_orange' => _('ORANGE'),
+  'nw_dmz_descr' => _('network segment for servers accessible from internet (DMZ)'),
+  'nw_dmz' => _('DMZ'),
   'nw_papchap' => _('PAP or CHAP'),
   'nw_pap' => _('PAP'),
   'nw_port' => _('Port'),
@@ -77,10 +72,10 @@
   'nw_pppoe' => _('PPPoE'),
   'nw_prev' => _('<<<'),
   'nw_network_modes' => _('Network modes'),
-  'nw_red_descr' => _('untrusted, internet connection (WAN)'),
-  'nw_red_is_dhcp' => _('RED gets the data from DHCP.'),
-  'nw_red' => _('RED'),
-  'nw_red_stealth' => ('Outgoing Interface'),
+  'nw_wan_descr' => _('untrusted, internet connection (WAN)'),
+  'nw_wan_is_dhcp' => _('WAN gets the data from DHCP.'),
+  'nw_wan' => _('WAN'),
+  'nw_wan_stealth' => ('Outgoing Interface'),
   'nw_static_gw' => _('Gateway'),
   'nw_static_ip' => _('Static ip'),
   'nw_static_netmask' => _('Netmask'),

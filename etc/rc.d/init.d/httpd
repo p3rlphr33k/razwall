@@ -33,15 +33,11 @@ prepare_cert() {
     # set temporary random file
     export RANDFILE=/root/.rnd
     echo "Generating https server key."
-    openssl genrsa -out \
-        /etc/httpd/server.key 1024 >/dev/null 2>&1
+    openssl genrsa -out /razwall/web/certs/server.key 1024 #>/dev/null 2>&1
     echo "Generating CSR"
-    cat /etc/certparams | sed "s/HOSTNAME/${HOSTNAME}/" | openssl \
-        req -new -key /razwall/web/certs/server.key -out /razwall/web/certs/server.csr >/dev/null 2>&1
+    cat /razwall/certparams | sed "s/HOSTNAME/${HOSTNAME}/" | openssl req -new -key /razwall/web/certs/server.key -out /razwall/web/certs/server.csr #>/dev/null 2>&1
     echo "Signing certificate"
-    openssl x509 -req -days 999999 -in \
-        /razwall/web/certs/server.csr -signkey /razwall/web/certs/server.key -out \
-        /razwall/web/certs/server.crt >/dev/null 2>&1
+    openssl x509 -req -days 999999 -in /razwall/web/certs/server.csr -signkey /razwall/web/certs/server.key -out /razwall/web/certs/server.crt #>/dev/null 2>&1
     # unset and remove random file
     export -n RANDFILE
     rm -f /root/.rnd

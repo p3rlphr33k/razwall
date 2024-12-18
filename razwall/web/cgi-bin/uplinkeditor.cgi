@@ -1,14 +1,9 @@
 #!/usr/bin/perl
 #
 #        +-----------------------------------------------------------------------------+
-#        | Endian Firewall                                                             |
+#        | RazWall Firewall                                                             |
 #        +-----------------------------------------------------------------------------+
-#        | Copyright (c) 2005-2006 Endian                                              |
-#        |         Endian GmbH/Srl                                                     |
-#        |         Bergweg 41 Via Monte                                                |
-#        |         39057 Eppan/Appiano                                                 |
-#        |         ITALIEN/ITALIA                                                      |
-#        |         info@endian.it                                                      |
+#        | Copyright (c) 2024 RazWall                                                  |
 #        |                                                                             |
 #        | This program is free software; you can redistribute it and/or               |
 #        | modify it under the terms of the GNU General Public License                 |
@@ -27,10 +22,9 @@
 #        +-----------------------------------------------------------------------------+
 #
 
-require 'ifacetools.pl';
-require 'netwizard_tools.pl';
+
 require 'header.pl';
-require 'ethconfig.pl';
+require 'razinc.pl';
 require 'modemtools.pl';
 
 use File::Path qw( rmtree );
@@ -68,25 +62,25 @@ my %device_used = ();
 my %uplink_networks = ();
 
 my %zones = (
-    'GREEN' => _('GREEN'),
-    'BLUE' => _('BLUE'),
-    'ORANGE' => _('ORANGE')
+    'LAN' => _('LAN'),
+    'LAN2' => _('LAN2'),
+    'DMZ' => _('DMZ')
 );
 
 my %zone_devices = (
-    'GREEN' => 'br0',
-    'ORANGE' => 'br1',
-    'BLUE' => 'br2'
+    'LAN' => 'br0',
+    'DMZ' => 'br1',
+    'LAN2' => 'br2'
 );
 
-my %red_names = ();
+my %wan_names = ();
 my %network_types = ();
 my %network_names = ("ROUTED" => _("Routed"), "BRIDGED" => _("Bridged"), "NOUPLINK" => _("No uplink"));
 my %network_labels = ("ROUTED" => _("Uplink type"), "BRIDGED" => "", "NOUPLINK" => "");
 
 foreach my $regfile (glob("/home/httpd/cgi-bin/uplinkType-*.pl")) {
     require $regfile;
-    $red_names{$uplink_code} = $uplink_name;
+    $wan_names{$uplink_code} = $uplink_name;
     if (exists $network_types{$network_type}) {
         push(@{$network_types{$network_type}}, $uplink_code);
     } else {
@@ -126,15 +120,15 @@ my %analog_modem_names = ("modem" => "Simple analog modem", "hsdpa" => "UMTS/HSD
 my @speeds = ('300', '1200', '2400', '4800', '9600', '19200', '38400', '57600', '115200', '230400', '460800');
 
 init_ethconfig();
-(my $ifaces, my $ifacesdata) = list_devices_description(3, 'RED|NONE', 1);
-(my $stealth_ifaces, my $stealth_ifacesdata) = list_devices_description(3, 'GREEN|ORANGE|BLUE', 1);
+(my $ifaces, my $ifacesdata) = list_devices_description(3, 'WAN|NONE', 1);
+(my $stealth_ifaces, my $stealth_ifacesdata) = list_devices_description(3, 'LAN|DMZ|LAN2', 1);
 
 my $adsl_modems = iterate_modems("adsl");
 my $isdn_modems = iterate_modems("isdn");
 my $modeminforef = iterate_comports();
 my @comports = @$modeminforef;
 
-my $uplinkdir = '/var/efw/uplinks';
+my $uplinkdir = '/razwall/config/uplinks';
 
 my $UP_PNG = '/images/stock_up-16.png';
 my $DOWN_PNG = '/images/stock_down-16.png';
@@ -172,8 +166,8 @@ sub check_device($$$) { #check if network device can be enabled
 
     foreach (@{get_uplinks()}) {
         my %u_info = get_uplink_info($_);
-        if ($u_info{'ENABLED'} eq "on" && $u_info{'ID'} ne $uplink && $u_info{'RED_DEV'} eq $dev) {
-            if (($u_info{'RED_TYPE'} ne $type) || ($u_info{'RED_TYPE'} ne "PPTP" && $u_info{'RED_TYPE'} ne "PPPOE")) {
+        if ($u_info{'ENABLED'} eq "on" && $u_info{'ID'} ne $uplink && $u_info{'WAN_DEV'} eq $dev) {
+            if (($u_info{'WAN_TYPE'} ne $type) || ($u_info{'WAN_TYPE'} ne "PPTP" && $u_info{'WAN_TYPE'} ne "PPPOE")) {
                 $notification = _("Could not enable Uplink. Device <b>%s</b> is already used by <b>%s</b>", $dev, $u_info{'NAME'});
                 return 1;
             }
@@ -183,60 +177,60 @@ sub check_device($$$) { #check if network device can be enabled
 }
 
 sub check_ips() {
-    my $redip = "";
-    if ($par{'RED_TYPE'} eq "STATIC" || ($par{'RED_TYPE'} eq "PPTP" && $par{'METHOD'} eq "STATIC")) {
-        if ($par{'RED_ADDRESS'} eq "") {
+    my $wanip = "";
+    if ($par{'WAN_TYPE'} eq "STATIC" || ($par{'WAN_TYPE'} eq "PPTP" && $par{'METHOD'} eq "STATIC")) {
+        if ($par{'WAN_ADDRESS'} eq "") {
             push(@errormessages, _("IP address must not be <b>empty</b>."));
             return;
         }
-        if ($par{'RED_NETMASK'} eq "") {
+        if ($par{'WAN_NETMASK'} eq "") {
             push(@errormessages, _("Netmask must not be <b>empty</b>."));
             return;
         }
-        $redip = $par{'RED_ADDRESS'}.'/'.$par{'RED_NETMASK'};
+        $wanip = $par{'WAN_ADDRESS'}.'/'.$par{'WAN_NETMASK'};
     }
     else {
-        $par{'RED_ADDRESS'} = "";
-        $par{'RED_NETMASK'} = "";
+        $par{'WAN_ADDRESS'} = "";
+        $par{'WAN_NETMASK'} = "";
     }
-    ($red_ips, $nok_ips) = createIPS($redip, $par{'RED_IPS'});
-    $par{'RED_IPS'} = $red_ips;
-    #$red_ips = $ok_ips;
+    ($wan_ips, $nok_ips) = createIPS($wanip, $par{'WAN_IPS'});
+    $par{'WAN_IPS'} = $wan_ips;
+    #$wan_ips = $ok_ips;
     if ($nok_ips eq "") {
-        foreach my $invalid (@{checkNetaddress($red_ips)}) {
+        foreach my $invalid (@{checkNetaddress($wan_ips)}) {
             push(@errormessages, _("The IP address '%s' is the same as its network address, which is not allowed!", $invalid));
         }
-        foreach my $invalid (@{checkBroadcast($red_ips)}) {
+        foreach my $invalid (@{checkBroadcast($wan_ips)}) {
             push(@errormessages, _("The IP address '%s' is the same as its broadcast address, which is not allowed!", $invalid));
         }
-        foreach my $invalid (@{checkInvalidMask($red_ips)}) {
+        foreach my $invalid (@{checkInvalidMask($wan_ips)}) {
             push(@errormessages, _("The network mask of the IP address '%s' addresses only 1 IP address, which will lock you out if applied. Choose another one!", $invalid));
         }
     }
     else {
         foreach my $nokip (split(/,/, $nok_ips)) {
-            push(@errormessages, _('The RED IP address or network mask "%s" is not correct.', $nokip));
+            push(@errormessages, _('The WAN IP address or network mask "%s" is not correct.', $nokip));
         }
     }
     foreach my $uplink (keys %uplink_networks) {
         if ($uplink eq $par{'ID'} || $uplink_networks{$uplink} eq "") {
             next;
         }
-        if (network_overlap($red_ips, $uplink_networks{$uplink},)) {
+        if (network_overlap($wan_ips, $uplink_networks{$uplink},)) {
             push(@errormessages, _('The networks of this uplink are not distinct with \'%s\' networks.', $uplink));
         }
     }
-    if (network_overlap($red_ips, $settings{'GREEN_IPS'},)) {
-        push(@errormessages, _('The RED and GREEN networks are not distinct.'));
+    if (network_overlap($wan_ips, $settings{'LAN_IPS'},)) {
+        push(@errormessages, _('The WAN and LAN networks are not distinct.'));
     }
-    if (orange_used()) {
-        if (network_overlap($red_ips, $settings{'ORANGE_IPS'},)) {
-            push(@errormessages, _('The RED and ORANGE networks are not distinct.'));
+    if (dmz_used()) {
+        if (network_overlap($wan_ips, $settings{'DMZ_IPS'},)) {
+            push(@errormessages, _('The WAN and DMZ networks are not distinct.'));
         }
     }
-    if (blue_used()) {
-        if (network_overlap($red_ips, $settings{'BLUE_IPS'})) {
-            push(@errormessages, _('The RED and BLUE networks are not distinct.'));
+    if (lan2_used()) {
+        if (network_overlap($wan_ips, $settings{'LAN2_IPS'})) {
+            push(@errormessages, _('The WAN and LAN2 networks are not distinct.'));
         }
     }
 }
@@ -271,7 +265,7 @@ sub getzonebydev($) {
     
     my $validzones=validzones();
     foreach my $zone (@$validzones) {
-        if ($zone eq 'RED') {
+        if ($zone eq 'WAN') {
             next;
         }
         foreach my $zone_dev (@{get_zone_devices($zone_devices{$zone})}) {
@@ -288,13 +282,13 @@ sub check_gateway() { #check if gateway is correct
     if ($par{'DEFAULT_GATEWAY'} eq "") {
         push(@errormessages, _("Default gateway must not be <b>empty</b>."));
     }
-    elsif ($par{'RED_TYPE'} eq "NONE") {
+    elsif ($par{'WAN_TYPE'} eq "NONE") {
         (my $valid, my $ip, my $mask) = check_ip($par{'DEFAULT_GATEWAY'}, '255.255.255.0');
         if (!$valid) {
             push(@errormessages, _('The gateway address is not correct.'));
         }
     }
-    elsif ($par{'RED_TYPE'} eq "STEALTH") {
+    elsif ($par{'WAN_TYPE'} eq "STEALTH") {
         my $gwzone = getzonebydev($par{'STEALTH_DEV'});
         if (! network_overlap($settings{$gwzone.'_IPS'}, $par{'DEFAULT_GATEWAY'}. '/32')) {
             push(@errormessages, _('Gateway must be within %s network.', $zones{$gwzone}));
@@ -306,17 +300,17 @@ sub check_gateway() { #check if gateway is correct
             push(@errormessages, _('The gateway address is not correct.'));
             return @errormessages
         }
-        if (network_overlap($settings{'GREEN_IPS'}, $par{'DEFAULT_GATEWAY'}. '/32')) {
-            push(@errormessages, _('The DEFAULT GATEWAY is within the GREEN network.'));
+        if (network_overlap($settings{'LAN_IPS'}, $par{'DEFAULT_GATEWAY'}. '/32')) {
+            push(@errormessages, _('The DEFAULT GATEWAY is within the LAN network.'));
         }
-        if (orange_used()) {
-            if (network_overlap($settings{'ORANGE_IPS'}, $par{'DEFAULT_GATEWAY'}. '/32')) {
-                push(@errormessages, _('The DEFAULT GATEWAY is within the ORANGE network.'));
+        if (dmz_used()) {
+            if (network_overlap($settings{'DMZ_IPS'}, $par{'DEFAULT_GATEWAY'}. '/32')) {
+                push(@errormessages, _('The DEFAULT GATEWAY is within the DMZ network.'));
             }
         }
-        if (blue_used()) {
-            if (network_overlap($settings{'BLUE_IPS'}, $par{'DEFAULT_GATEWAY'}. '/32')) {
-                push(@errormessages, _('The DEFAULT GATEWAY is within the BLUE network.'));
+        if (lan2_used()) {
+            if (network_overlap($settings{'LAN2_IPS'}, $par{'DEFAULT_GATEWAY'}. '/32')) {
+                push(@errormessages, _('The DEFAULT GATEWAY is within the LAN2 network.'));
             }
         }
     }
@@ -373,11 +367,11 @@ sub toggle_enable($$) {
     }
     if ($enable eq "on") {
         my %u_info = get_uplink_info($uplink);
-        my $used = check_device($uplink, $u_info{'RED_DEV'}, $u_info{'RED_TYPE'});
+        my $used = check_device($uplink, $u_info{'WAN_DEV'}, $u_info{'WAN_TYPE'});
         if ($used == 1) {
             return;
         }
-        my $used = check_allow($u_info{'RED_TYPE'});
+        my $used = check_allow($u_info{'WAN_TYPE'});
         if ($used == 1) {
             return;
         }
@@ -397,7 +391,7 @@ sub save_uplink() {
 
     my %config = ();
 
-    &readhash('/var/efw/ethernet/settings', \%settings);
+    &readhash('/razwall/config/ethernet/settings', \%settings);
 
     # check if it is the default profile
     if ($par{'NAME'} eq _("Main uplink")) {
@@ -413,10 +407,10 @@ sub save_uplink() {
 
     if ($save ne "main") {
         if ($name eq "") {
-            $name = sprintf "%s $red_names{$par{'RED_TYPE'}}", _("Uplink");
+            $name = sprintf "%s $wan_names{$par{'WAN_TYPE'}}", _("Uplink");
         }
         elsif ($name eq _("Main uplink")) {
-            $name = sprintf "%s $red_names{$par{'RED_TYPE'}}", _("Uplink");
+            $name = sprintf "%s $wan_names{$par{'WAN_TYPE'}}", _("Uplink");
         }
         if (($name ne $old_name)) {
             $i = 0;
@@ -462,8 +456,8 @@ sub save_uplink() {
         }
     }
     
-    if ($par{'RED_IPS_ACTIVE'} ne "on") {
-        $par{'RED_IPS'} = "";
+    if ($par{'WAN_IPS_ACTIVE'} ne "on") {
+        $par{'WAN_IPS'} = "";
     }
     if ($par{'BACKUPPROFILEACTIVE'} ne "on" || $par{'BACKUPPROFILE'} eq $par{'ID'}) {
         $par{'BACKUPPROFILE'} = "";
@@ -489,8 +483,8 @@ sub save_uplink() {
     }
 
     if ($par{'ENABLED'} eq "on") {
-        my $dev = $par{'RED_DEV'};
-        my $type = $par{'RED_TYPE'};
+        my $dev = $par{'WAN_DEV'};
+        my $type = $par{'WAN_TYPE'};
         if ($par{'NETWORK_TYPE'} eq "BRIDGED") {
             $dev = $par{'STEALTH_DEV'};
             $type = "STEALTH";
@@ -508,8 +502,8 @@ sub save_uplink() {
     }
 
     if ($par{'NETWORK_TYPE'} eq "NOUPLINK") {
-        $par{'RED_TYPE'} = "NONE";
-        $config{'RED_DEV'} = "";
+        $par{'WAN_TYPE'} = "NONE";
+        $config{'WAN_DEV'} = "";
         if ($par{'CHECKHOSTS'} eq "") {
             $par{'CHECKHOSTS'} = "127.0.0.1";
         }
@@ -520,8 +514,8 @@ sub save_uplink() {
         check_dns();
     }
     elsif ($par{'NETWORK_TYPE'} eq "BRIDGED") {
-        $par{'RED_TYPE'} = "STEALTH";
-        $config{'RED_DEV'} = $par{'STEALTH_DEV'};
+        $par{'WAN_TYPE'} = "STEALTH";
+        $config{'WAN_DEV'} = $par{'STEALTH_DEV'};
         
         if ($par{'CHECKHOSTS'} eq "") {
             $par{'CHECKHOSTS'} = "127.0.0.1";
@@ -532,8 +526,8 @@ sub save_uplink() {
         $par{'DNS'} = "on";
         check_dns();
     }
-    elsif ($par{'RED_TYPE'} eq "STATIC") {
-        $config{'RED_DEV'} = $par{'RED_DEV'};
+    elsif ($par{'WAN_TYPE'} eq "STATIC") {
+        $config{'WAN_DEV'} = $par{'WAN_DEV'};
         check_ips();
         check_gateway();
         $config{'DEFAULT_GATEWAY'} = $par{'DEFAULT_GATEWAY'};
@@ -542,18 +536,18 @@ sub save_uplink() {
         check_mac();
         $config{'MAC'} = $par{'MAC'};
     }
-    elsif ($par{'RED_TYPE'} eq "DHCP") {
-        $config{'RED_DEV'} = $par{'RED_DEV'};
-        $par{'RED_IPS'} = "";
+    elsif ($par{'WAN_TYPE'} eq "DHCP") {
+        $config{'WAN_DEV'} = $par{'WAN_DEV'};
+        $par{'WAN_IPS'} = "";
         check_ips();
         check_dns();
         check_mac();
         $config{'MAC'} = $par{'MAC'};
     }
-    elsif ($par{'RED_TYPE'} eq "PPPOE") {
+    elsif ($par{'WAN_TYPE'} eq "PPPOE") {
         $config{'METHOD'} = "PPPOE";
         $config{'PROTOCOL'} = "RFC1483";
-        $config{'RED_DEV'} = $par{'RED_DEV'};
+        $config{'WAN_DEV'} = $par{'WAN_DEV'};
         $config{'AUTH'} = $par{'AUTH'};
         check_ips();
         check_dns();
@@ -562,8 +556,8 @@ sub save_uplink() {
         $config{'CONCENTRATORNAME'} = $par{'CONCENTRATORNAME'};
         $config{'SERVICENAME'} = $par{'SERVICENAME'};
     }
-    elsif ($par{'RED_TYPE'} eq "PPTP") {
-        $config{'RED_DEV'} = $par{'RED_DEV'};
+    elsif ($par{'WAN_TYPE'} eq "PPTP") {
+        $config{'WAN_DEV'} = $par{'WAN_DEV'};
         $config{'METHOD'} = $par{'METHOD'};
         $config{'PHONENUMBER'} = $par{'TELEPHONE'};
         $config{'AUTH'} = $par{'AUTH'};
@@ -579,8 +573,8 @@ sub save_uplink() {
         check_mac();
         $config{'MAC'} = $par{'MAC'};
     }
-    elsif ($par{'RED_TYPE'} eq "ADSL") {
-        $config{'RED_DEV'} = "";
+    elsif ($par{'WAN_TYPE'} eq "ADSL") {
+        $config{'WAN_DEV'} = "";
         $config{'TYPE'} = $par{'ADSL_TYPE'};
         $config{'PROTOCOL'} = $par{'PROTOCOL'};
         $config{'METHOD'} = $par{'METHOD'};
@@ -615,8 +609,8 @@ sub save_uplink() {
             check_dns();
         }
     }
-    elsif ($par{'RED_TYPE'} eq "ISDN") {
-        $config{'RED_DEV'} = "";
+    elsif ($par{'WAN_TYPE'} eq "ISDN") {
+        $config{'WAN_DEV'} = "";
         $config{'TELEPHONE'} = $par{'TELEPHONE'};
         $config{'AUTH'} = $par{'AUTH'};
         $config{'MSN'} = $par{'MSN'};
@@ -625,8 +619,8 @@ sub save_uplink() {
         $config{'TYPE'} = $par{'ISDN_TYPE'};
         $config{'TIMEOUT'} = $par{'RECONNECT_TIMEOUT'};
     }
-    elsif ($par{'RED_TYPE'} eq "ANALOG") {
-        $config{'RED_DEV'} = "";
+    elsif ($par{'WAN_TYPE'} eq "ANALOG") {
+        $config{'WAN_DEV'} = "";
         $config{'TELEPHONE'} = $par{'TELEPHONE'};
         $config{'COMPORT'} = $par{'COMPORT'};
         $config{'MODEMTYPE'} = $par{'MODEMTYPE'};
@@ -637,7 +631,7 @@ sub save_uplink() {
         check_apn();
         $config{'APN'} = $par{'APN'};
     }
-    elsif ($par{'RED_TYPE'} eq "MODEM") {
+    elsif ($par{'WAN_TYPE'} eq "MODEM") {
         $config{'MM_MODEM'} = $par{'MM_MODEM'};
         $config{'MM_MODEM_TYPE'} = $par{'MM_MODEM_TYPE'};
 
@@ -649,7 +643,7 @@ sub save_uplink() {
         $config{'MM_PROVIDER_COUNTRY'} = $par{'MM_PROVIDER_COUNTRY'};
         $config{'MM_PROVIDER_PROVIDER'} = $par{'MM_PROVIDER_PROVIDER'};
         $config{'MM_PROVIDER_APN'} = $par{'MM_PROVIDER_APN'};
-        $config{'RED_DEV'} = "";
+        $config{'WAN_DEV'} = "";
         $config{'TELEPHONE'} = $par{'TELEPHONE'};
         $config{'AUTH'} = $par{'AUTH'};
         check_ips();
@@ -670,11 +664,11 @@ sub save_uplink() {
     }
     # check if errormessage is empty if not show the errors and do not save.
     if (scalar(@errormessages) eq 0) {
-        $config{'RED_TYPE'} = $par{'RED_TYPE'};
-        $config{'RED_ADDRESS'} = $par{'RED_ADDRESS'};
-        $config{'RED_NETMASK'} = $par{'RED_NETMASK'};
-        $config{'CIDR'} = $config{'RED_CIDR'};
-        $config{'RED_IPS'} = $par{'RED_IPS'};
+        $config{'WAN_TYPE'} = $par{'WAN_TYPE'};
+        $config{'WAN_ADDRESS'} = $par{'WAN_ADDRESS'};
+        $config{'WAN_NETMASK'} = $par{'WAN_NETMASK'};
+        $config{'CIDR'} = $config{'WAN_CIDR'};
+        $config{'WAN_IPS'} = $par{'WAN_IPS'};
         $config{'USERNAME'} = $par{'USERNAME'};
         $config{'PASSWORD'} = $par{'PASSWORD'};
         $config{'RECONNECT_TIMEOUT'} = $par{'RECONNECT_TIMEOUT'};
@@ -778,11 +772,11 @@ sub get_uplink_display() {
             $display{'folding_advanced'} = "open";
         }
     }
-    if ($par{'RED_TYPE'} eq "") {
-        $par{'RED_TYPE'} = "NONE";
+    if ($par{'WAN_TYPE'} eq "") {
+        $par{'WAN_TYPE'} = "NONE";
     }
-    if ($par{'RED_IPS_ACTIVE'} eq "on") {
-        $checked{'RED_IPS_ACTIVE'} = "checked=\"checked\"";
+    if ($par{'WAN_IPS_ACTIVE'} eq "on") {
+        $checked{'WAN_IPS_ACTIVE'} = "checked=\"checked\"";
     }
     if ($par{'MACACTIVE'} eq "on") {
         $checked{'MACACTIVE'} = "checked=\"checked\"";
@@ -795,7 +789,7 @@ sub get_uplink_display() {
     }
     if ($uplink ne "" || $#errormessages ne -1) {
         $button = _("Update uplink");
-        $selected{$par{'RED_TYPE'}} = "selected=\"selected\"";
+        $selected{$par{'WAN_TYPE'}} = "selected=\"selected\"";
     }
     else {
         $button = _("Create uplink");
@@ -827,13 +821,13 @@ sub show_uplink_types() {
             <tr>
                 <td style="width: 100px;">%s *</td>
                 <td>
-                    <select class="form" name="RED_DEV">
+                    <select class="form" name="WAN_DEV">
 EOF
     ,
     _("Device"),
     ;
     foreach $iface (@$ifaces) {
-        if ($iface->{'device'} eq $par{'RED_DEV'}) {
+        if ($iface->{'device'} eq $par{'WAN_DEV'}) {
             $selected = "selected=\"selected\"";
         }
         else {
@@ -870,7 +864,7 @@ EOF
         if ($#zone_dev le 0) {
             next;
         }
-        if ($iface->{'device'} eq $par{'RED_DEV'}) {
+        if ($iface->{'device'} eq $par{'WAN_DEV'}) {
             $selected = "selected=\"selected\"";
         }
         else {
@@ -1225,17 +1219,17 @@ EOF
         <table width="100%">
             <tr>
                 <td style="width: 100px;">%s *</td>
-                <td style="width: 150px;"><input class="form" type="text" maxlength="15" size="15" value="$par{'RED_ADDRESS'}" name="RED_ADDRESS"/></td>
+                <td style="width: 150px;"><input class="form" type="text" maxlength="15" size="15" value="$par{'WAN_ADDRESS'}" name="WAN_ADDRESS"/></td>
                 <td style="width: 10px;"></td>
                 <td style="width: 100px;">%s *</td>
-                <td><input class="form" type="text" maxlength="15" size="15" value="$par{'RED_NETMASK'}" name="RED_NETMASK"/></td>
+                <td><input class="form" type="text" maxlength="15" size="15" value="$par{'WAN_NETMASK'}" name="WAN_NETMASK"/></td>
             </tr>
         </table>
     </div>
     <div class="uplinktypes" id="uplinkipsactive" >
         <table width="100%">
             <tr>
-                <td><input class="form" type="checkbox" style="margin-left:0px;" name="RED_IPS_ACTIVE" $checked{'RED_IPS_ACTIVE'}/>&nbsp;%s</td>
+                <td><input class="form" type="checkbox" style="margin-left:0px;" name="WAN_IPS_ACTIVE" $checked{'WAN_IPS_ACTIVE'}/>&nbsp;%s</td>
             </tr>
         </table>
     </div>
@@ -1243,7 +1237,7 @@ EOF
         <table width="100%" >
             <tr style="padding-top: 0px;">
                 <td style="padding-top: 0px;">
-                    <textarea class="form" cols="30" rows="6" style="padding: 0px;" name="RED_IPS">$par{'RED_IPS'}</textarea>
+                    <textarea class="form" cols="30" rows="6" style="padding: 0px;" name="WAN_IPS">$par{'WAN_IPS'}</textarea>
                 </td>
             </tr>
         </table>
@@ -1456,22 +1450,22 @@ EOF
     foreach my $network_type (keys %network_types) {
         if ($#{$network_types{$network_type}} > 0) {
             printf <<EOF
-            <tr class="redtype $network_type">
+            <tr class="wantype $network_type">
                 <td style="width: 100px;">%s *</td>
                 <td>
-                    <select class="form" name="RED_TYPE" id="type_chooser">
+                    <select class="form" name="WAN_TYPE" id="type_chooser">
 EOF
             ,
             _("Uplink type"),
             ;
             foreach $type (@{$network_types{$network_type}}) {
-                if ($type eq $par{'RED_TYPE'}) {
+                if ($type eq $par{'WAN_TYPE'}) {
                     $selected = "selected=\"selected\"";
                 } else {
                     undef $selected;
                 }
                 printf <<EOF
-                        <option value="$type" $selected>$red_names{$type}</option>
+                        <option value="$type" $selected>$wan_names{$type}</option>
 EOF
                 ,
                 ;
@@ -1618,27 +1612,27 @@ EOF
         foreach $uplink (@uplinklist) {
             %uplink_info = get_uplink_info($uplink);
             
-            if ($uplink_info{'RED_TYPE'} eq "NONE") {
+            if ($uplink_info{'WAN_TYPE'} eq "NONE") {
                 $uplink_info{'NETWORK_TYPE'} = "NOUPLINK";
-            } elsif ($uplink_info{'RED_TYPE'} eq "STEALTH") {
-                $uplink_info{'STEALTH_DEV'} = $uplink_info{'RED_DEV'};
+            } elsif ($uplink_info{'WAN_TYPE'} eq "STEALTH") {
+                $uplink_info{'STEALTH_DEV'} = $uplink_info{'WAN_DEV'};
                 $uplink_info{'NETWORK_TYPE'} = "BRIDGED";
             } else {
                 $uplink_info{'NETWORK_TYPE'} = "ROUTED";
             }
             
-            my ($primary, $ip, $mask, $cidr) = getPrimaryIP($uplink_info{'RED_IPS'});
-            $uplink_info{'RED_ADDRESS'} = $ip;
-            $uplink_info{'RED_NETMASK'} = $mask;
+            my ($primary, $ip, $mask, $cidr) = getPrimaryIP($uplink_info{'WAN_IPS'});
+            $uplink_info{'WAN_ADDRESS'} = $ip;
+            $uplink_info{'WAN_NETMASK'} = $mask;
             $uplink_info{'CIDR'} = $cidr;
             $uplink_info{'MACACTIVE'} = $uplink_info{'MAC'} eq "" ? "" : "on";
-            if ($uplink_info{'RED_TYPE'} eq "STATIC" || $uplink_info{'RED_TYPE'} eq "PPTP") {
-                $uplink_info{'RED_IPS'} = getAdditionalIPs($uplink_info{'RED_IPS'});
+            if ($uplink_info{'WAN_TYPE'} eq "STATIC" || $uplink_info{'WAN_TYPE'} eq "PPTP") {
+                $uplink_info{'WAN_IPS'} = getAdditionalIPs($uplink_info{'WAN_IPS'});
             }
-            if ($uplink_info{'RED_TYPE'} eq "PPTP") {
+            if ($uplink_info{'WAN_TYPE'} eq "PPTP") {
                 $uplink_info{'TELEPHONE'} = $uplink_info{'PHONENUMBER'};
             }
-            if ($uplink_info{'RED_TYPE'} eq "ISDN") {
+            if ($uplink_info{'WAN_TYPE'} eq "ISDN") {
                 $uplink_info{'ISDN_TYPE'} = $uplink_info{'TYPE'};
             }
             my $enabled_gif = $DISABLED_PNG;
@@ -1661,14 +1655,14 @@ EOF
         <tr class="$color" id="row_$uplink">
             <td>$uplink</td>
             <td>$uplink_info{'NAME'}</td>
-            <td>$red_names{$uplink_info{'RED_TYPE'}}</td>
+            <td>$wan_names{$uplink_info{'WAN_TYPE'}}</td>
             <td>$uplink_info{'BACKUPPROFILENAME'}</td>
             <td class="actions">
                 <form method="post" action="$ENV{'SCRIPT_NAME'}" style="float:left">
                   <input class='imagebutton' type='image' name="submit" src="$enabled_gif" alt="$enabled_alt" />
                   <input TYPE="hidden" name="ACTION" value="$enabled_action">
                   <input TYPE="hidden" name="ID" value="$uplink">
-                  <input class="form" type="hidden" name="OLD_RED_TYPE" value="$par{'OLD_RED_TYPE'}" />
+                  <input class="form" type="hidden" name="OLD_WAN_TYPE" value="$par{'OLD_WAN_TYPE'}" />
                 </form>
                 <input class="imagebutton" type="image" name="edituplink" value="$uplink" src="$EDIT_PNG" alt="%s" title="%s" />
                 <input type="hidden" class="$uplink" name="rowcolor" value="$color" />
@@ -1777,7 +1771,7 @@ sub reload_par() {
     if ($par{'BACKUPPROFILEACTIVE'} ne "on") {
         $par{'BACKUPPROFILE'} = "";
     }
-    $par{'RED_IPS'} =~ s/,/\n/g;
+    $par{'WAN_IPS'} =~ s/,/\n/g;
     $par{'CHECKHOSTS'} =~ s/,/\n/g;
     @uplinklist = @{get_uplinks()};
 }
@@ -1789,17 +1783,17 @@ $notification = "";
 reload_par();
 
 for my $uplink (@uplinklist) {
-    my %tmp = get_uplink_info($uplink); #check if maximum amount of the red_type is reached
-    $uplink_networks{$uplink} = $tmp{'RED_IPS'};
+    my %tmp = get_uplink_info($uplink); #check if maximum amount of the wan_type is reached
+    $uplink_networks{$uplink} = $tmp{'WAN_IPS'};
     if ($tmp{'ENABLED'} eq "on") {  #check which devices are already used
-        if (($tmp{'RED_TYPE'} eq "STATIC") || ($tmp{'RED_TYPE'} eq "DHCP") || ($tmp{'RED_TYPE'} eq "PPPOE") || ($tmp{'RED_TYPE'} eq "PPTP")) {
-            $device_used{$tmp{'RED_DEV'}} = $uplink;
+        if (($tmp{'WAN_TYPE'} eq "STATIC") || ($tmp{'WAN_TYPE'} eq "DHCP") || ($tmp{'WAN_TYPE'} eq "PPPOE") || ($tmp{'WAN_TYPE'} eq "PPTP")) {
+            $device_used{$tmp{'WAN_DEV'}} = $uplink;
         }
     } else {
         next;
     }
-    if ($allow{$tmp{'RED_TYPE'}} > 0) {
-        $allow{$tmp{'RED_TYPE'}}--;
+    if ($allow{$tmp{'WAN_TYPE'}} > 0) {
+        $allow{$tmp{'WAN_TYPE'}}--;
     }
 }
 

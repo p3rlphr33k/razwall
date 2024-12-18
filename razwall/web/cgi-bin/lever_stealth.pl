@@ -1,13 +1,8 @@
 #
 #        +-----------------------------------------------------------------------------+
-#        | Endian Firewall                                                             |
+#        | RazWall Firewall                                                             |
 #        +-----------------------------------------------------------------------------+
-#        | Copyright (c) 2005-2006 Endian                                              |
-#        |         Endian GmbH/Srl                                                     |
-#        |         Bergweg 41 Via Monte                                                |
-#        |         39057 Eppan/Appiano                                                 |
-#        |         ITALIEN/ITALIA                                                      |
-#        |         info@endian.it                                                      |
+#        | Copyright (c) 2024 RazWall                                                  |
 #        |                                                                             |
 #        | This program is free software; you can redistribute it and/or               |
 #        | modify it under the terms of the GNU General Public License                 |
@@ -26,8 +21,8 @@
 #        +-----------------------------------------------------------------------------+
 #
 
-require '/razwall/web/cgi-bin/ifacetools.pl';
-require '/razwall/web/cgi-bin/redtools.pl';
+require 'razinc.pl';
+require 'wantools.pl';
 
 my %substeps = ();
 my $session = 0;
@@ -43,9 +38,9 @@ my %substeps = (
 my $substepnum = scalar(keys(%substeps));
 
 my %zones = (
-    'GREEN' => _('GREEN'),
-    'BLUE' => _('BLUE'),
-    'ORANGE' => _('ORANGE'),
+    'LAN' => _('LAN'),
+    'LAN2' => _('LAN2'),
+    'DMZ' => _('DMZ'),
     );
 
 my @static_keys=(
@@ -54,9 +49,9 @@ my @static_keys=(
 
          'ENABLED',
          
-         'RED_DEV',
+         'WAN_DEV',
          'DEFAULT_GATEWAY',
-         'RED_TYPE',
+         'WAN_TYPE',
 
          'CHECKHOSTS',
          'AUTOSTART',
@@ -74,7 +69,7 @@ sub lever_init($$$$$) {
     $live_data = shift;
 
     init_ifacetools($session, $par);
-    init_redtools($session, $settings);
+    init_wantools($session, $settings);
 }
 
 
@@ -96,7 +91,7 @@ sub enable_zones_with_min_two_ifaces($) {
         $ifacesnr{$zone} = $#ifaces+1;
     }
 
-    my $red_dev = pick_device($session->{'RED_DEVICES'});
+    my $wan_dev = pick_device($session->{'WAN_DEVICES'});
     foreach my $item (@$ifaces) {
         my $selected = $item->{'DEV_LOOP_SELECTED'};
         my $checked = $item->{'DEV_LOOP_CHECKED'};
@@ -108,7 +103,7 @@ sub enable_zones_with_min_two_ifaces($) {
             $selected = '';
             $checked = '';
         }
-        elsif ($red_dev eq $item->{'DEV_LOOP_DEVICE'}) {
+        elsif ($wan_dev eq $item->{'DEV_LOOP_DEVICE'}) {
             $selected = 'selected';
             $checked = 'checked';
         }
@@ -130,7 +125,7 @@ sub lever_prepare_values() {
         $session->{'DNS_N'} = '1';
         $ifaces = create_ifaces_list('');
         enable_zones_with_min_two_ifaces($ifaces);
-        $tpl_ph->{'IFACE_RED_LOOP'} = $ifaces;
+        $tpl_ph->{'IFACE_WAN_LOOP'} = $ifaces;
         return;
     }
     return;
@@ -152,9 +147,9 @@ sub lever_savedata() {
             $session->{'DNS_N'} = $par->{'DNS_N'};
         }
 
-        my $ifacelist = ifnum2device($par->{'RED_DEVICES'});
+        my $ifacelist = ifnum2device($par->{'WAN_DEVICES'});
             if ($ifacelist =~ /^$/) {
-                my $zone = _('RED');
+                my $zone = _('WAN');
             $err .= _('Please select at least one interface for zone %s!', $zone).'<BR><BR>';
             }
 
@@ -173,8 +168,8 @@ sub lever_savedata() {
             return $err;
         }
 
-        my $selected_device = getifbynum(pick_device($par->{'RED_DEVICES'}))->{'device'};
-        $session->{'RED_DEVICES'} = $selected_device;
+        my $selected_device = getifbynum(pick_device($par->{'WAN_DEVICES'}))->{'device'};
+        $session->{'WAN_DEVICES'} = $selected_device;
 
         my $gwzone = getzonebyiface($selected_device);
         if (! network_overlap($session->{$gwzone.'_IPS'}, $session->{'DEFAULT_GATEWAY'}. '/32')) {
@@ -187,8 +182,8 @@ sub lever_savedata() {
 }
 
 sub lever_apply() {
-    $session->{'RED_DEV'} = pick_device($session->{'RED_DEVICES'});
-    save_red('main', select_from_hash(\@static_keys, $session));
+    $session->{'WAN_DEV'} = pick_device($session->{'WAN_DEVICES'});
+    save_wan('main', select_from_hash(\@static_keys, $session));
     return;
 }
 

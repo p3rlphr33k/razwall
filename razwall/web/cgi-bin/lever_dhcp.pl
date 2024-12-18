@@ -1,13 +1,8 @@
 #
 #        +-----------------------------------------------------------------------------+
-#        | Endian Firewall                                                             |
+#        | RazWall Firewall                                                             |
 #        +-----------------------------------------------------------------------------+
-#        | Copyright (c) 2005-2006 Endian                                              |
-#        |         Endian GmbH/Srl                                                     |
-#        |         Bergweg 41 Via Monte                                                |
-#        |         39057 Eppan/Appiano                                                 |
-#        |         ITALIEN/ITALIA                                                      |
-#        |         info@endian.it                                                      |
+#        | Copyright (c) 2024 RazWall                                                  |
 #        |                                                                             |
 #        | This program is free software; you can redistribute it and/or               |
 #        | modify it under the terms of the GNU General Public License                 |
@@ -26,8 +21,8 @@
 #        +-----------------------------------------------------------------------------+
 #
 
-require '/razwall/web/cgi-bin/ifacetools.pl';
-require '/razwall/web/cgi-bin/redtools.pl';
+require 'razinc.pl';
+require 'wantools.pl';
 
 my %substeps = ();
 my $session = 0;
@@ -51,8 +46,8 @@ my @static_keys=(
 
 		 'BACKUPPROFILE',
 		 'ENABLED',
-		 'RED_TYPE',
-		 'RED_DEV',
+		 'WAN_TYPE',
+		 'WAN_DEV',
 		 'CHECKHOSTS',
 		 'AUTOSTART',
 		 'ONBOOT',
@@ -68,7 +63,7 @@ sub lever_init($$$$$) {
     $live_data = shift;
 
     init_ifacetools($session, $par);
-    init_redtools($session, $settings);
+    init_wantools($session, $settings);
 }
 
 
@@ -89,7 +84,7 @@ sub lever_prepare_values() {
 	} else {
 	    $session->{'DNS_N'} = '1';
 	}
-	$tpl_ph->{'IFACE_RED_LOOP'} = create_ifaces_list('RED');
+	$tpl_ph->{'IFACE_WAN_LOOP'} = create_ifaces_list('WAN');
 	return;
     }
     return;
@@ -107,15 +102,15 @@ sub lever_savedata() {
     if ($substep eq '1') {
 	$session->{'DNS_N'} = $par->{'DNS_N'};
 	
-	my $ifacelist = ifnum2device($par->{'RED_DEVICES'});
-	my $reterr = check_iface_free($ifacelist, 'RED');
+	my $ifacelist = ifnum2device($par->{'WAN_DEVICES'});
+	my $reterr = check_iface_free($ifacelist, 'WAN');
     	if ($reterr) {
 	    $err .= $reterr;
     	} else {
-	    $session->{'RED_DEVICES'} = $ifacelist;
+	    $session->{'WAN_DEVICES'} = $ifacelist;
 	}
         if ($ifacelist =~ /^$/) {
-            my $zone = _('RED');
+            my $zone = _('WAN');
 	    $err .= _('Please select at least one interface for zone %s!', $zone).'<BR><BR>';
         }
         if ($par->{'MTU'} !~ /^$/) {
@@ -140,12 +135,12 @@ sub lever_savedata() {
 }
 
 sub lever_apply() {
-    $session->{'RED_DEV'} = pick_device($session->{'RED_DEVICES'});
+    $session->{'WAN_DEV'} = pick_device($session->{'WAN_DEVICES'});
     if ($session->{'DNS_N'} == 0) {
 	$session->{'DNS1'} = "";
 	$session->{'DNS2'} = "";
     }
-    save_red('main', select_from_hash(\@static_keys, $session));
+    save_wan('main', select_from_hash(\@static_keys, $session));
     return;
 }
 

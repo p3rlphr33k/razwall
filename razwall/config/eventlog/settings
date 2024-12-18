@@ -1,0 +1,4 @@
+ACTION_MAIL=custom
+EVENT_ADMINMAIL=bryan.donarski@gflibrary.com
+EVENT_MAILFROM=administrator@gflibrary.com
+EVENT_SMARTHOST=192.168.19.19

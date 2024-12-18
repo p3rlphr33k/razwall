@@ -1,18 +1,9 @@
 #!/usr/bin/perl
 #
-# P3Scan CGI for Endian Firewall
-#
-
-#
 #        +-----------------------------------------------------------------------------+
-#        | Endian Firewall                                                             |
+#        | RazWall Firewall                                                             |
 #        +-----------------------------------------------------------------------------+
-#        | Copyright (c) 2005-2006 Endian                                              |
-#        |         Endian GmbH/Srl                                                     |
-#        |         Bergweg 41 Via Monte                                                |
-#        |         39057 Eppan/Appiano                                                 |
-#        |         ITALIEN/ITALIA                                                      |
-#        |         info@endian.it                                                      |
+#        | Copyright (c) 2024 RazWall                                                  |
 #        |                                                                             |
 #        | This program is free software; you can redistribute it and/or               |
 #        | modify it under the terms of the GNU General Public License                 |
@@ -87,16 +78,16 @@ if ($par{ACTION} eq 'save') {
         $conf->{'LOG_FIREWALL'} = $par{'LOG_FIREWALL'} eq 'on' ? 'on' : 'off';
         $needrestart = 1;
     }
-    if (($par{'P3SCAN_GREEN_ENABLE'} eq 'on' ? 'on' : 'off') ne $conf->{'P3SCAN_GREEN_ENABLE'}) {
-        $conf->{'P3SCAN_GREEN_ENABLE'} = $par{'P3SCAN_GREEN_ENABLE'} eq 'on' ? 'on' : 'off';
+    if (($par{'P3SCAN_LAN_ENABLE'} eq 'on' ? 'on' : 'off') ne $conf->{'P3SCAN_LAN_ENABLE'}) {
+        $conf->{'P3SCAN_LAN_ENABLE'} = $par{'P3SCAN_LAN_ENABLE'} eq 'on' ? 'on' : 'off';
         $needrestart = 1;
     }
-    if (($par{'P3SCAN_BLUE_ENABLE'} eq 'on' ? 'on' : 'off') ne $conf->{'P3SCAN_BLUE_ENABLE'}) {
-        $conf->{'P3SCAN_BLUE_ENABLE'} = $par{'P3SCAN_BLUE_ENABLE'} eq 'on' ? 'on' : 'off';
+    if (($par{'P3SCAN_LAN2_ENABLE'} eq 'on' ? 'on' : 'off') ne $conf->{'P3SCAN_LAN2_ENABLE'}) {
+        $conf->{'P3SCAN_LAN2_ENABLE'} = $par{'P3SCAN_LAN2_ENABLE'} eq 'on' ? 'on' : 'off';
         $needrestart = 1;
     }
-    if (($par{'P3SCAN_ORANGE_ENABLE'} eq 'on' ? 'on' : 'off') ne $conf->{'P3SCAN_ORANGE_ENABLE'}) {
-        $conf->{'P3SCAN_ORANGE_ENABLE'} = $par{'P3SCAN_ORANGE_ENABLE'} eq 'on' ? 'on' : 'off';
+    if (($par{'P3SCAN_DMZ_ENABLE'} eq 'on' ? 'on' : 'off') ne $conf->{'P3SCAN_DMZ_ENABLE'}) {
+        $conf->{'P3SCAN_DMZ_ENABLE'} = $par{'P3SCAN_DMZ_ENABLE'} eq 'on' ? 'on' : 'off';
         $needrestart = 1;
     }
 
@@ -108,9 +99,9 @@ if ($par{ACTION} eq 'save') {
         print OUT "IGNORE_TLS=$conf->{IGNORE_TLS}\n";
         print OUT "JUSTDELETE=$conf->{JUSTDELETE}\n";
         print OUT "LOG_FIREWALL=$conf->{'LOG_FIREWALL'}\n";
-        print OUT "P3SCAN_GREEN_ENABLE=$conf->{'P3SCAN_GREEN_ENABLE'}\n";
-        print OUT "P3SCAN_BLUE_ENABLE=$conf->{'P3SCAN_BLUE_ENABLE'}\n";
-        print OUT "P3SCAN_ORANGE_ENABLE=$conf->{'P3SCAN_ORANGE_ENABLE'}\n";
+        print OUT "P3SCAN_LAN_ENABLE=$conf->{'P3SCAN_LAN_ENABLE'}\n";
+        print OUT "P3SCAN_LAN2_ENABLE=$conf->{'P3SCAN_LAN2_ENABLE'}\n";
+        print OUT "P3SCAN_DMZ_ENABLE=$conf->{'P3SCAN_DMZ_ENABLE'}\n";
         close OUT;
     }
 
@@ -147,18 +138,18 @@ printf <<EOF
   <tr valign="top">
     <td class='base'>%s <font color="$colourgreen">Green</font>:</td>
     <td class="base">
-      <input type='checkbox' name='P3SCAN_GREEN_ENABLE' $checked{$conf->{'P3SCAN_GREEN_ENABLE'}} value='on' />
+      <input type='checkbox' name='P3SCAN_LAN_ENABLE' $checked{$conf->{'P3SCAN_LAN_ENABLE'}} value='on' />
     </td>
 EOF
 ,
 _('Enabled on')
 ;
 
-if (blue_used()) {
+if (lan2_used()) {
     printf <<EOF
-    <td class='base'>%s <font color="$colourblue">Blue</font>:</td>
+    <td class='base'>%s <font color="$colourlan2">Blue</font>:</td>
     <td class="base">
-      <input type='checkbox' name='P3SCAN_BLUE_ENABLE' $checked{$conf->{'P3SCAN_BLUE_ENABLE'}} value='on' />
+      <input type='checkbox' name='P3SCAN_LAN2_ENABLE' $checked{$conf->{'P3SCAN_LAN2_ENABLE'}} value='on' />
     </td>
 EOF
 ,_('Enabled on')
@@ -171,12 +162,12 @@ EOF
 }
 print "</tr>";
 
-if (orange_used()) {
+if (dmz_used()) {
     printf <<EOF
   <tr>
-    <td class='base'>%s <font color="$colourorange">Orange</font>:</td>
+    <td class='base'>%s <font color="$colourdmz">Orange</font>:</td>
     <td class="base">
-      <input type='checkbox' name='P3SCAN_ORANGE_ENABLE' $checked{$conf->{'P3SCAN_ORANGE_ENABLE'}} value='on' />
+      <input type='checkbox' name='P3SCAN_DMZ_ENABLE' $checked{$conf->{'P3SCAN_DMZ_ENABLE'}} value='on' />
     </td>
     <td colspan="2">&nbsp;</td>
   </tr>

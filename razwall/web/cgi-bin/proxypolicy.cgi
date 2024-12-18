@@ -1,17 +1,9 @@
 #!/usr/bin/perl
 #
-# HTTP Proxy CGI for Endian Firewall
-#
-#
 #        +-----------------------------------------------------------------------------+
-#        | Endian Firewall                                                             |
+#        | RazWall Firewall                                                             |
 #        +-----------------------------------------------------------------------------+
-#        | Copyright (c) 2005-2006 Endian                                              |
-#        |         Endian GmbH/Srl                                                     |
-#        |         Bergweg 41 Via Monte                                                |
-#        |         39057 Eppan/Appiano                                                 |
-#        |         ITALIEN/ITALIA                                                      |
-#        |         info@endian.it                                                      |
+#        | Copyright (c) 2024 RazWall                                                  |
 #        |                                                                             |
 #        | This program is free software; you can redistribute it and/or               |
 #        | modify it under the terms of the GNU General Public License                 |
@@ -33,7 +25,7 @@
 # -------------------------------------------------------------
 # some definitions
 # -------------------------------------------------------------
-require '/razwall/web/cgi-bin/proxy.pl';
+require 'proxy.pl';
 
 sub get_timeframefield_widget($$) {
     my $params_ref = shift;
@@ -114,7 +106,7 @@ sub get_policyrules($$$$) {
     my @valid_zones = @$valid_zones_ref;
     my @zones = ();
     foreach $zone (@valid_zones) {
-        if (uc($zone) eq "RED") {
+        if (uc($zone) eq "WAN") {
             next;
         }
         push(@zones, {V_VALUE => uc($zone), T_OPTION => uc($zone)});
@@ -280,7 +272,7 @@ sub get_policyrules($$$$) {
     
     my @zones = ();
     foreach $zone (@valid_zones) {
-        if (uc($zone) eq "RED") {
+        if (uc($zone) eq "WAN") {
             next;
         }
         push(@zones, {V_VALUE => uc($zone), T_OPTION => uc($zone)});
@@ -529,16 +521,16 @@ sub get_policyrules($$$$) {
         
         my $source = $splitted{'src'};
         $source =~ s/\|/<br\/>/g;
-        $source =~ s/GREEN/<font color='$colourgreen'>GREEN<\/font>/g;
-        $source =~ s/ORANGE/<font color='$colourorange'>ORANGE<\/font>/g;
-        $source =~ s/BLUE/<font color='$colourblue'>BLUE<\/font>/g;
+        $source =~ s/LAN/<font color='$colourgreen'>LAN<\/font>/g;
+        $source =~ s/DMZ/<font color='$colourorange'>DMZ<\/font>/g;
+        $source =~ s/LAN2/<font color='$colourblue'>LAN2<\/font>/g;
         push(@cols, {V_CELL_CONTENT => $source eq "" ? "<b>" . _("ANY") . "</b>" : $source});
         
         my $destination = $splitted{'dst'};
         $destination =~ s/\|/<br\/>/g;
-        $destination =~ s/GREEN/<font color='$colourgreen'>GREEN<\/font>/g;
-        $destination =~ s/ORANGE/<font color='$colourorange'>ORANGE<\/font>/g;
-        $destination =~ s/BLUE/<font color='$colourblue'>BLUE<\/font>/g;
+        $destination =~ s/LAN/<font color='$colourgreen'>LAN<\/font>/g;
+        $destination =~ s/DMZ/<font color='$colourorange'>DMZ<\/font>/g;
+        $destination =~ s/LAN2/<font color='$colourblue'>LAN2<\/font>/g;
         push(@cols, {V_CELL_CONTENT => $destination eq "" ? "<b>" . _("ANY") . "</b>" : $destination});
         
         my $auth = _("not required");

@@ -1,0 +1,258 @@
+[
+    {
+        "custom_script": "",
+        "email_enabled": false,
+        "evtcode": "10100011",
+        "id": "10100011",
+        "script_enabled": false,
+        "sms_enabled": false
+    },
+    {
+        "custom_script": "",
+        "email_enabled": false,
+        "evtcode": "10100026",
+        "id": "10100026",
+        "script_enabled": false,
+        "sms_enabled": false
+    },
+    {
+        "custom_script": "",
+        "email_enabled": false,
+        "evtcode": "10100038",
+        "id": "10100038",
+        "script_enabled": false,
+        "sms_enabled": false
+    },
+    {
+        "custom_script": "",
+        "email_enabled": false,
+        "evtcode": "20100036",
+        "id": "20100036",
+        "script_enabled": false,
+        "sms_enabled": false
+    },
+    {
+        "custom_script": "",
+        "email_enabled": false,
+        "evtcode": "20100044",
+        "id": "20100044",
+        "script_enabled": false,
+        "sms_enabled": false
+    },
+    {
+        "custom_script": "",
+        "email_enabled": false,
+        "evtcode": "20100054",
+        "id": "20100054",
+        "script_enabled": false,
+        "sms_enabled": false
+    },
+    {
+        "custom_script": "",
+        "email_enabled": false,
+        "evtcode": "20200018",
+        "id": "20200018",
+        "script_enabled": false,
+        "sms_enabled": false
+    },
+    {
+        "custom_script": "",
+        "email_enabled": false,
+        "evtcode": "20200024",
+        "id": "20200024",
+        "script_enabled": false,
+        "sms_enabled": false
+    },
+    {
+        "custom_script": "",
+        "email_enabled": true,
+        "evtcode": "20300014",
+        "id": "20300014",
+        "script_enabled": false,
+        "sms_enabled": false
+    },
+    {
+        "custom_script": "",
+        "email_enabled": true,
+        "evtcode": "30100018",
+        "id": "30100018",
+        "script_enabled": false,
+        "sms_enabled": false
+    },
+    {
+        "custom_script": "",
+        "email_enabled": true,
+        "evtcode": "30100021",
+        "id": "30100021",
+        "script_enabled": false,
+        "sms_enabled": false
+    },
+    {
+        "custom_script": "",
+        "email_enabled": false,
+        "evtcode": "20100016",
+        "id": "20100016",
+        "script_enabled": false,
+        "sms_enabled": false
+    },
+    {
+        "custom_script": "",
+        "email_enabled": false,
+        "evtcode": "20100024",
+        "id": "20100024",
+        "script_enabled": false,
+        "sms_enabled": false
+    },
+    {
+        "custom_script": "",
+        "email_enabled": false,
+        "evtcode": "20110030",
+        "id": "20110030",
+        "script_enabled": false,
+        "sms_enabled": false
+    },
+    {
+        "custom_script": "",
+        "email_enabled": false,
+        "evtcode": "20110046",
+        "id": "20110046",
+        "script_enabled": false,
+        "sms_enabled": false
+    },
+    {
+        "custom_script": "",
+        "email_enabled": false,
+        "evtcode": "20110054",
+        "id": "20110054",
+        "script_enabled": false,
+        "sms_enabled": false
+    },
+    {
+        "custom_script": "",
+        "email_enabled": false,
+        "evtcode": "20110066",
+        "id": "20110066",
+        "script_enabled": false,
+        "sms_enabled": false
+    },
+    {
+        "custom_script": "",
+        "email_enabled": true,
+        "evtcode": 30100038,
+        "id": "30100038",
+        "script_enabled": false,
+        "sms_enabled": false
+    },
+    {
+        "custom_script": "",
+        "email_enabled": true,
+        "evtcode": 40100016,
+        "id": "40100016",
+        "script_enabled": false,
+        "sms_enabled": false
+    },
+    {
+        "custom_script": "",
+        "email_enabled": true,
+        "evtcode": 40100024,
+        "id": "40100024",
+        "script_enabled": false,
+        "sms_enabled": false
+    },
+    {
+        "custom_script": "",
+        "email_enabled": true,
+        "evtcode": 40100034,
+        "id": "40100034",
+        "script_enabled": false,
+        "sms_enabled": false
+    },
+    {
+        "custom_script": "",
+        "email_enabled": false,
+        "evtcode": "20800014",
+        "id": "20800014",
+        "script_enabled": false,
+        "sms_enabled": false
+    },
+    {
+        "custom_script": "",
+        "email_enabled": false,
+        "evtcode": "20800088",
+        "id": "20800088",
+        "script_enabled": false,
+        "sms_enabled": false
+    },
+    {
+        "custom_script": "",
+        "email_enabled": false,
+        "evtcode": "20800024",
+        "id": "20800024",
+        "script_enabled": false,
+        "sms_enabled": false
+    },
+    {
+        "custom_script": "",
+        "email_enabled": false,
+        "evtcode": "20800034",
+        "id": "20800034",
+        "script_enabled": false,
+        "sms_enabled": false
+    },
+    {
+        "custom_script": "",
+        "email_enabled": false,
+        "evtcode": "20800048",
+        "id": "20800048",
+        "script_enabled": false,
+        "sms_enabled": false
+    },
+    {
+        "custom_script": "",
+        "email_enabled": false,
+        "evtcode": "20800068",
+        "id": "20800068",
+        "script_enabled": false,
+        "sms_enabled": false
+    },
+    {
+        "custom_script": "",
+        "email_enabled": false,
+        "evtcode": "20800078",
+        "id": "20800078",
+        "script_enabled": false,
+        "sms_enabled": false
+    },
+    {
+        "custom_script": "",
+        "email_enabled": false,
+        "evtcode": "20800058",
+        "id": "20800058",
+        "script_enabled": false,
+        "sms_enabled": false
+    },
+    {
+        "custom_script": "",
+        "email_enabled": false,
+        "evtcode": "20400014",
+        "id": "20400014",
+        "script_enabled": false,
+        "sms_enabled": false
+    },
+    {
+        "custom_script": "",
+        "email_enabled": false,
+        "evtcode": "20700018",
+        "id": "20700018",
+        "script_enabled": false,
+        "sms_enabled": false
+    },
+    {
+        "custom_script": "",
+        "email_enabled": false,
+        "evtcode": "20700028",
+        "id": "20700028",
+        "script_enabled": false,
+        "sms_enabled": false
+    }
+]

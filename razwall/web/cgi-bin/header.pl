@@ -44,16 +44,16 @@ sub check_user_profile() {
     foreach my $f (glob('/usr/lib/efw/auth/guiuser*.default')) {
         $guiuser_filename = $f;
     }
-    if (-f '/var/efw/auth/guiuser') {
-        $guiuser_filename = '/var/efw/auth/guiuser';
+    if (-f '/razwall/config/auth/guiuser') {
+        $guiuser_filename = '/razwall/config/auth/guiuser';
     }
 
     my $guiprofile_filename = "";
     foreach my $f (glob('/usr/lib/efw/auth/guiprofile*.default')) {
         $guiprofile_filename = $f;
     }
-    if (-f '/var/efw/auth/guiprofile') {
-        $guiprofile_filename = '/var/efw/auth/guiprofile';
+    if (-f '/razwall/config/auth/guiprofile') {
+        $guiprofile_filename = '/razwall/config/auth/guiprofile';
     }
 
     $user = $ENV{'REMOTE_USER'};
@@ -118,14 +118,14 @@ sub escape_quotes($) {
 
 sub get_major_version() {
     my %version_settings = ();
-    &readhash("/var/efw/version/settings", \%version_settings);
+    &readhash("/razwall/config/version/settings", \%version_settings);
     my $major_version = $version_settings{'MAJOR_VERSION'} ne "" ? $version_settings{'MAJOR_VERSION'} : "";
     return $major_version;
 }
 
 sub get_minor_version() {
     my %version_settings = ();
-    &readhash("/var/efw/version/settings", \%version_settings);
+    &readhash("/razwall/config/version/settings", \%version_settings);
     my $minor_version = $version_settings{'MINOR_VERSION'} ne "" ? $version_settings{'MINOR_VERSION'} : "";
     return $minor_version;
 }
@@ -168,13 +168,13 @@ sub get_version_info() {
 
 sub get_documentation_type() {
     my %productsettings = ();
-    &readhash("/var/efw/product/settings", \%productsettings);
+    &readhash("/razwall/config/product/settings", \%productsettings);
     return $productsettings{'DOCUMENTATION_TYPE'} ne "" ? $productsettings{'DOCUMENTATION_TYPE'} : "";
 }
 
 sub get_settings_product_name() {
     my %productsettings = ();
-    &readhash("/var/efw/product/settings", \%productsettings);
+    &readhash("/razwall/config/product/settings", \%productsettings);
     return $productsettings{'PRODUCT_NAME'};
 }
 
@@ -237,7 +237,7 @@ $network_name = $brand.' '.$en_brand;
 # Is the firewall branded?
 $branded = 0;
 $revision = 'final';
-$swroot = '/var/efw';
+$swroot = '/razwall/config';
 $pagecolour = '#ffffff';
 #$tablecolour = '#a0a0a0';
 $tablecolour = '#FFFFFF';
@@ -269,9 +269,9 @@ my $useFlavour = 'main';
 @URI = ();
 $supported=0;
 
-$HOTSPOT_ENABLED = '/var/efw/hotspot/enabled';
+$HOTSPOT_ENABLED = '/razwall/config/hotspot/enabled';
 
-$DOWNLOADJOB_TIMESTAMPS = '/var/efw/download/timestamps';
+$DOWNLOADJOB_TIMESTAMPS = '/razwall/config/download/timestamps';
 
 $ALLOW_PNG = '/images/stock_ok.png';
 $DENY_PNG = '/images/stock_stop.png';
@@ -286,7 +286,7 @@ $OPTIONAL_PNG = '/images/blob.png';
 $CLEAR_PNG = '/images/clear.gif';
 
 $PERSISTENT_DIR = '/usr/lib/efw/';
-$USER_DIR = '/var/efw/';
+$USER_DIR = '/razwall/config/';
 $STATE_DIR = '/var/lib/efw/';
 $PROVISIONING_DIR = '/var/emc/';
 $VENDOR_DIR = 'vendor';
@@ -908,7 +908,7 @@ sub get_helpuri($) {
     
     # Retrieve product settings
     my %productsettings = ();
-    &readhash("/var/efw/product/settings", \%productsettings);
+    &readhash("/razwall/config/product/settings", \%productsettings);
     
     # Retrieve brand settings
     my %brandsettings = ();
@@ -1713,7 +1713,7 @@ sub cleanhtml
 sub connectionstatus
 {
         my $status;
-        opendir UPLINKS, "/var/efw/uplinks" or die "Cannot read uplinks: $!";
+        opendir UPLINKS, "/razwall/config/uplinks" or die "Cannot read uplinks: $!";
                 foreach my $uplink (sort grep !/^\./, readdir UPLINKS) {
                     if ( -f "${swroot}/uplinks/${uplink}/active") {
                         if ( ! $status ) {
@@ -2104,7 +2104,7 @@ sub get_wan_ifaces() {
 sub get_zone_devices($) {
     my $bridge = shift;
     my @ifaces = ();
-    $filename = searchplainfile("/var/efw/ethernet/$bridge");
+    $filename = searchplainfile("/razwall/config/ethernet/$bridge");
     open (FILE, $filename) || return "";
     foreach my $line (<FILE>) {
 	chomp($line);
@@ -2278,7 +2278,7 @@ sub joinbridge($$) {
     my $bridge_ifaces = get_zone_devices($bridge);
     return if (grep (/^$device$/, @$bridge_ifaces));
 
-    my $file = "/var/efw/ethernet/$bridge";
+    my $file = "/razwall/config/ethernet/$bridge";
     if (!open(F, ">>$file")) {
         warn("Could not open '$file' because $!");
         return;
@@ -2292,7 +2292,7 @@ sub removefrombridge($$) {
     my $device = shift;
     my $bridge_ifaces = get_zone_devices($bridge);
 
-    my $file = "/var/efw/ethernet/$bridge";
+    my $file = "/razwall/config/ethernet/$bridge";
     if (!open(F, ">$file")) {
         warn("Could not open '$file' because $!");
         return;
@@ -2716,10 +2716,10 @@ sub readplainhash($) {
     # basic cases:
     #
     # 1) /usr/lib/efw/XXX/default/settings
-    # 2) /var/efw/XXX/default/settings
+    # 2) /razwall/config/XXX/default/settings
     # 3) /usr/lib/efw/XXX/vendor/settings
     # 4) /var/emc/XXX/vendor/settings
-    # 5) /var/efw/XXX/vendor/settings
+    # 5) /razwall/config/XXX/vendor/settings
     # 6) /var/lib/efw/XXX/default/settings
     #
     # - every default and vendor case searches also for ../ and ../../
@@ -2792,12 +2792,12 @@ sub readhash($$) {
     # basic cases:
     #
     # 1) /usr/lib/efw/XXX/default/settings
-    # 2) /var/efw/XXX/default/settings
+    # 2) /razwall/config/XXX/default/settings
     # 3) /usr/lib/efw/XXX/vendor/settings
-    # 4) /var/efw/XXX/vendor/settings
+    # 4) /razwall/config/XXX/vendor/settings
     # 5) /var/lib/efw/XXX/default/settings
-    # 6) /var/efw/XXX/settings
-    # 7) /var/efw/XXX/settings
+    # 6) /razwall/config/XXX/settings
+    # 7) /razwall/config/XXX/settings
     # 8) /var/lib/efw/XXX/settings
     #
     # - every default and vendor case searches also for ../ and ../../
@@ -2866,7 +2866,7 @@ sub readhash($$) {
 	return;
     }
 
-    # if it is not a file beginning with /var/efw
+    # if it is not a file beginning with /razwall/config
     # fall back to old mode
     if (! -e $filename) {
 	return;
@@ -2880,10 +2880,10 @@ sub searchplainfile($) {
 
     # basic cases:
     #
-    # 1) /var/efw/XXX/settings
+    # 1) /razwall/config/XXX/settings
     # 2) /var/lib/efw/XXX/settings
     # 3) /usr/lib/efw/XXX/default/settings
-    # 4) /var/efw/XXX/default/settings
+    # 4) /razwall/config/XXX/default/settings
     # 5) /var/lib/efw/XXX/default/settings
     #
     # - every default case searches also for ../ and ../../
@@ -2934,7 +2934,7 @@ sub searchplainfile($) {
 	return;
     }
 
-    # if it is not a file beginning with /var/efw
+    # if it is not a file beginning with /razwall/config
     # fall back to old mode
     if (! -e $filename) {
 	return '';

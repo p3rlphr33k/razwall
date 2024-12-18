@@ -1,13 +1,8 @@
 #
 #        +-----------------------------------------------------------------------------+
-#        | Endian Firewall                                                             |
+#        | RazWall Firewall                                                             |
 #        +-----------------------------------------------------------------------------+
-#        | Copyright (c) 2005-2006 Endian                                              |
-#        |         Endian GmbH/Srl                                                     |
-#        |         Bergweg 41 Via Monte                                                |
-#        |         39057 Eppan/Appiano                                                 |
-#        |         ITALIEN/ITALIA                                                      |
-#        |         info@endian.it                                                      |
+#        | Copyright (c) 2024 RazWall                                                  |
 #        |                                                                             |
 #        | This program is free software; you can redistribute it and/or               |
 #        | modify it under the terms of the GNU General Public License                 |
@@ -26,8 +21,8 @@
 #        +-----------------------------------------------------------------------------+
 #
 
-require '/razwall/web/cgi-bin/ifacetools.pl';
-require '/razwall/web/cgi-bin/redtools.pl';
+require 'razinc.pl';
+require 'wantools.pl';
 
 my %substeps = ();
 my $session = 0;
@@ -37,12 +32,12 @@ my $tpl_ph = 0;
 my $live_data = 0;
 
 my @static_keys = (
-		   'RED_TYPE',
+		   'WAN_TYPE',
 		   'DNS1',
 		   'DNS2',
 		   'DEFAULT_GATEWAY',
 		   'CHECKHOSTS',
-		   'RED_DEV',
+		   'WAN_DEV',
 
 		   'AUTOSTART',
 		   'ONBOOT',
@@ -64,7 +59,7 @@ sub lever_init($$$$$) {
     $live_data = shift;
 
     init_ifacetools($session, $par);
-    init_redtools($session, $settings);
+    init_wantools($session, $settings);
 }
 
 
@@ -97,7 +92,7 @@ sub lever_savedata() {
     my ($ok, $ip, $mask) = (0,0,0);
     ($ok, $ip, $mask) = check_ip($par->{'DEFAULT_GATEWAY'}, '255.255.255.0');
     if (! $ok) {
-	$err .= _('The RED IP address or network mask is not correct.'). '<BR>';
+	$err .= _('The WAN IP address or network mask is not correct.'). '<BR>';
     } else {
 	$session->{'DEFAULT_GATEWAY'} = $ip;
     }
@@ -106,11 +101,11 @@ sub lever_savedata() {
 }
 
 sub lever_apply() {
-    $session->{'RED_DEV'} = $session->{'GREEN_DEV'};
+    $session->{'WAN_DEV'} = $session->{'LAN_DEV'};
     if (! $session->{'CHECKHOSTS'}) {
 	$session->{'CHECKHOSTS'} = "127.0.0.1";
     }
-    save_red('main', select_from_hash(\@static_keys, $session));
+    save_wan('main', select_from_hash(\@static_keys, $session));
     return;
 }
 

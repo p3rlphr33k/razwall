@@ -1,30 +1,27 @@
-# +--------------------------------------------------------------------------+
-# | Endian Firewall                                                          |
-# +--------------------------------------------------------------------------+
-# | Copyright (c) 2012-2013 Endian                                           |
-# |         Endian GmbH/Srl                                                  |
-# |         Bergweg 41 Via Monte                                             |
-# |         39057 Eppan/Appiano                                              |
-# |         ITALIEN/ITALIA                                                   |
-# |         info@endian.com                                                  |
-# |                                                                          |
-# | efw-ipsec is free software: you can redistribute it and/or modify it     |
-# | under the terms of GNU General Public License (GPL) version 2.0          |
-# | when released with the Community edition                                 |
-# | or the GNU Lesser General Public License (LGPL) version 2.1              |
-# | when released with the Enterprise edition.                               |
-# |                                                                          |
-# | efw-ipsec is distributed in the hope that it will be useful,             |
-# | but WITHOUT ANY WARRANTY; without even the implied warranty of           |
-# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the             |
-# | GNU General Public License for more details or the                       |
-# | GNU Lesser General Public License for more details.                      |
-# |                                                                          |
-# | You should have received a copy of the license along with efw-ipsec.     |
-# | If not, see <http://www.gnu.org/licenses/>.                              |
-# +--------------------------------------------------------------------------+
+#
+#        +-----------------------------------------------------------------------------+
+#        | RazWall Firewall                                                             |
+#        +-----------------------------------------------------------------------------+
+#        | Copyright (c) 2024 RazWall                                                  |
+#        |                                                                             |
+#        | This program is free software; you can redistribute it and/or               |
+#        | modify it under the terms of the GNU General Public License                 |
+#        | as published by the Free Software Foundation; either version 2              |
+#        | of the License, or (at your option) any later version.                      |
+#        |                                                                             |
+#        | This program is distributed in the hope that it will be useful,             |
+#        | but WITHOUT ANY WARRANTY; without even the implied warranty of              |
+#        | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               |
+#        | GNU General Public License for more details.                                |
+#        |                                                                             |
+#        | You should have received a copy of the GNU General Public License           |
+#        | along with this program; if not, write to the Free Software                 |
+#        | Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA. |
+#        | http://www.fsf.org/                                                         |
+#        +-----------------------------------------------------------------------------+
+#
 require 'header.pl';
-require '/razwall/web/cgi-bin/endianinc.pl';
+require 'razinc.pl';
 
 my $ipsec = ['charon', '/var/run/strongswan/charon.pid', ''];
 register_status(_('VPN (IPsec)'), $ipsec);

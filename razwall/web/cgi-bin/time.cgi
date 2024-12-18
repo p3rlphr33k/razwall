@@ -1,18 +1,29 @@
 #!/usr/bin/perl
 #
-# IPCop CGIs
+#        +-----------------------------------------------------------------------------+
+#        | RazWall Firewall                                                             |
+#        +-----------------------------------------------------------------------------+
+#        | Copyright (c) 2024 RazWall                                                  |
+#        |                                                                             |
+#        | This program is free software; you can redistribute it and/or               |
+#        | modify it under the terms of the GNU General Public License                 |
+#        | as published by the Free Software Foundation; either version 2              |
+#        | of the License, or (at your option) any later version.                      |
+#        |                                                                             |
+#        | This program is distributed in the hope that it will be useful,             |
+#        | but WITHOUT ANY WARRANTY; without even the implied warranty of              |
+#        | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               |
+#        | GNU General Public License for more details.                                |
+#        |                                                                             |
+#        | You should have received a copy of the GNU General Public License           |
+#        | along with this program; if not, write to the Free Software                 |
+#        | Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA. |
+#        | http://www.fsf.org/                                                         |
+#        +-----------------------------------------------------------------------------+
 #
-# This file is part of the IPCop Project
-# 
-# This code is distributed under the terms of the GPL
-#
-# (c) Eric Oberlander June 2002
-#
-# (c) Darren Critchley June 2003 - added real time clock setting, etc
-
 require 'header.pl';
 
-my $conffile = '/var/efw/time/settings';
+my $conffile = '/razwall/config/time/settings';
 #my $enabled = 0;
 my %conf_hash = ();
 my $conf = \%conf_hash;
@@ -20,7 +31,7 @@ my $restart = 'jobcontrol restart ntp';
 my $sync = 'jobcontrol call ntp.sync';
 my $update_time = 'jobcontrol call ntp.update_time --timestamp=';
 my %checked     = ( 0 => '', 1 => 'checked', 'on' => 'checked');
-my $mainsettings = '/var/efw/main/settings';
+my $mainsettings = '/razwall/config/main/settings';
 
 
 my %par;

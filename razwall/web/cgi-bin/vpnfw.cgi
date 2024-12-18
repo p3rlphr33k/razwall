@@ -1,30 +1,28 @@
 #!/usr/bin/perl
-# +--------------------------------------------------------------------------+
-# | Endian Firewall                                                          |
-# +--------------------------------------------------------------------------+
-# | Copyright (c) 2005-2016 Endian S.p.A. <info@endian.com>                  |
-# |         Endian S.p.A.                                                    |
-# |         via Pillhof 47                                                   |
-# |         39057 Appiano (BZ)                                               |
-# |         Italy                                                            |
-# |                                                                          |
-# | This program is free software; you can redistribute it and/or modify     |
-# | it under the terms of the GNU General Public License as published by     |
-# | the Free Software Foundation; either version 2 of the License, or        |
-# | (at your option) any later version.                                      |
-# |                                                                          |
-# | This program is distributed in the hope that it will be useful,          |
-# | but WITHOUT ANY WARRANTY; without even the implied warranty of           |
-# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            |
-# | GNU General Public License for more details.                             |
-# |                                                                          |
-# | You should have received a copy of the GNU General Public License along  |
-# | with this program; if not, write to the Free Software Foundation, Inc.,  |
-# | 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.              |
-# +--------------------------------------------------------------------------+
-
+#
+#        +-----------------------------------------------------------------------------+
+#        | RazWall Firewall                                                             |
+#        +-----------------------------------------------------------------------------+
+#        | Copyright (c) 2024 RazWall                                                  |
+#        |                                                                             |
+#        | This program is free software; you can redistribute it and/or               |
+#        | modify it under the terms of the GNU General Public License                 |
+#        | as published by the Free Software Foundation; either version 2              |
+#        | of the License, or (at your option) any later version.                      |
+#        |                                                                             |
+#        | This program is distributed in the hope that it will be useful,             |
+#        | but WITHOUT ANY WARRANTY; without even the implied warranty of              |
+#        | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               |
+#        | GNU General Public License for more details.                                |
+#        |                                                                             |
+#        | You should have received a copy of the GNU General Public License           |
+#        | along with this program; if not, write to the Free Software                 |
+#        | Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA. |
+#        | http://www.fsf.org/                                                         |
+#        +-----------------------------------------------------------------------------+
+#
 require 'header.pl';
-require 'ethconfig.pl';
+require 'razinc.pl';
 my $l2tp = 0;
 eval {
     require l2tplib;
@@ -68,18 +66,18 @@ my $vpnfw = \%vpnfwhash;
 my $devices, $deviceshash = 0;
 
 my $services_file = '/usr/lib/efw/vpnfw/services';
-my $services_custom_file = '/var/efw/vpnfw/services.custom';
+my $services_custom_file = '/razwall/config/vpnfw/services.custom';
 
 my %openvpnstring = (
-    'GREEN' => '',
-    'ORANGE' => '',
-    'BLUE' => '',
+    'LAN' => '',
+    'DMZ' => '',
+    'LAN2' => '',
 );
 
 my %openvpn_server_per_zone = (
-    'GREEN' => [],
-    'ORANGE' => [],
-    'BLUE' => [],
+    'LAN' => [],
+    'DMZ' => [],
+    'LAN2' => [],
 );
 
 my @vpn_servers = `$openvpn_servers_cmd`;
@@ -112,9 +110,9 @@ sub have_net($) {
 
     # AAAAAAARGH! dumb fools
     my %net_config = (
-        'GREEN' => [1,1,1,1,1,1,1,1,1,1],
-        'ORANGE' => [0,1,0,3,0,5,0,7,0,0],
-        'BLUE' => [0,0,0,0,4,5,6,7,0,0]
+        'LAN' => [1,1,1,1,1,1,1,1,1,1],
+        'DMZ' => [0,1,0,3,0,5,0,7,0,0],
+        'LAN2' => [0,0,0,0,4,5,6,7,0,0]
     );
 
     if ($net_config{$net}[$ether{'CONFIG_TYPE'}] > 0) {
@@ -136,7 +134,7 @@ sub server_in_bridged($) {
 }
 
 sub configure_nets() {
-    my @totest = ('GREEN', 'BLUE', 'ORANGE');
+    my @totest = ('LAN', 'LAN2', 'DMZ');
 
     foreach (@totest) {
         my $thisnet = $_;
@@ -599,7 +597,7 @@ sub generate_addressing($$$$) {
         }
         elsif ($item =~ /^UPLINK:(.*)$/) {
             my $ul = get_uplink_label($1);
-            push(@addr_values, "<font color='". $zonecolors{'RED'} ."'>"._('Uplink')." ".$ul->{'name'}."</font>");
+            push(@addr_values, "<font color='". $zonecolors{'WAN'} ."'>"._('Uplink')." ".$ul->{'name'}."</font>");
         }
         elsif ($item =~ /^L2TPDEVICE:(.*)$/) {
             my $user = $1;
@@ -1533,9 +1531,9 @@ EOF
     printf <<EOF
                             <div id='dst_dev_v' style='display:$foil{'title'}{'dst_dev'}' style="width: 250px; height: 90px;">
                                 <select name="dst_dev" multiple style="width: 250px; height: 90px;">
-                                    <option value="RED" $selected{'dst_dev'}{'RED'}>%s</option>
+                                    <option value="WAN" $selected{'dst_dev'}{'WAN'}>%s</option>
 EOF
-    , $strings_zone{'RED'}
+    , $strings_zone{'WAN'}
     ;
     foreach my $item (@nets) {
 	printf <<EOF
@@ -1583,7 +1581,7 @@ EOF
                                     <option value='$key' $selected{'dst_dev'}{$key}>%s $desc [%s]</option>
 EOF
         , _('Uplink')
-        , _('RED')
+        , _('WAN')
         ;
     }
     printf <<EOF
@@ -1915,7 +1913,7 @@ my $extraheader = '<script language="JavaScript" src="/include/firewall_type.js"
 
 init_ethconfig();
 configure_nets();
-($devices, $deviceshash) = list_devices_description(3, 'GREEN|ORANGE|BLUE', 0);
+($devices, $deviceshash) = list_devices_description(3, 'LAN|DMZ|LAN2', 0);
 save();
 
 if ($reload) {

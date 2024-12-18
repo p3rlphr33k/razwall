@@ -1,17 +1,9 @@
 #!/usr/bin/perl
 #
-# Backup CGI for Endian Firewall
-#
-#
 #        +-----------------------------------------------------------------------------+
-#        | Endian Firewall                                                             |
+#        | RazWall Firewall                                                             |
 #        +-----------------------------------------------------------------------------+
-#        | Copyright (c) 2005-2008 Endian                                              |
-#        |         Endian GmbH/Srl                                                     |
-#        |         Bergweg 41 Via Monte                                                |
-#        |         39057 Eppan/Appiano                                                 |
-#        |         ITALIEN/ITALIA                                                      |
-#        |         info@endian.it                                                      |
+#        | Copyright (c) 2024 RazWall                                                  |
 #        |                                                                             |
 #        | This program is free software; you can redistribute it and/or               |
 #        | modify it under the terms of the GNU General Public License                 |
@@ -31,7 +23,7 @@
 #
 
 
-require '/razwall/web/cgi-bin/backup-lib.cgi';
+require 'backup-lib.cgi';
 
 $usbstickdetected=`mount | grep '/mnt/usbstick' 2>/dev/null`;
 $virtualization=`/usr/bin/rpm -q efw-virtualization | grep endian`;

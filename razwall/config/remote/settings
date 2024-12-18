@@ -1,0 +1,3 @@
+ENABLE_SSH_KEYS=off
+ENABLE_SSH_PROTOCOL1=
+perform_switch=1

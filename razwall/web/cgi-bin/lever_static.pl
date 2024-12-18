@@ -1,13 +1,8 @@
 #
 #        +-----------------------------------------------------------------------------+
-#        | Endian Firewall                                                             |
+#        | RazWall Firewall                                                             |
 #        +-----------------------------------------------------------------------------+
-#        | Copyright (c) 2005-2006 Endian                                              |
-#        |         Endian GmbH/Srl                                                     |
-#        |         Bergweg 41 Via Monte                                                |
-#        |         39057 Eppan/Appiano                                                 |
-#        |         ITALIEN/ITALIA                                                      |
-#        |         info@endian.it                                                      |
+#        | Copyright (c) 2024 RazWall                                                  |
 #        |                                                                             |
 #        | This program is free software; you can redistribute it and/or               |
 #        | modify it under the terms of the GNU General Public License                 |
@@ -26,8 +21,8 @@
 #        +-----------------------------------------------------------------------------+
 #
 
-require '/razwall/web/cgi-bin/ifacetools.pl';
-require '/razwall/web/cgi-bin/redtools.pl';
+require 'razinc.pl';
+require 'wantools.pl';
 
 my %substeps = ();
 my $session = 0;
@@ -52,15 +47,15 @@ my @static_keys=(
 		 'BACKUPPROFILE',
 		 'ENABLED',
 		 
-		 'RED_DEV',
-		 'RED_ADDRESS',
-		 'RED_NETMASK',
-		 'RED_CIDR',
-		 'RED_NETADDRESS',
-		 'RED_BROADCAST',
+		 'WAN_DEV',
+		 'WAN_ADDRESS',
+		 'WAN_NETMASK',
+		 'WAN_CIDR',
+		 'WAN_NETADDRESS',
+		 'WAN_BROADCAST',
 		 'DEFAULT_GATEWAY',
-		 'RED_TYPE',
-		 'RED_IPS',
+		 'WAN_TYPE',
+		 'WAN_IPS',
 
 		 'CHECKHOSTS',
 		 'AUTOSTART',
@@ -78,7 +73,7 @@ sub lever_init($$$$$) {
     $live_data = shift;
 
     init_ifacetools($session, $par);
-    init_redtools($session, $settings);
+    init_wantools($session, $settings);
 }
 
 
@@ -97,12 +92,12 @@ sub lever_prepare_values() {
     if ($substep eq '1') {
 	$session->{'DNS_N'} = '1';
 
-	my ($primary, $ip, $mask, $cidr) = getPrimaryIP($session->{'RED_IPS'});
-	$tpl_ph->{'DISPLAY_RED_ADDRESS'} = $ip;
-	$tpl_ph->{'DISPLAY_RED_NETMASK_LOOP'} = loadNetmasks($cidr);
-	$tpl_ph->{'DISPLAY_RED_ADDITIONAL'} = getAdditionalIPs($session->{'RED_IPS'});
-	$tpl_ph->{'DISPLAY_RED_ADDITIONAL'} =~ s/,/\n/g;
-	$tpl_ph->{'IFACE_RED_LOOP'} = create_ifaces_list('RED');
+	my ($primary, $ip, $mask, $cidr) = getPrimaryIP($session->{'WAN_IPS'});
+	$tpl_ph->{'DISPLAY_WAN_ADDRESS'} = $ip;
+	$tpl_ph->{'DISPLAY_WAN_NETMASK_LOOP'} = loadNetmasks($cidr);
+	$tpl_ph->{'DISPLAY_WAN_ADDITIONAL'} = getAdditionalIPs($session->{'WAN_IPS'});
+	$tpl_ph->{'DISPLAY_WAN_ADDITIONAL'} =~ s/,/\n/g;
+	$tpl_ph->{'IFACE_WAN_LOOP'} = create_ifaces_list('WAN');
 	return;
     }
     return;
@@ -124,15 +119,15 @@ sub lever_savedata() {
 	    $session->{'DNS_N'} = $par->{'DNS_N'};
 	}
 
-	my $ifacelist = ifnum2device($par->{'RED_DEVICES'});
-	my $reterr = check_iface_free($ifacelist, 'RED');
+	my $ifacelist = ifnum2device($par->{'WAN_DEVICES'});
+	my $reterr = check_iface_free($ifacelist, 'WAN');
 	if ($reterr) {
 	    $err .= $reterr;
 	} else {
-	    $session->{'RED_DEVICES'} = $ifacelist;
+	    $session->{'WAN_DEVICES'} = $ifacelist;
 	}
         if ($ifacelist =~ /^$/) {
-            my $zone = _('RED');
+            my $zone = _('WAN');
 	    $err .= _('Please select at least one interface for zone %s!', $zone).'<BR><BR>';
         }
 
@@ -158,12 +153,12 @@ sub lever_savedata() {
 	    return $err;
 	}
 
-	my ($ok_ips, $nok_ips) = createIPS($par->{'DISPLAY_RED_ADDRESS'}.'/'.$par->{'DISPLAY_RED_NETMASK'}, $par->{'DISPLAY_RED_ADDITIONAL'});
+	my ($ok_ips, $nok_ips) = createIPS($par->{'DISPLAY_WAN_ADDRESS'}.'/'.$par->{'DISPLAY_WAN_NETMASK'}, $par->{'DISPLAY_WAN_ADDITIONAL'});
 	if ($nok_ips eq '') {
-	    $session->{'RED_IPS'} = $ok_ips;
+	    $session->{'WAN_IPS'} = $ok_ips;
 	} else {
 	    foreach my $nokip (split(/,/, $nok_ips)) {
-		$err .= _('The RED IP address or network mask "%s" is not correct.', $nokip).'<BR>';
+		$err .= _('The WAN IP address or network mask "%s" is not correct.', $nokip).'<BR>';
 	    }
 	}
 
@@ -179,26 +174,26 @@ sub lever_savedata() {
 	    return $err;
 	}
 
-	if (network_overlap($session->{'RED_IPS'}, $session->{'GREEN_IPS'})) {
-	    $err .= _('The RED and GREEN networks are not distinct.').'<BR>';
+	if (network_overlap($session->{'WAN_IPS'}, $session->{'LAN_IPS'})) {
+	    $err .= _('The WAN and LAN networks are not distinct.').'<BR>';
 	}
-	if (network_overlap($session->{'GREEN_IPS'}, $session->{'DEFAULT_GATEWAY'}. '/32')) {
-	    $err .= _('The DEFAULT GATEWAY is within the GREEN network.').'<BR>';
+	if (network_overlap($session->{'LAN_IPS'}, $session->{'DEFAULT_GATEWAY'}. '/32')) {
+	    $err .= _('The DEFAULT GATEWAY is within the LAN network.').'<BR>';
 	}
-	if (orange_used()) {
-	    if (network_overlap($session->{'RED_IPS'}, $session->{'ORANGE_IPS'},)) {
-		$err .= _('The RED and ORANGE networks are not distinct.').'<BR>';
+	if (dmz_used()) {
+	    if (network_overlap($session->{'WAN_IPS'}, $session->{'DMZ_IPS'},)) {
+		$err .= _('The WAN and DMZ networks are not distinct.').'<BR>';
 	    }
-	    if (network_overlap($session->{'ORANGE_IPS'}, $session->{'DEFAULT_GATEWAY'}. '/32')) {
-		$err .= _('The DEFAULT GATEWAY is within the ORANGE network.').'<BR>';
+	    if (network_overlap($session->{'DMZ_IPS'}, $session->{'DEFAULT_GATEWAY'}. '/32')) {
+		$err .= _('The DEFAULT GATEWAY is within the DMZ network.').'<BR>';
 	    }
 	}
-	if (blue_used()) {
-	    if (network_overlap($session->{'RED_IPS'}, $session->{'BLUE_IPS'})) {
-		$err .= _('The RED and BLUE networks are not distinct.').'<BR>';
+	if (lan2_used()) {
+	    if (network_overlap($session->{'WAN_IPS'}, $session->{'LAN2_IPS'})) {
+		$err .= _('The WAN and LAN2 networks are not distinct.').'<BR>';
 	    }
-	    if (network_overlap($session->{'BLUE_IPS'}, $session->{'DEFAULT_GATEWAY'}. '/32')) {
-		$err .= _('The DEFAULT GATEWAY is within the BLUE network.').'<BR>';
+	    if (network_overlap($session->{'LAN2_IPS'}, $session->{'DEFAULT_GATEWAY'}. '/32')) {
+		$err .= _('The DEFAULT GATEWAY is within the LAN2 network.').'<BR>';
 	    }
 	}
 	return $err;
@@ -208,15 +203,15 @@ sub lever_savedata() {
 }
 
 sub lever_apply() {
-    my ($primary,$ip,$mask,$cidr) = getPrimaryIP($session->{'RED_IPS'});
-    $session->{'RED_ADDRESS'} = $ip;
-    $session->{'RED_NETMASK'} = $mask;
-    $session->{'RED_CIDR'} = $cidr;
+    my ($primary,$ip,$mask,$cidr) = getPrimaryIP($session->{'WAN_IPS'});
+    $session->{'WAN_ADDRESS'} = $ip;
+    $session->{'WAN_NETMASK'} = $mask;
+    $session->{'WAN_CIDR'} = $cidr;
 
-    ($session->{'RED_NETADDRESS'},) = ipv4_network($primary);
-    $session->{'RED_BROADCAST'} = ipv4_broadcast($primary);
-    $session->{'RED_DEV'} = pick_device($session->{'RED_DEVICES'});
-    save_red('main', select_from_hash(\@static_keys, $session));
+    ($session->{'WAN_NETADDRESS'},) = ipv4_network($primary);
+    $session->{'WAN_BROADCAST'} = ipv4_broadcast($primary);
+    $session->{'WAN_DEV'} = pick_device($session->{'WAN_DEVICES'});
+    save_wan('main', select_from_hash(\@static_keys, $session));
     return;
 }
 
