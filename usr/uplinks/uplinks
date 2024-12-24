@@ -1,0 +1,101 @@
+#!/bin/sh
+#
+#        +-----------------------------------------------------------------------------+
+#        | RazWall Firewall - 2024                                                     |
+#        | www.RazWall.com		                                                       |
+#        +-----------------------------------------------------------------------------+
+#
+
+export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin
+
+. /etc/rc.d/raz_lib.sh
+. ${UPLINK_SCRIPTS}/generic/hookery.sh
+. ${UPLINK_SCRIPTS}/generic/data.sh
+
+action="$1"
+uplink="$2"
+switch="$3"
+logger_tag="uplink[$uplink]"
+
+function spawn() {
+    local uplink="$1"
+    local lTYPE="$2"
+    local PARAMS="$3"
+
+    lTYPE=$(lowercase "$lTYPE")
+
+    [ ! -e "${UPLINK_SCRIPTS}/${lTYPE}/uplink" ] && bailout "Uplink '$uplink': RED_TYPE '${lTYPE}' does not exist!"
+    sh -c "${UPLINK_SCRIPTS}/${lTYPE}/uplink ${PARAMS} $uplink"
+    return $?
+}
+
+function start() {
+    local uplink="$1"
+
+    init_variables "$uplink" "start"
+    if [ "$ENABLED" != "on" ]; then
+	bailout "Cannot start uplink '$uplink'. It is disabled!"
+    fi
+    spawn "$uplink" "${red_type}" "start"
+}
+
+function stop() {
+    local uplink="$1"
+
+    init_variables "$uplink" "stop"
+    spawn "$uplink" "${old_red_type}" "stop"
+}
+
+function check_params() {
+    local uplink="$1"
+    if [ -z "$uplink" ]; then
+        bailout "No uplink supplied!"
+    fi
+}
+
+function cleanup_old() {
+    local uplink="$1"
+    local FILES="broadcast-address cidr interface keepconnected network-address none routing-prio routing-table"
+    for i in $FILES; do
+	rm -f "${USER_D}/uplinks/$uplink/$i" &>/dev/null
+    done
+}
+
+function call_hooks() {
+    [ "$switch" != "--with-hooks" ] && return
+
+    # XXX: use run-parts if it gets bigger
+    setdefaultgw
+}
+
+case "$action" in
+    'start')
+        check_params $uplink
+	cleanup_old $uplink
+	start $uplink
+
+	# updating resolv.conf is necessary for linkchecker which uses hostnames
+	restartdnsmasq --resolv-only
+
+	# updating snat rules is necessary for linkchecker, when uplink
+	# reconnects
+	setsnat
+	call_hooks
+	;;
+    'stop')
+        check_params $uplink
+	stop $uplink
+	call_hooks
+	;;
+    'restart')
+        check_params $uplink
+	$0 stop $uplink
+	$0 start $uplink
+	;;
+    *)
+        echo "Usage: uplink {start|stop|restart} <uplink> [--with-hooks]"
+        exit 1
+	;;
+esac
+
+exit 0

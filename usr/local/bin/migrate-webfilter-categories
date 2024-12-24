@@ -1,0 +1,456 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# +--------------------------------------------------------------------------+
+# | Endian Firewall                                                          |
+# +--------------------------------------------------------------------------+
+# | Copyright (c) 2004-2021 Endian Srl <info@endian.com>                     |
+# |         Endian Srl                                                       |
+# |         via Ipazia 2                                                     |
+# |         39100 Bolzano (BZ)                                               |
+# |         Italy                                                            |
+# |                                                                          |
+# | This program is free software; you can redistribute it and/or modify     |
+# | it under the terms of the GNU General Public License as published by     |
+# | the Free Software Foundation; either version 2 of the License, or        |
+# | (at your option) any later version.                                      |
+# |                                                                          |
+# | This program is distributed in the hope that it will be useful,          |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of           |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            |
+# | GNU General Public License for more details.                             |
+# |                                                                          |
+# | You should have received a copy of the GNU General Public License along  |
+# | with this program; if not, write to the Free Software Foundation, Inc.,  |
+# | 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.              |
+# +--------------------------------------------------------------------------+
+
+import argparse
+
+from endian.data import DataSource
+
+mappings = {
+    ("commtouch", "urlfilter"): {
+        "1": ["ads"],
+        "2": ["beerliquorinfo", "beerliquorsale", "alcohol", "tobacco"],
+        "3": ["proxy"],
+        "7": ["chat", "instantmessaging"],
+        "62": ["religion", "sect"],
+        "13": ["dating"],
+        "14": ["marketingware", "warez", "filehosting", "filesharing"],
+        "16": [
+            "astrology",
+            "culinary",
+            "desktopsillies",
+            "entertainment",
+            "gardening",
+            "homerepair",
+            "religion",
+            "kidstimewasting",
+            "pets",
+            "sect",
+            "manga",
+            "celebrity",
+            "humor",
+        ],
+        "17": ["banking", "financial", "onlinepayment", "personalfinance"],
+        "9": ["socialnetworking", "forums", "social_networks"],
+        "18": ["gambling"],
+        "19": ["games", "onlinegames"],
+        "26": ["audio-video"],
+        "65": ["hacking"],
+        "21": ["aggressive", "guns", "violence", "weapons", "agressif"],
+        "22": ["medical"],
+        "23": ["drugs"],
+        "67": ["filesharing", "filehosting", "warez"],
+        "68": ["filesharing"],
+        "70": ["instantmessaging"],
+        "24": ["jobsearch"],
+        "50": ["vacation"],
+        # "42": ["malware"],
+        "27": ["news", "press", "magazines", "books", "sportnews"],
+        "29": ["adult", "artnudes", "mixed_adult", "naturism", "sexuality"],
+        "31": ["phishing", "spyware"],
+        "33": ["adult", "artnudes", "mixed_adult", "porn"],
+        "35": ["religion"],
+        "37": ["searchengines", "jobsearch"],
+        "76": ["sexual_education"],
+        "38": ["shopping"],
+        "39": ["socialnetworking", "social_networks"],
+        "41": ["sportnews", "sports"],
+        "45": ["vacation", "weather"],
+        "46": ["aggressive", "violence", "agressif"],
+        "47": ["weapons", "guns"],
+        "48": ["mail", "webmail"]
+    },
+    ("urlfilter", "commtouch"): {
+        "ads": ["1"],
+        "adult": ["33", "29"],
+        "artnudes": ["29"],
+        "mixed_adult": ["33", "29"],
+        "naturism": ["29"],
+        "porn": ["33"],
+        "sexuality": ["29"],
+        "sexual_education": ["76"],
+        "audio-video": ["26"],
+        "chat": ["7"],
+        "instantmessaging": ["70"],
+        "dating": ["13"],
+        "beerliquorinfo": ["2"],
+        "beerliquorsale": ["2"],
+        "drugs": ["23"],
+        "alcohol": ["2"],
+        "medical": ["22"],
+        "tobacco": ["2"],
+        "astrology": ["16"],
+        "culinary": ["16"],
+        "desktopsillies": ["16"],
+        "entertainment": ["16"],
+        "gardening": ["16"],
+        "homerepair": ["16"],
+        "religion": ["35"],
+        "kidstimewasting": ["16", "19", "75"],
+        "pets": ["16"],
+        "sect": ["62"],
+        "manga": ["16"],
+        "celebrity": ["16"],
+        "humor": ["16"],
+        "banking": ["17"],
+        "financial": ["17"],
+        "onlinepayment": ["17"],
+        "personalfinance": ["17"],
+        "socialnetworking": ["39"],
+        "forums": ["9"],
+        "social_networks": ["39"],
+        "gambling": ["18"],
+        "games": ["19"],
+        "onlinegames": ["19"],
+        "hacking": ["65"],
+        "warez": ["67"],
+        "filehosting": ["73"],
+        "filesharing": ["73"],
+        "phishing": ["31"],
+        "dialers": ["31"],
+        "spyware": ["31"],
+        "virusinfected": ["31"],
+        # "malware": ["42"],
+        "searchengines": ["37"],
+        "jobsearch": ["24"],
+        "news": ["27"],
+        "press": ["27"],
+        "magazines": ["27", "26"],
+        "books": ["16"],
+        "shopping": ["38"],
+        "ecommerce": ["38"],
+        "onlineauctions": ["38"],
+        "ringtones": ["38"],
+        "sportnews": ["41"],
+        "sports": ["41"],
+        "vacation": ["45"],
+        "weather": ["45"],
+        "aggressive": ["46"],
+        "guns": ["47"],
+        "violence": ["46"],
+        "weapons": ["47"],
+        "agressif": ["46"],
+        "proxy": ["3"],
+        "blog": ["30"],
+        "mail": ["48"],
+        "webmail": ["48"]
+    },
+    ("commtouch", "bitdefender"): {
+
+        # 61,Botnets,malware,,"malware is not a bitdefender catetory, but rather a status"
+        # 10,Compromised,malware,,"malware is not a bitdefender catetory, but rather a status"
+        # 42,Malware,malware,,"malware is not a bitdefender catetory, but rather a status"
+        # 31,Phishing & Fraud,malware,,"malware is not a bitdefender catetory, but rather a status"
+
+        "1": ["ads"],
+        "2": ["drugs"],
+        "3": ["webproxy"],
+        "4": ["entertainment"],
+        "5": ["business"],
+        "7": ["im"],
+        "78": ["porn"],
+        "11": ["computersandsoftware"],
+        "12": ["hacking"],
+        "62": ["religion"],
+        "13": ["onlinedating"],
+        "14": ["filesharing"],
+        "15": ["education"],
+        "16": ["entertainment"],
+        "63": ["hobbies"],
+        "17": ["financial"],
+        "9": ["advice"],
+        "18": ["gambling"],
+        "19": ["games"],
+        "49": [""],
+        "20": ["government"],
+        "64": ["computersandsoftware"],
+        "65": ["hacking"],
+        "21": ["hate"],
+        "22": ["health"],
+        "23": ["narcotics"],
+        "67": ["illegal"],
+        "68": ["onlinephotos", "filesharing"],
+        "69": ["computersandsoftware"],
+        "70": ["im"],
+        "24": ["jobsearch"],
+        "50": ["hobbies"],
+        "71": [""],
+        "27": ["news"],
+        "28": [""],
+        "29": ["maturecontent"],
+        "72": [""],
+        "73": ["filesharing"],
+        "30": ["blogs"],
+        "32": [""],
+        "33": ["porn"],
+        "74": [""],
+        "34": ["business"],
+        "35": ["religion"],
+        "36": [""],
+        "75": [""],
+        "37": ["searchengines", "portals"],
+        "76": ["maturecontent"],
+        "38": ["onlineshop"],
+        "39": ["socialnetworks"],
+        "41": ["sports"],
+        "26": ["videos", "radiomusic"],
+        "77": ["timewasters"],
+        "44": ["education"],
+        "6": ["travel"],
+        "45": ["travel"],
+        "46": ["hate", "suicide"],
+        "47": ["weapons"],
+        "48": ["webmail"]
+    },
+    ("bitdefender", "commtouch"): {
+        "ads": ["1"],
+        "advice": ["9"],
+        "blogs": ["30"],
+        "business": ["5", "34"],
+        "computersandsoftware": ["11", "69", "64"],
+        "drugs": ["2"],
+        "education": ["15", "44"],
+        "entertainment": ["16", "4"],
+        "filesharing": ["73", "14"],
+        "financial": ["17"],
+        "gambling": ["18"],
+        "games": ["19"],
+        "government": ["20"],
+        "hacking": ["65", "12"],
+        "hate": ["21", "46"],
+        "health": ["22"],
+        "hobbies": ["50", "63"],
+        "hosting": [],
+        "illegal": ["67"],
+        "im": ["70", "7"],
+        "jobsearch": ["24"],
+        "maturecontent": ["76", "29"],
+        "narcotics": ["23"],
+        "news": ["27"],
+        "onlinedating": ["13"],
+        "onlinepay": [],
+        "onlinephotos": ["68"],
+        "onlineshop": ["38"],
+        "porn": ["33", "78"],
+        "portals": ["37"],
+        "radiomusic": ["26"],
+        "religion": ["35", "62"],
+        "searchengines": ["37"],
+        "socialnetworks": ["39"],
+        "sports": ["41"],
+        "suicide": ["46"],
+        "tabloids": [],
+        "timewasters": ["77"],
+        "travel": ["6", "45"],
+        "videos": ["26"],
+        "violentcartoons": [],
+        "weapons": ["47"],
+        "webmail": ["48"],
+        "webproxy": ["3"]
+    },
+    ("urlfilter", "bitdefender"): {
+        # dialers --> malware (not a category but rather a status)
+        # malware --> malware (not a category but rather a status)
+        "ads": ["ads"],
+        "adult": ["maturecontent"],
+        "aggressive": [],
+        "agressif": [],
+        "alcohol": ["drugs"],
+        "artnudes": ["maturecontent"],
+        "astrology": [],
+        "audio-video": ["radiomusic", "videos"],
+        "banking": [],
+        "beerliquorinfo": ["drugs"],
+        "beerliquorsale": ["drugs"],
+        "blog": ["blogs", "hobbies"],
+        "books": ["education"],
+        "celebrity": ["tabloids"],
+        "chat": ["im"],
+        "culinary": ["hobbies"],
+        "dating": ["onlinedating"],
+        "desktopsillies": [],
+        "drugs": ["drugs", "narcotics"],
+        "ecommerce": ["onlineshop"],
+        "entertainment": ["entertainment"],
+        "filehosting": ["filesharing"],
+        "filesharing": ["filesharing"],
+        "financial": ["financial"],
+        "forums": ["advice"],
+        "gambling": ["gambling"],
+        "games": ["games"],
+        "gardening": ["hobbies"],
+        "guns": ["weapons"],
+        "hacking": ["hacking"],
+        "homerepair": ["hobbies"],
+        "humor": ["timewasters"],
+        "instantmessaging": ["im"],
+        "jobsearch": ["jobsearch"],
+        "kidstimewasting": ["timewasters"],
+        "magazines": ["tabloids"],
+        "mail": ["webmail"],
+        "manga": ["violentcartoons"],
+        "medical": ["health"],
+        "mixed_adult": ["maturecontent"],
+        "naturism": ["maturecontent"],
+        "news": ["news"],
+        "onlineauctions": ["onlineshop"],
+        "onlinegames": ["games"],
+        "onlinepayment": ["onlinepay"],
+        "personalfinance": ["financial"],
+        "pets": [],
+        # "phishing": ["malware"],
+        "porn": ["porn"],
+        "press": ["news"],
+        "proxy": ["webproxy"],
+        "religion": ["religion"],
+        "ringtones": [],
+        "searchengines": ["searchengines"],
+        "sect": ["religion"],
+        "sexual_education": ["maturecontent"],
+        "sexuality": ["maturecontent"],
+        "shopping": ["onlineshop"],
+        "social_networks": ["socialnetworks"],
+        "socialnetworking": ["socialnetworks"],
+        "sportnews": ["sports", "news"],
+        "sports": ["sports"],
+        # "spyware": ["malware"],
+        "tobacco": ["drugs"],
+        "vacation": ["travel"],
+        "violence": ["hate", "violentcartoons"],
+        # "virusinfected": ["malware"],
+        "warez": ["illegal"],
+        "weapons": ["weapons"],
+        "weather": [],
+        "webmail": ["webmail"]
+    },
+    ("bitdefender", "urlfilter"): {
+        "ads": ["ads"],
+        "advice": ["forums"],
+        "blogs": ["blog"],
+        "business": ["ecommerce"],
+        "computersandsoftware": ["hacking"],
+        "drugs": ["drugs"],
+        "education": [],
+        "entertainment": ["entertainment"],
+        "filesharing": ["filesharing"],
+        "financial": ["financial"],
+        "gambling": ["gambling"],
+        "games": ["games"],
+        "government": [],
+        "hacking": ["hacking"],
+        "hate": ["violence"],
+        "health": ["medical"],
+        "hobbies": ["homerepair", "culinary", "gardening"],
+        "hosting": ["filehosting"],
+        "illegal": ["drugs", "hacking"],
+        "im": ["instantmessaging"],
+        "jobsearch": ["jobsearch"],
+        "maturecontent": ["mixed_adult", "naturism", "porn", "sexuality", "artnudes"],
+        "narcotics": ["drugs"],
+        "news": ["news"],
+        "onlinedating": ["dating"],
+        "onlinepay": ["onlinepayment"],
+        "onlinephotos": ["filehosting"],
+        "onlineshop": ["ecommerce"],
+        "porn": ["porn", "mixed_adult", "sexuality", "artnudes"],
+        "portals": ["searchengines"],
+        "radiomusic": ["audio-video"],
+        "religion": ["audio-video"],
+        "searchengines": ["searchengines"],
+        "socialnetworks": ["social_networks"],
+        "sports": ["sports"],
+        "suicide": ["violence"],
+        "tabloids": ["celebrity"],
+        "timewasters": ["kidstimewasting", "humor"],
+        "travel": ["vacation"],
+        "videos": ["audio-video"],
+        "violentcartoons": ["violence", "manga"],
+        "weapons": ["weapons"],
+        "webmail": ["webmail"],
+        "webproxy": ["proxy"]
+    },
+}
+
+
+def guess_engine(blacklist):
+    if blacklist[0].isdigit():
+        return "commtouch"
+    return "urlfilter"
+
+
+def get_current_engine():
+    ds = DataSource()
+    return ds.webfilter.settings.get("WEBFILTER_DEFAULT")
+
+
+def migrate(to, dry_run):
+    profiles = DataSource("webfilter").profiles
+    must_overwrite_file = False
+    for line in profiles:
+        blacklist = line.blacklist.split("&")
+        if not line.engine:
+            engine = guess_engine(blacklist)
+            line.engine = engine
+        engine = line.engine
+        if engine != to:
+            must_overwrite_file = True
+        try:
+            mapping = mappings[(engine, to)]
+        except Exception:
+            continue
+        new_blacklist = set()
+        for b in blacklist:
+            try:
+                c = mapping[b]
+            except KeyError:
+                continue
+            if c:
+                new_blacklist.update(c)
+        line.engine = to
+        line.blacklist = "&".join(sorted(new_blacklist))
+
+    if dry_run:
+        print(profiles)
+    elif must_overwrite_file:
+        profiles.write()
+
+
+def main():
+    ENGINES = ("urlfilter", "commtouch", "bitdefender")
+    parser = argparse.ArgumentParser(
+        description="Converts web filter categories."
+    )
+    parser.add_argument("--to", choices=ENGINES)
+    parser.add_argument("--dry-run", action="store_true")
+    args = parser.parse_args()
+    if args.to is None:
+        to = get_current_engine()
+    else:
+        to = args.to
+    migrate(to, args.dry_run)
+
+
+if __name__ == "__main__":
+    main()

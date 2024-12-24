@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-foreach my $regfile (glob("/home/httpd/cgi-bin/menu-*.pl")) {
+foreach my $regfile (glob("/razwall/web/cgi-bin/menu-*.pl")) {
     require $regfile;
 }
 1;

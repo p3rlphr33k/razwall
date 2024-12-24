@@ -1,0 +1,131 @@
+#!/bin/sh
+# +--------------------------------------------------------------------------+
+# | Endian Firewall                                                          |
+# +--------------------------------------------------------------------------+
+# | Copyright (c) 2004-2021 Endian Srl <info@endian.com>                     |
+# |         Endian Srl                                                       |
+# |         via Ipazia 2                                                     |
+# |         39100 Bolzano (BZ)                                               |
+# |         Italy                                                            |
+# |                                                                          |
+# | This program is free software; you can redistribute it and/or modify     |
+# | it under the terms of the GNU General Public License as published by     |
+# | the Free Software Foundation; either version 2 of the License, or        |
+# | (at your option) any later version.                                      |
+# |                                                                          |
+# | This program is distributed in the hope that it will be useful,          |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of           |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            |
+# | GNU General Public License for more details.                             |
+# |                                                                          |
+# | You should have received a copy of the GNU General Public License along  |
+# | with this program; if not, write to the Free Software Foundation, Inc.,  |
+# | 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.              |
+# +--------------------------------------------------------------------------+
+
+SERVICE="http"
+ANTIVIRUS="clamd"
+
+function getvirusname() {
+    local output="$@"
+    local vname="`echo $output | \
+        grep "X-Infection-Found:" | \
+        sed -e "s/^.*Threat=\([^;]*\);.*$/\1/"`"
+    if [ -n "$vname" ] ; then
+        echo "$vname"
+        return 0
+    fi
+    vname="`echo -e "$@" | \
+        grep -A 2 "X-Violations-Found:[^0]" | \
+        tail -1 | \
+        sed s"/\(^\s*\|\s*$\)//"g`"
+    echo "$vname"
+}
+
+function logvirusfound() {
+    local vname="$@"
+    if [ -z "$vname" ] ; then
+        vname="unknown_virus"
+    fi
+    case "$SERVICE" in
+        smtp|pop3)
+            facility="mail"
+            ;;
+        *)
+            facility="local6"
+            ;;
+    esac
+    logger -p "${facility}.info" "event:virus detected; service:${SERVICE}; virus:$vname;"
+}
+
+function scanfile() {
+    local icap_service="${ANTIVIRUS}_scan"
+    output=`/usr/bin/c-icap-client -v -s ${icap_service} -f $1 2>&1 > /dev/null`
+    exitcode=$?
+    if [ $exitcode -ne 0 ]; then
+          # in case of scanner error no file will work
+          return $exitcode
+    fi
+    virusname=$(getvirusname "$output")
+    if [ -n "$virusname" ] ; then
+        logvirusfound "$virusname"
+        echo "$1: $virusname FOUND"
+    fi
+    if [[ "$output" =~ "HTTP/1.0 403 Forbidden" ]]; then
+        # echo "$output"
+        return 200
+    fi
+
+    # This is necessary because proxies which use this script cannot disinfect
+    if [[ "$output" =~ "Resolution=1; Threat=" ]]; then
+        # echo "$output"
+        return 200
+    fi
+}
+
+function process() {
+    if [ -d "$1" ]; then
+        ls -1 $1/* | while read F; do
+            scanfile $F
+            exitcode=$?
+            if [ $exitcode -ne 0 ]; then
+                return $exitcode
+            fi
+        done
+    else
+        scanfile $1
+        return $?
+    fi
+}
+
+
+OPTS=$(getopt -o a:s: -l "service:,antivirus:" -n "$0" -- "$@");
+
+eval set -- "$OPTS";
+
+while true
+do
+    case "$1" in
+        -a|--antivirus)
+            shift;
+            if [ -n "$1" ] ; then
+                ANTIVIRUS="$1"
+                shift;
+            fi
+            ;;
+        -s|--service)
+            shift;
+            if [ -n "$1" ] ; then
+                SERVICE="$1"
+                shift;
+            fi
+            ;;
+        --)
+            shift;
+            break;
+            ;;
+    esac
+done
+
+process $1
+

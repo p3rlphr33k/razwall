@@ -1,0 +1,90 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# +--------------------------------------------------------------------------+
+# | Endian Firewall                                                          |
+# +--------------------------------------------------------------------------+
+# | Copyright (c) 2004-2018 Endian S.p.A. <info@endian.com>                  |
+# |         Endian S.p.A.                                                    |
+# |         via Pillhof 47                                                   |
+# |         39057 Appiano (BZ)                                               |
+# |         Italy                                                            |
+# |                                                                          |
+# | This program is free software; you can redistribute it and/or modify     |
+# | it under the terms of the GNU General Public License as published by     |
+# | the Free Software Foundation; either version 2 of the License, or        |
+# | (at your option) any later version.                                      |
+# |                                                                          |
+# | This program is distributed in the hope that it will be useful,          |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of           |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            |
+# | GNU General Public License for more details.                             |
+# |                                                                          |
+# | You should have received a copy of the GNU General Public License along  |
+# | with this program; if not, write to the Free Software Foundation, Inc.,  |
+# | 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.              |
+# +--------------------------------------------------------------------------+
+
+__author__ = "Andrea Bonomi <a.bonomi@endian.com>"
+__date__ = "2018-05-14"
+
+import sys
+import os
+import os.path
+from optparse import OptionParser
+from endian.core.commands import (
+    generateOptions,
+    parseFunctionDoc,
+    options_to_dict,
+    EnhancedOption
+)
+try:
+    import simplejson as json
+except:
+    import json
+from endian.authentication import auth_client
+
+def help():
+    exe = os.path.basename(sys.argv[0])
+    for cmd in auth_client.__all__:
+        if cmd == 'ClientAuthException':
+            continue
+        method = getattr(auth_client, cmd)
+        parsed_doc = parseFunctionDoc(method)
+        print("%s %s\n    %s\n" % (exe, cmd, parsed_doc['description']))
+    sys.exit(2)
+
+def execute_cmd():
+    exe = os.path.basename(sys.argv[0])
+    cmd = sys.argv[1]
+    argv = sys.argv[1:]
+    method = getattr(auth_client, cmd, None)
+    if method is None:
+        print("%s: Error: '%s' is an invalid command." % (exe, cmd))
+        sys.exit(2)
+    parsed_doc = parseFunctionDoc(method)
+    parser = OptionParser(usage="usage: %prog <options>",
+                 description=parsed_doc['description'],
+                 prog='%s %s' % (exe, cmd),
+                 option_class=EnhancedOption)
+    generateOptions(parser, method, parsed_doc)
+    options = parser.parse_args(argv)[0]
+    try:
+        output = method(**options_to_dict(options))
+    except Exception as ex:
+        msg = str(ex)
+        print(msg)
+        sys.exit(1)
+    try:
+        print(json.dumps(output))
+    except:
+        print(output)
+    sys.exit(0)
+
+def main():
+    if len(sys.argv) == 1 or 'help' in sys.argv[1] or '-h' in sys.argv[1]:
+        help()
+    else:
+        execute_cmd()
+
+if __name__ == "__main__":
+    main()

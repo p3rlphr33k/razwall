@@ -1,18 +1,202 @@
-[Thu Nov 21 13:03:41.625190 2024] [mpm_worker:notice] [pid 24087:tid 140671134643968] AH00292: Apache/2.4.10 (Unix) OpenSSL/1.0.1r configured -- resuming normal operations
-[Thu Nov 21 13:03:41.625315 2024] [core:notice] [pid 24087:tid 140671134643968] AH00094: Command line: '/usr/sbin/httpd -f /etc/httpd/httpd.conf'
-[Thu Nov 21 13:08:58.713240 2024] [core:warn] [pid 24087:tid 140671134643968] AH00045: child process 24095 still did not exit, sending a SIGTERM
-[Thu Nov 21 13:08:58.713320 2024] [core:warn] [pid 24087:tid 140671134643968] AH00045: child process 24097 still did not exit, sending a SIGTERM
-[Thu Nov 21 13:08:58.713354 2024] [core:warn] [pid 24087:tid 140671134643968] AH00045: child process 24098 still did not exit, sending a SIGTERM
-[Thu Nov 21 13:08:58.713387 2024] [core:warn] [pid 24087:tid 140671134643968] AH00045: child process 24188 still did not exit, sending a SIGTERM
-[Thu Nov 21 13:10:06.556231 2024] [mpm_worker:notice] [pid 25825:tid 140022798182144] AH00292: Apache/2.4.10 (Unix) OpenSSL/1.0.1r configured -- resuming normal operations
-[Thu Nov 21 13:10:06.556341 2024] [core:notice] [pid 25825:tid 140022798182144] AH00094: Command line: '/usr/sbin/httpd -f /etc/httpd/httpd.conf'
-Can't locate /home/httpd/cgi-bin/netwiz.cgi in @INC (@INC contains: /etc/perl /usr/lib/perl/site_perl/5.14.3/ /usr/lib/perl/site_perl/5.14.3 /usr/lib/perl/vendor_perl/5.14.3/ /usr/lib/perl/vendor_perl/5.14.3 /usr/lib/perl/5.14.3/ /usr/lib/perl/5.14.3 /usr/local/lib/site_perl /usr/lib/perl/5.14.3 .) at /razwall/web/cgi-bin/netwizard.cgi line 41.
-[Thu Nov 21 13:10:09.507273 2024] [cgid:error] [pid 25833:tid 140022560839424] [client 192.168.19.82:59794] End of script output before headers: netwizard.cgi, referer: https://192.168.19.17:10443/manage/dashboard/
-Can't locate /home/httpd/cgi-bin/netwiz.cgi in @INC (@INC contains: /etc/perl /usr/lib/perl/site_perl/5.14.3/ /usr/lib/perl/site_perl/5.14.3 /usr/lib/perl/vendor_perl/5.14.3/ /usr/lib/perl/vendor_perl/5.14.3 /usr/lib/perl/5.14.3/ /usr/lib/perl/5.14.3 /usr/local/lib/site_perl /usr/lib/perl/5.14.3 .) at /razwall/web/cgi-bin/netwizard.cgi line 41.
-[Thu Nov 21 13:26:42.931375 2024] [cgid:error] [pid 25834:tid 140022418163456] [client 192.168.19.82:60220] End of script output before headers: netwizard.cgi, referer: https://192.168.19.17:10443/manage/dashboard/
-Can't locate /home/httpd/cgi-bin/netwiz.cgi in @INC (@INC contains: /etc/perl /usr/lib/perl/site_perl/5.14.3/ /usr/lib/perl/site_perl/5.14.3 /usr/lib/perl/vendor_perl/5.14.3/ /usr/lib/perl/vendor_perl/5.14.3 /usr/lib/perl/5.14.3/ /usr/lib/perl/5.14.3 /usr/local/lib/site_perl /usr/lib/perl/5.14.3 .) at /razwall/web/cgi-bin/netwizard.cgi line 41.
-[Thu Nov 21 13:26:51.363993 2024] [cgid:error] [pid 25833:tid 140022669629184] [client 192.168.19.82:60229] End of script output before headers: netwizard.cgi, referer: https://192.168.19.17:10443/manage/dashboard/
-Can't locate /home/httpd/cgi-bin/netwiz.cgi in @INC (@INC contains: /etc/perl /usr/lib/perl/site_perl/5.14.3/ /usr/lib/perl/site_perl/5.14.3 /usr/lib/perl/vendor_perl/5.14.3/ /usr/lib/perl/vendor_perl/5.14.3 /usr/lib/perl/5.14.3/ /usr/lib/perl/5.14.3 /usr/local/lib/site_perl /usr/lib/perl/5.14.3 .) at /razwall/web/cgi-bin/netwizard.cgi line 41.
-[Thu Nov 21 13:26:54.979937 2024] [cgid:error] [pid 25927:tid 140022510483200] [client 192.168.19.82:60232] End of script output before headers: netwizard.cgi, referer: https://192.168.19.17:10443/manage/dashboard/
-Can't locate /home/httpd/cgi-bin/endianinc.pl in @INC (@INC contains: /etc/perl /usr/lib/perl/site_perl/5.14.3/ /usr/lib/perl/site_perl/5.14.3 /usr/lib/perl/vendor_perl/5.14.3/ /usr/lib/perl/vendor_perl/5.14.3 /usr/lib/perl/5.14.3/ /usr/lib/perl/5.14.3 /usr/local/lib/site_perl /usr/lib/perl/5.14.3 .) at /razwall/web/cgi-bin/status.cgi line 13.
-[Thu Nov 21 13:27:09.247416 2024] [cgid:error] [pid 25834:tid 140022510483200] [client 192.168.19.82:60238] End of script output before headers: status.cgi, referer: https://192.168.19.17:10443/manage/dashboard/
+[Mon Dec 23 17:13:52.170132 2024] [authz_core:error] [pid 6809:tid 140378296534592] [client 192.168.19.82:58420] AH01627: AuthType configured with no corresponding authorization directives
+[Mon Dec 23 17:14:52.097117 2024] [mpm_event:notice] [pid 6716:tid 140379010111424] AH00491: caught SIGTERM, shutting down
+[Mon Dec 23 17:14:52.243659 2024] [ssl:warn] [pid 9461:tid 140270985889728] AH01909: razwall.localdomain:10443:0 server certificate does NOT include an ID which matches the server name
+[Mon Dec 23 17:14:52.248927 2024] [ssl:warn] [pid 9462:tid 140270985889728] AH01873: Init: Session Cache is not configured [hint: SSLSessionCache]
+[Mon Dec 23 17:14:52.250263 2024] [ssl:warn] [pid 9462:tid 140270985889728] AH01909: razwall.localdomain:10443:0 server certificate does NOT include an ID which matches the server name
+[Mon Dec 23 17:14:52.255295 2024] [mpm_event:notice] [pid 9462:tid 140270985889728] AH00489: Apache/2.4.52 (Unix) OpenSSL/1.1.1m configured -- resuming normal operations
+[Mon Dec 23 17:14:52.255329 2024] [core:notice] [pid 9462:tid 140270985889728] AH00094: Command line: '/usr/sbin/httpd -f /etc/httpd/httpd.conf'
+[Mon Dec 23 17:15:35.067790 2024] [cgid:error] [pid 9735:tid 140270985889728] (2)No such file or directory: AH01241: exec of '/razwall/web/html/index.pl' failed
+[Mon Dec 23 17:15:35.068108 2024] [cgid:error] [pid 9466:tid 140270150583872] [client 192.168.19.82:63204] End of script output before headers: index.pl
+[Mon Dec 23 17:16:15.120601 2024] [cgid:error] [pid 9904:tid 140270985889728] (2)No such file or directory: AH01241: exec of '/razwall/web/html/index.cgi' failed
+[Mon Dec 23 17:16:15.121473 2024] [cgid:error] [pid 9466:tid 140270142191168] [client 192.168.19.82:63257] End of script output before headers: index.cgi
+[Mon Dec 23 17:16:17.123532 2024] [cgid:error] [pid 9912:tid 140270985889728] (2)No such file or directory: AH01241: exec of '/razwall/web/html/index.cgi' failed
+[Mon Dec 23 17:16:17.124048 2024] [cgid:error] [pid 9466:tid 140270133798464] [client 192.168.19.82:63258] End of script output before headers: index.cgi
+[Mon Dec 23 17:16:17.704809 2024] [cgid:error] [pid 9913:tid 140270985889728] (2)No such file or directory: AH01241: exec of '/razwall/web/html/index.cgi' failed
+[Mon Dec 23 17:16:17.705396 2024] [cgid:error] [pid 9465:tid 140270779708992] [client 192.168.19.82:63261] End of script output before headers: index.cgi
+[Mon Dec 23 17:16:17.872102 2024] [cgid:error] [pid 9914:tid 140270985889728] (2)No such file or directory: AH01241: exec of '/razwall/web/html/index.cgi' failed
+[Mon Dec 23 17:16:17.872749 2024] [cgid:error] [pid 9465:tid 140270872028736] [client 192.168.19.82:63263] End of script output before headers: index.cgi
+[Mon Dec 23 17:16:18.031597 2024] [cgid:error] [pid 9915:tid 140270985889728] (2)No such file or directory: AH01241: exec of '/razwall/web/html/index.cgi' failed
+[Mon Dec 23 17:16:18.032312 2024] [cgid:error] [pid 9467:tid 140270880421440] [client 192.168.19.82:63265] End of script output before headers: index.cgi
+[Mon Dec 23 17:16:18.120853 2024] [cgid:error] [pid 9916:tid 140270985889728] (2)No such file or directory: AH01241: exec of '/razwall/web/html/index.cgi' failed
+[Mon Dec 23 17:16:18.121128 2024] [cgid:error] [pid 9467:tid 140270863636032] [client 192.168.19.82:63267] End of script output before headers: index.cgi
+[Mon Dec 23 17:16:18.307423 2024] [cgid:error] [pid 9917:tid 140270985889728] (2)No such file or directory: AH01241: exec of '/razwall/web/html/index.cgi' failed
+[Mon Dec 23 17:16:18.307700 2024] [cgid:error] [pid 9466:tid 140270175761984] [client 192.168.19.82:63269] End of script output before headers: index.cgi
+[Mon Dec 23 17:16:18.452610 2024] [cgid:error] [pid 9918:tid 140270985889728] (2)No such file or directory: AH01241: exec of '/razwall/web/html/index.cgi' failed
+[Mon Dec 23 17:16:18.453307 2024] [cgid:error] [pid 9467:tid 140270653916736] [client 192.168.19.82:63271] End of script output before headers: index.cgi
+[Mon Dec 23 17:16:57.098956 2024] [mpm_event:notice] [pid 9462:tid 140270985889728] AH00491: caught SIGTERM, shutting down
+[Mon Dec 23 17:17:00.969007 2024] [ssl:warn] [pid 10121:tid 140467210418112] AH01909: razwall.localdomain:10443:0 server certificate does NOT include an ID which matches the server name
+[Mon Dec 23 17:17:00.975647 2024] [ssl:warn] [pid 10122:tid 140467210418112] AH01873: Init: Session Cache is not configured [hint: SSLSessionCache]
+[Mon Dec 23 17:17:00.976370 2024] [ssl:warn] [pid 10122:tid 140467210418112] AH01909: razwall.localdomain:10443:0 server certificate does NOT include an ID which matches the server name
+[Mon Dec 23 17:17:00.977779 2024] [mpm_event:notice] [pid 10122:tid 140467210418112] AH00489: Apache/2.4.52 (Unix) OpenSSL/1.1.1m configured -- resuming normal operations
+[Mon Dec 23 17:17:00.977808 2024] [core:notice] [pid 10122:tid 140467210418112] AH00094: Command line: '/usr/sbin/httpd -f /etc/httpd/httpd.conf'
+[Mon Dec 23 17:22:30.227188 2024] [authz_core:error] [pid 10127:tid 140467064776256] [client 192.168.19.82:63411] AH01627: AuthType configured with no corresponding authorization directives, referer: https://192.168.19.152:10443/index.html
+[Mon Dec 23 17:22:40.845061 2024] [mpm_event:notice] [pid 10122:tid 140467210418112] AH00491: caught SIGTERM, shutting down
+[Mon Dec 23 17:22:40.991159 2024] [ssl:warn] [pid 11666:tid 139817094449088] AH01909: razwall.localdomain:10443:0 server certificate does NOT include an ID which matches the server name
+[Mon Dec 23 17:22:40.998021 2024] [ssl:warn] [pid 11667:tid 139817094449088] AH01873: Init: Session Cache is not configured [hint: SSLSessionCache]
+[Mon Dec 23 17:22:40.998773 2024] [ssl:warn] [pid 11667:tid 139817094449088] AH01909: razwall.localdomain:10443:0 server certificate does NOT include an ID which matches the server name
+[Mon Dec 23 17:22:41.000286 2024] [mpm_event:notice] [pid 11667:tid 139817094449088] AH00489: Apache/2.4.52 (Unix) OpenSSL/1.1.1m configured -- resuming normal operations
+[Mon Dec 23 17:22:41.000371 2024] [core:notice] [pid 11667:tid 139817094449088] AH00094: Command line: '/usr/sbin/httpd -f /etc/httpd/httpd.conf'
+[Mon Dec 23 17:23:38.614389 2024] [authz_core:error] [pid 11672:tid 139816905709120] [client 192.168.19.82:63425] AH01627: AuthType configured with no corresponding authorization directives, referer: https://192.168.19.152:10443/index.html
+[Mon Dec 23 17:23:40.140208 2024] [authz_core:error] [pid 11672:tid 139816888923712] [client 192.168.19.82:63428] AH01627: AuthType configured with no corresponding authorization directives, referer: https://192.168.19.152:10443/index.html
+[Mon Dec 23 17:23:41.603232 2024] [authz_core:error] [pid 11672:tid 139816872138304] [client 192.168.19.82:63432] AH01627: AuthType configured with no corresponding authorization directives, referer: https://192.168.19.152:10443/index.html
+[Mon Dec 23 17:31:40.399122 2024] [authz_core:error] [pid 11672:tid 139817042040384] [client 192.168.19.82:63568] AH01627: AuthType configured with no corresponding authorization directives, referer: https://192.168.19.152:10443/index.html
+[Mon Dec 23 17:31:41.095023 2024] [authz_core:error] [pid 11671:tid 139816872138304] [client 192.168.19.82:63575] AH01627: AuthType configured with no corresponding authorization directives, referer: https://192.168.19.152:10443/index.html
+[Mon Dec 23 17:31:41.335637 2024] [authz_core:error] [pid 11671:tid 139817058825792] [client 192.168.19.82:63577] AH01627: AuthType configured with no corresponding authorization directives, referer: https://192.168.19.152:10443/index.html
+[Mon Dec 23 17:31:41.543130 2024] [authz_core:error] [pid 11671:tid 139816846960192] [client 192.168.19.82:63578] AH01627: AuthType configured with no corresponding authorization directives, referer: https://192.168.19.152:10443/index.html
+[Mon Dec 23 17:32:52.423018 2024] [authz_core:error] [pid 11671:tid 139816838567488] [client 192.168.19.82:63601] AH01627: AuthType configured with no corresponding authorization directives, referer: https://192.168.19.152:10443/index.html
+[Mon Dec 23 17:32:53.349532 2024] [authz_core:error] [pid 14047:tid 139816905709120] [client 192.168.19.82:63602] AH01627: AuthType configured with no corresponding authorization directives, referer: https://192.168.19.152:10443/index.html
+[Mon Dec 23 17:32:53.959681 2024] [authz_core:error] [pid 11672:tid 139816905709120] [client 192.168.19.82:63609] AH01627: AuthType configured with no corresponding authorization directives, referer: https://192.168.19.152:10443/index.html
+[Mon Dec 23 17:32:54.238064 2024] [authz_core:error] [pid 14047:tid 139816914101824] [client 192.168.19.82:63616] AH01627: AuthType configured with no corresponding authorization directives, referer: https://192.168.19.152:10443/index.html
+[Mon Dec 23 17:32:54.454080 2024] [authz_core:error] [pid 11672:tid 139816922494528] [client 192.168.19.82:63623] AH01627: AuthType configured with no corresponding authorization directives, referer: https://192.168.19.152:10443/index.html
+[Mon Dec 23 17:36:53.106951 2024] [authz_core:error] [pid 14047:tid 139816813389376] [client 192.168.19.82:63698] AH01627: AuthType configured with no corresponding authorization directives, referer: https://192.168.19.152:10443/index.html
+[Mon Dec 23 17:36:53.967596 2024] [authz_core:error] [pid 11672:tid 139817042040384] [client 192.168.19.82:63700] AH01627: AuthType configured with no corresponding authorization directives, referer: https://192.168.19.152:10443/index.html
+[Mon Dec 23 17:37:31.905609 2024] [authz_core:error] [pid 11670:tid 139816863745600] [client 192.168.19.82:63708] AH01627: AuthType configured with no corresponding authorization directives, referer: https://192.168.19.152:10443/index.html
+[Mon Dec 23 17:37:32.588314 2024] [authz_core:error] [pid 14047:tid 139816930887232] [client 192.168.19.82:63710] AH01627: AuthType configured with no corresponding authorization directives, referer: https://192.168.19.152:10443/index.html
+[Mon Dec 23 17:37:33.131464 2024] [authz_core:error] [pid 11672:tid 139816956065344] [client 192.168.19.82:63711] AH01627: AuthType configured with no corresponding authorization directives, referer: https://192.168.19.152:10443/index.html
+[Mon Dec 23 17:37:33.414504 2024] [authz_core:error] [pid 14047:tid 139816947672640] [client 192.168.19.82:63712] AH01627: AuthType configured with no corresponding authorization directives, referer: https://192.168.19.152:10443/index.html
+[Mon Dec 23 17:37:33.619702 2024] [authz_core:error] [pid 14047:tid 139817084003904] [client 192.168.19.82:63713] AH01627: AuthType configured with no corresponding authorization directives, referer: https://192.168.19.152:10443/index.html
+[Mon Dec 23 17:37:33.783729 2024] [authz_core:error] [pid 14047:tid 139817075611200] [client 192.168.19.82:63714] AH01627: AuthType configured with no corresponding authorization directives, referer: https://192.168.19.152:10443/index.html
+[Mon Dec 23 17:37:33.932520 2024] [authz_core:error] [pid 14047:tid 139817067218496] [client 192.168.19.82:63715] AH01627: AuthType configured with no corresponding authorization directives, referer: https://192.168.19.152:10443/index.html
+[Mon Dec 23 17:37:57.100772 2024] [authz_core:error] [pid 14047:tid 139817058825792] [client 192.168.19.82:63721] AH01627: AuthType configured with no corresponding authorization directives, referer: https://192.168.19.152:10443/
+[Mon Dec 23 17:38:02.868583 2024] [authz_core:error] [pid 11672:tid 139816939279936] [client 192.168.19.82:63723] AH01627: AuthType configured with no corresponding authorization directives, referer: https://192.168.19.152:10443/
+[Mon Dec 23 17:38:08.504634 2024] [authz_core:error] [pid 14047:tid 139817050433088] [client 192.168.19.82:63724] AH01627: AuthType configured with no corresponding authorization directives, referer: https://192.168.19.152:10443/index.html
+[Mon Dec 23 17:38:10.410147 2024] [authz_core:error] [pid 11670:tid 139816897316416] [client 192.168.19.82:63726] AH01627: AuthType configured with no corresponding authorization directives, referer: https://192.168.19.152:10443/
+[Mon Dec 23 17:38:32.995796 2024] [authz_core:error] [pid 11672:tid 139816855352896] [client 192.168.19.82:63745] AH01627: AuthType configured with no corresponding authorization directives, referer: https://192.168.19.152:10443/index.html
+[Mon Dec 23 17:39:22.351044 2024] [authz_core:error] [pid 14047:tid 139816930887232] [client 192.168.19.82:63763] AH01627: AuthType configured with no corresponding authorization directives, referer: https://192.168.19.152:10443/index.html
+[Mon Dec 23 17:39:26.533602 2024] [authz_core:error] [pid 11672:tid 139816830174784] [client 192.168.19.82:63767] AH01627: AuthType configured with no corresponding authorization directives
+[Mon Dec 23 17:45:18.512021 2024] [authz_core:error] [pid 11670:tid 139816922494528] [client 192.168.19.82:63864] AH01627: AuthType configured with no corresponding authorization directives
+[Mon Dec 23 17:45:30.710545 2024] [authz_core:error] [pid 11671:tid 139816914101824] [client 192.168.19.82:63871] AH01627: AuthType configured with no corresponding authorization directives
+Use of uninitialized value $plugin in string eq at /razwall/web/cgi-bin/dash.pl line 50.
+Use of uninitialized value $plugin in string eq at /razwall/web/cgi-bin/dash.pl line 68.
+Use of uninitialized value $plugin in string eq at /razwall/web/cgi-bin/dash.pl line 82.
+Use of uninitialized value $plugin in string eq at /razwall/web/cgi-bin/dash.pl line 94.
+Use of uninitialized value $plugin in string eq at /razwall/web/cgi-bin/dash.pl line 100.
+Use of uninitialized value $plugin in string eq at /razwall/web/cgi-bin/dash.pl line 107.
+Can't locate routing.pl in @INC (@INC contains: /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5) at /razwall/web/cgi-bin/routing.cgi line 26.
+[Mon Dec 23 17:46:12.123927 2024] [cgid:error] [pid 11671:tid 139817033647680] [client 192.168.19.82:63889] End of script output before headers: routing.cgi, referer: https://192.168.19.152:10443/manage/dnsmasq/hosts/
+Can't locate routing.pl in @INC (@INC contains: /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5) at /razwall/web/cgi-bin/routing.cgi line 26.
+[Mon Dec 23 17:46:21.178398 2024] [cgid:error] [pid 11671:tid 139816939279936] [client 192.168.19.82:63896] End of script output before headers: routing.cgi, referer: https://192.168.19.152:10443/manage/dnsmasq/hosts/
+Can't locate routing.pl in @INC (@INC contains: /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5) at /razwall/web/cgi-bin/routing.cgi line 26.
+[Mon Dec 23 17:47:00.661252 2024] [cgid:error] [pid 11671:tid 139816947672640] [client 192.168.19.82:63906] End of script output before headers: routing.cgi
+Could not cache menu to '/var/cache/menu//haslave.json' due to No such file or directory at /razwall/web/cgi-bin/header.pl line 407.
+Could not cache menu to '/var/cache/menu//main.json' due to No such file or directory at /razwall/web/cgi-bin/header.pl line 407.
+Could not cache menu to '/var/cache/menu//cache.json' due to No such file or directory at /razwall/web/cgi-bin/header.pl line 407.
+Could not cache menu to '/var/cache/menu//haslave.json' due to No such file or directory at /razwall/web/cgi-bin/header.pl line 407.
+Could not cache menu to '/var/cache/menu//main.json' due to No such file or directory at /razwall/web/cgi-bin/header.pl line 407.
+Could not cache menu to '/razwall/web/menus/cache.json' due to Permission denied at /razwall/web/cgi-bin/header.pl line 407.
+Could not cache menu to '/razwall/web/menus/haslave.json' due to Permission denied at /razwall/web/cgi-bin/header.pl line 407.
+Could not cache menu to '/razwall/web/menus/main.json' due to Permission denied at /razwall/web/cgi-bin/header.pl line 407.
+Can't locate razinc.pl in @INC (@INC contains: /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5) at /razwall/web/cgi-bin/uplinkeditor.cgi line 27.
+[Mon Dec 23 17:51:30.423804 2024] [cgid:error] [pid 14047:tid 139817075611200] [client 192.168.19.82:64053] End of script output before headers: uplinkeditor.cgi, referer: https://192.168.19.152:10443/cgi-bin/routing.cgi
+String found where operator expected at /razwall/web/cgi-bin/header.pl line 1158, near "PRINT "SUBSECTION:<br>""
+	(Do you need to predeclare PRINT?)
+syntax error at /razwall/web/cgi-bin/header.pl line 1158, near "PRINT "SUBSECTION:<br>""
+Compilation failed in require at /razwall/web/cgi-bin/uplinkeditor.cgi line 26.
+[Mon Dec 23 17:58:47.380580 2024] [cgid:error] [pid 11671:tid 139816905709120] [client 192.168.19.82:64248] End of script output before headers: uplinkeditor.cgi, referer: https://192.168.19.152:10443/cgi-bin/routing.cgi
+[Mon Dec 23 18:57:45.827386 2024] [authz_core:error] [pid 11671:tid 139816939279936] [client 192.168.19.82:59567] AH01627: AuthType configured with no corresponding authorization directives
+[Mon Dec 23 19:55:26.519528 2024] [authz_core:error] [pid 11672:tid 139816905709120] [client 192.168.19.82:60488] AH01627: AuthType configured with no corresponding authorization directives
+[Mon Dec 23 19:55:36.110362 2024] [authz_core:error] [pid 11670:tid 139817050433088] [client 192.168.19.82:60485] AH01627: AuthType configured with no corresponding authorization directives
+[Mon Dec 23 19:55:37.168417 2024] [authz_core:error] [pid 11672:tid 139816863745600] [client 192.168.19.82:60490] AH01627: AuthType configured with no corresponding authorization directives
+[Mon Dec 23 19:55:37.897222 2024] [authz_core:error] [pid 11672:tid 139816897316416] [client 192.168.19.82:60486] AH01627: AuthType configured with no corresponding authorization directives
+[Mon Dec 23 19:55:38.091540 2024] [authz_core:error] [pid 11672:tid 139816855352896] [client 192.168.19.82:60496] AH01627: AuthType configured with no corresponding authorization directives
+[Mon Dec 23 19:55:44.029305 2024] [authz_core:error] [pid 11672:tid 139816830174784] [client 192.168.19.82:60499] AH01627: AuthType configured with no corresponding authorization directives
+[Mon Dec 23 19:55:50.666657 2024] [authz_core:error] [pid 11670:tid 139817033647680] [client 192.168.19.82:60502] AH01627: AuthType configured with no corresponding authorization directives
+[Mon Dec 23 20:01:47.035628 2024] [authz_core:error] [pid 11672:tid 139816813389376] [client 192.168.19.82:60846] AH01627: AuthType configured with no corresponding authorization directives
+Can't locate routing.pl in @INC (@INC contains: /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5) at /razwall/web/cgi-bin/policy_routing.cgi line 25.
+[Mon Dec 23 21:09:33.976084 2024] [cgid:error] [pid 11672:tid 139816914101824] [client 192.168.19.82:59418] End of script output before headers: policy_routing.cgi, referer: https://192.168.19.152:10443/cgi-bin/routing.cgi
+Can't locate routing.pl in @INC (@INC contains: /usr/local/lib64/perl5 /usr/local/share/perl5 /usr/lib64/perl5/vendor_perl /usr/share/perl5/vendor_perl /usr/lib64/perl5 /usr/share/perl5) at /razwall/web/cgi-bin/policy_routing.cgi line 25.
+[Mon Dec 23 21:40:50.623562 2024] [cgid:error] [pid 11672:tid 139816813389376] [client 192.168.19.82:58022] End of script output before headers: policy_routing.cgi, referer: https://192.168.19.152:10443/cgi-bin/routing.cgi
+[Mon Dec 23 21:45:04.932313 2024] [authz_core:error] [pid 14047:tid 139817050433088] [client 192.168.19.82:58095] AH01627: AuthType configured with no corresponding authorization directives
+[Mon Dec 23 21:45:05.663850 2024] [authz_core:error] [pid 11670:tid 139816947672640] [client 192.168.19.82:58102] AH01627: AuthType configured with no corresponding authorization directives
+[Mon Dec 23 21:45:06.441679 2024] [authz_core:error] [pid 14047:tid 139816930887232] [client 192.168.19.82:58109] AH01627: AuthType configured with no corresponding authorization directives
+[Mon Dec 23 21:45:06.700618 2024] [authz_core:error] [pid 11671:tid 139817058825792] [client 192.168.19.82:58116] AH01627: AuthType configured with no corresponding authorization directives
+[Mon Dec 23 21:45:06.813104 2024] [authz_core:error] [pid 14047:tid 139817033647680] [client 192.168.19.82:58117] AH01627: AuthType configured with no corresponding authorization directives
+[Mon Dec 23 21:45:07.006243 2024] [authz_core:error] [pid 14047:tid 139817042040384] [client 192.168.19.82:58118] AH01627: AuthType configured with no corresponding authorization directives
+[Mon Dec 23 21:45:07.080208 2024] [authz_core:error] [pid 14047:tid 139816880531008] [client 192.168.19.82:58119] AH01627: AuthType configured with no corresponding authorization directives
+[Mon Dec 23 21:45:24.632746 2024] [authz_core:error] [pid 11670:tid 139817075611200] [client 192.168.19.82:58133] AH01627: AuthType configured with no corresponding authorization directives
+Undefined subroutine &main::printTemplate called at /razwall/web/cgi-bin/dashboard.cgi line 53.
+Undefined subroutine &main::printTemplate called at /razwall/web/cgi-bin/dashboard.cgi line 53.
+Undefined subroutine &main::printTemplate called at /razwall/web/cgi-bin/dashboard.cgi line 53.
+Undefined subroutine &main::printTemplate called at /razwall/web/cgi-bin/dashboard.cgi line 53.
+[Mon Dec 23 21:57:22.518535 2024] [cgid:error] [pid 17807:tid 139817094449088] (13)Permission denied: AH01241: exec of '/razwall/web/cgi-bin/uplinks-status.cgi' failed
+[Mon Dec 23 21:57:22.519379 2024] [cgid:error] [pid 14047:tid 139816872138304] [client 192.168.19.82:58361] End of script output before headers: uplinks-status.cgi, referer: https://192.168.19.152:10443/cgi-bin/dashboard.cgi?ACTION=show&CONTROLLERNAME=settings
+Not enough arguments for main::get_uplink_info at /razwall/web/cgi-bin/uplinkeditor.cgi line 168, near "$_)"
+Not enough arguments for main::get_uplink_info at /razwall/web/cgi-bin/uplinkeditor.cgi line 369, near "$uplink)"
+Not enough arguments for main::get_uplink_info at /razwall/web/cgi-bin/uplinkeditor.cgi line 422, near "$_)"
+Not enough arguments for main::get_uplink_info at /razwall/web/cgi-bin/uplinkeditor.cgi line 744, near "$uplink)"
+Not enough arguments for main::get_uplink_info at /razwall/web/cgi-bin/uplinkeditor.cgi line 748, near "$_)"
+Not enough arguments for main::get_uplink_info at /razwall/web/cgi-bin/uplinkeditor.cgi line 1533, near "$b)"
+Not enough arguments for main::get_uplink_info at /razwall/web/cgi-bin/uplinkeditor.cgi line 1613, near "$uplink)"
+Not enough arguments for main::get_uplink_info at /razwall/web/cgi-bin/uplinkeditor.cgi line 1786, near "$uplink)"
+Compilation failed in require at /razwall/web/cgi-bin/dashboard.cgi line 28.
+[Mon Dec 23 21:58:08.364320 2024] [cgid:error] [pid 11672:tid 139816872138304] [client 192.168.19.82:58371] End of script output before headers: dashboard.cgi, referer: https://192.168.19.152:10443/cgi-bin/dashboard.cgi
+[Mon Dec 23 22:00:08.718983 2024] [cgid:error] [pid 18513:tid 139817094449088] (13)Permission denied: AH01241: exec of '/razwall/web/cgi-bin/uplinks-status.cgi' failed
+[Mon Dec 23 22:00:08.720382 2024] [cgid:error] [pid 14047:tid 139816855352896] [client 192.168.19.82:58399] End of script output before headers: uplinks-status.cgi, referer: https://192.168.19.152:10443/cgi-bin/dashboard.cgi?ACTION=show&CONTROLLERNAME=settings
+[Mon Dec 23 22:00:13.264733 2024] [cgid:error] [pid 18539:tid 139817094449088] (13)Permission denied: AH01241: exec of '/razwall/web/cgi-bin/uplinks-status.cgi' failed
+[Mon Dec 23 22:00:13.265737 2024] [cgid:error] [pid 14047:tid 139816846960192] [client 192.168.19.82:58401] End of script output before headers: uplinks-status.cgi, referer: https://192.168.19.152:10443/cgi-bin/dashboard.cgi?ACTION=show&CONTROLLERNAME=settings
+Not enough arguments for main::get_uplink_info at /razwall/web/cgi-bin/uplinkeditor.cgi line 168, near "$_)"
+Not enough arguments for main::get_uplink_info at /razwall/web/cgi-bin/uplinkeditor.cgi line 369, near "$uplink)"
+Not enough arguments for main::get_uplink_info at /razwall/web/cgi-bin/uplinkeditor.cgi line 422, near "$_)"
+Not enough arguments for main::get_uplink_info at /razwall/web/cgi-bin/uplinkeditor.cgi line 744, near "$uplink)"
+Not enough arguments for main::get_uplink_info at /razwall/web/cgi-bin/uplinkeditor.cgi line 748, near "$_)"
+Not enough arguments for main::get_uplink_info at /razwall/web/cgi-bin/uplinkeditor.cgi line 1533, near "$b)"
+Not enough arguments for main::get_uplink_info at /razwall/web/cgi-bin/uplinkeditor.cgi line 1613, near "$uplink)"
+Not enough arguments for main::get_uplink_info at /razwall/web/cgi-bin/uplinkeditor.cgi line 1786, near "$uplink)"
+Compilation failed in require at /razwall/web/cgi-bin/dashboard.cgi line 28.
+[Mon Dec 23 22:00:25.370771 2024] [cgid:error] [pid 11672:tid 139816838567488] [client 192.168.19.82:58406] End of script output before headers: dashboard.cgi, referer: https://192.168.19.152:10443/cgi-bin/dashboard.cgi
+[Mon Dec 23 22:00:42.572575 2024] [cgid:error] [pid 18673:tid 139817094449088] (13)Permission denied: AH01241: exec of '/razwall/web/cgi-bin/uplinks-status.cgi' failed
+[Mon Dec 23 22:00:42.574248 2024] [cgid:error] [pid 11670:tid 139817050433088] [client 192.168.19.82:58414] End of script output before headers: uplinks-status.cgi, referer: https://192.168.19.152:10443/cgi-bin/dashboard.cgi?ACTION=show&CONTROLLERNAME=settings
+[Mon Dec 23 22:01:02.616627 2024] [cgid:error] [pid 18762:tid 139817094449088] (13)Permission denied: AH01241: exec of '/razwall/web/cgi-bin/uplinks-status.cgi' failed
+[Mon Dec 23 22:01:02.618068 2024] [cgid:error] [pid 11671:tid 139816947672640] [client 192.168.19.82:58417] End of script output before headers: uplinks-status.cgi, referer: https://192.168.19.152:10443/cgi-bin/dashboard.cgi?ACTION=show&CONTROLLERNAME=settings
+[Mon Dec 23 22:03:51.824649 2024] [cgid:error] [pid 19480:tid 139817094449088] (13)Permission denied: AH01241: exec of '/razwall/web/cgi-bin/uplinks-status.cgi' failed
+[Mon Dec 23 22:03:51.825278 2024] [cgid:error] [pid 11670:tid 139817033647680] [client 192.168.19.82:58461] End of script output before headers: uplinks-status.cgi, referer: https://192.168.19.152:10443/cgi-bin/dashboard.cgi?ACTION=show&CONTROLLERNAME=settings
+[Mon Dec 23 22:03:56.539550 2024] [cgid:error] [pid 19507:tid 139817094449088] (13)Permission denied: AH01241: exec of '/razwall/web/cgi-bin/uplinks-status.cgi' failed
+[Mon Dec 23 22:03:56.540336 2024] [cgid:error] [pid 11671:tid 139817075611200] [client 192.168.19.82:58470] End of script output before headers: uplinks-status.cgi, referer: https://192.168.19.152:10443/cgi-bin/dashboard.cgi?ACTION=show&CONTROLLERNAME=settings
+[Mon Dec 23 22:04:12.996563 2024] [cgid:error] [pid 19582:tid 139817094449088] (13)Permission denied: AH01241: exec of '/razwall/web/cgi-bin/uplinks-status.cgi' failed
+[Mon Dec 23 22:04:12.998180 2024] [cgid:error] [pid 11671:tid 139816880531008] [client 192.168.19.82:58480] End of script output before headers: uplinks-status.cgi, referer: https://192.168.19.152:10443/cgi-bin/dashboard.cgi
+[Mon Dec 23 22:06:21.364422 2024] [cgid:error] [pid 20130:tid 139817094449088] (13)Permission denied: AH01241: exec of '/razwall/web/cgi-bin/uplinks-status.cgi' failed
+[Mon Dec 23 22:06:21.365281 2024] [cgid:error] [pid 11671:tid 139817058825792] [client 192.168.19.82:58521] End of script output before headers: uplinks-status.cgi, referer: https://192.168.19.152:10443/cgi-bin/dashboard.cgi
+[Mon Dec 23 22:06:37.722526 2024] [cgid:error] [pid 20205:tid 139817094449088] (13)Permission denied: AH01241: exec of '/razwall/web/cgi-bin/uplinks-status.cgi' failed
+[Mon Dec 23 22:06:37.723313 2024] [cgid:error] [pid 11671:tid 139817084003904] [client 192.168.19.82:58531] End of script output before headers: uplinks-status.cgi, referer: https://192.168.19.152:10443/cgi-bin/dashboard.cgi
+[Mon Dec 23 22:07:08.137353 2024] [cgid:error] [pid 20336:tid 139817094449088] (13)Permission denied: AH01241: exec of '/razwall/web/cgi-bin/uplinks-status.cgi' failed
+[Mon Dec 23 22:07:08.141100 2024] [cgid:error] [pid 11672:tid 139816930887232] [client 192.168.19.82:58553] End of script output before headers: uplinks-status.cgi, referer: https://192.168.19.152:10443/cgi-bin/dashboard.cgi
+[Mon Dec 23 22:07:40.938222 2024] [cgid:error] [pid 20481:tid 139817094449088] (13)Permission denied: AH01241: exec of '/razwall/web/cgi-bin/uplinks-status.cgi' failed
+[Mon Dec 23 22:07:40.939408 2024] [cgid:error] [pid 11671:tid 139816855352896] [client 192.168.19.82:58569] End of script output before headers: uplinks-status.cgi, referer: https://192.168.19.152:10443/cgi-bin/dashboard.cgi
+[Mon Dec 23 22:08:32.131162 2024] [cgid:error] [pid 20703:tid 139817094449088] (13)Permission denied: AH01241: exec of '/razwall/web/cgi-bin/uplinks-status.cgi' failed
+[Mon Dec 23 22:08:32.134086 2024] [cgid:error] [pid 11671:tid 139816905709120] [client 192.168.19.82:58591] End of script output before headers: uplinks-status.cgi, referer: https://192.168.19.152:10443/cgi-bin/dashboard.cgi
+[Mon Dec 23 22:20:32.965351 2024] [cgid:error] [pid 23745:tid 139817094449088] (13)Permission denied: AH01241: exec of '/razwall/web/cgi-bin/uplinks-status.cgi' failed
+[Mon Dec 23 22:20:32.965628 2024] [cgid:error] [pid 14047:tid 139816905709120] [client 192.168.19.82:65281] End of script output before headers: uplinks-status.cgi, referer: https://192.168.19.152:10443/cgi-bin/dashboard.cgi
+[Mon Dec 23 22:36:16.646307 2024] [cgid:error] [pid 27734:tid 139817094449088] (13)Permission denied: AH01241: exec of '/razwall/web/cgi-bin/uplinks-status.cgi' failed
+[Mon Dec 23 22:36:16.646703 2024] [cgid:error] [pid 11670:tid 139817084003904] [client 192.168.19.82:65522] End of script output before headers: uplinks-status.cgi, referer: https://192.168.19.152:10443/cgi-bin/dashboard.cgi
+[Mon Dec 23 22:37:12.649009 2024] [cgid:error] [pid 28044:tid 139817094449088] (13)Permission denied: AH01241: exec of '/razwall/web/cgi-bin/uplinks-status.cgi' failed
+[Mon Dec 23 22:37:12.649470 2024] [cgid:error] [pid 11672:tid 139816930887232] [client 192.168.19.82:49160] End of script output before headers: uplinks-status.cgi, referer: https://192.168.19.152:10443/cgi-bin/dashboard.cgi
+[Mon Dec 23 22:40:12.535431 2024] [cgid:error] [pid 29016:tid 139817094449088] (13)Permission denied: AH01241: exec of '/razwall/web/cgi-bin/uplinks-status.cgi' failed
+[Mon Dec 23 22:40:12.535743 2024] [cgid:error] [pid 14047:tid 139816880531008] [client 192.168.19.82:49225] End of script output before headers: uplinks-status.cgi, referer: https://192.168.19.152:10443/cgi-bin/dashboard.cgi
+[Mon Dec 23 22:40:54.847682 2024] [cgid:error] [pid 29252:tid 139817094449088] (13)Permission denied: AH01241: exec of '/razwall/web/cgi-bin/uplinks-status.cgi' failed
+[Mon Dec 23 22:40:54.847967 2024] [cgid:error] [pid 14047:tid 139816872138304] [client 192.168.19.82:49629] End of script output before headers: uplinks-status.cgi, referer: https://192.168.19.152:10443/cgi-bin/dashboard.cgi
+[Mon Dec 23 23:03:15.310547 2024] [cgid:error] [pid 4068:tid 139817094449088] (13)Permission denied: AH01241: exec of '/razwall/web/cgi-bin/uplinks-status.cgi' failed
+[Mon Dec 23 23:03:15.311335 2024] [cgid:error] [pid 11670:tid 139816872138304] [client 192.168.19.82:50431] End of script output before headers: uplinks-status.cgi, referer: https://192.168.19.152:10443/cgi-bin/dashboard.cgi
+[Mon Dec 23 23:03:33.496458 2024] [cgid:error] [pid 4168:tid 139817094449088] (13)Permission denied: AH01241: exec of '/razwall/web/cgi-bin/uplinks-status.cgi' failed
+[Mon Dec 23 23:03:33.497342 2024] [cgid:error] [pid 11670:tid 139816914101824] [client 192.168.19.82:50446] End of script output before headers: uplinks-status.cgi, referer: https://192.168.19.152:10443/cgi-bin/dashboard.cgi
+[Mon Dec 23 23:03:51.348214 2024] [cgid:error] [pid 4274:tid 139817094449088] (13)Permission denied: AH01241: exec of '/razwall/web/cgi-bin/uplinks-status.cgi' failed
+[Mon Dec 23 23:03:51.348968 2024] [cgid:error] [pid 11671:tid 139817042040384] [client 192.168.19.82:50459] End of script output before headers: uplinks-status.cgi, referer: https://192.168.19.152:10443/cgi-bin/dashboard.cgi
+[Tue Dec 24 08:46:37.862732 2024] [cgid:error] [pid 11671:tid 139816930887232] [client 192.168.19.82:49870] Script timed out before returning headers: dash.pl, referer: https://192.168.19.152:10443/cgi-bin/dashboard.cgi
+[Tue Dec 24 17:00:57.062493 2024] [cgid:error] [pid 10164:tid 139817094449088] (13)Permission denied: AH01241: exec of '/razwall/web/cgi-bin/uplinks-status.cgi' failed
+[Tue Dec 24 17:00:57.063101 2024] [cgid:error] [pid 11672:tid 139816846960192] [client 192.168.19.82:64074] End of script output before headers: uplinks-status.cgi, referer: https://192.168.19.152:10443/cgi-bin/dashboard.cgi
+[Tue Dec 24 17:56:15.385217 2024] [cgid:error] [pid 27351:tid 139817094449088] (13)Permission denied: AH01241: exec of '/razwall/web/cgi-bin/uplinks-status.cgi' failed
+[Tue Dec 24 17:56:15.385521 2024] [cgid:error] [pid 14047:tid 139816922494528] [client 192.168.19.82:49956] End of script output before headers: uplinks-status.cgi, referer: https://192.168.19.152:10443/cgi-bin/dashboard.cgi
+[Tue Dec 24 17:56:22.581702 2024] [cgid:error] [pid 27432:tid 139817094449088] (13)Permission denied: AH01241: exec of '/razwall/web/cgi-bin/uplinks-status.cgi' failed
+[Tue Dec 24 17:56:22.582673 2024] [cgid:error] [pid 11672:tid 139816838567488] [client 192.168.19.82:49967] End of script output before headers: uplinks-status.cgi, referer: https://192.168.19.152:10443/cgi-bin/dashboard.cgi
+[Tue Dec 24 17:57:04.647425 2024] [cgid:error] [pid 27914:tid 139817094449088] (13)Permission denied: AH01241: exec of '/razwall/web/cgi-bin/uplinks-status.cgi' failed
+[Tue Dec 24 17:57:04.649630 2024] [cgid:error] [pid 14047:tid 139817042040384] [client 192.168.19.82:49988] End of script output before headers: uplinks-status.cgi, referer: https://192.168.19.152:10443/cgi-bin/dashboard.cgi
+[Tue Dec 24 18:01:42.392034 2024] [cgid:error] [pid 31065:tid 139817094449088] (13)Permission denied: AH01241: exec of '/razwall/web/cgi-bin/uplinks-status.cgi' failed
+[Tue Dec 24 18:01:42.392691 2024] [cgid:error] [pid 11670:tid 139816880531008] [client 192.168.19.82:50125] End of script output before headers: uplinks-status.cgi, referer: https://192.168.19.152:10443/cgi-bin/dashboard.cgi
+[Tue Dec 24 18:06:28.461133 2024] [cgid:error] [pid 1863:tid 139817094449088] (13)Permission denied: AH01241: exec of '/razwall/web/cgi-bin/uplinks-status.cgi' failed
+[Tue Dec 24 18:06:28.462564 2024] [cgid:error] [pid 11672:tid 139817058825792] [client 192.168.19.82:50257] End of script output before headers: uplinks-status.cgi, referer: https://192.168.19.152:10443/cgi-bin/dashboard.cgi
+[Tue Dec 24 18:09:10.983751 2024] [cgid:error] [pid 3726:tid 139817094449088] (13)Permission denied: AH01241: exec of '/razwall/web/cgi-bin/uplinks-status.cgi' failed
+[Tue Dec 24 18:09:10.984605 2024] [cgid:error] [pid 14047:tid 139816846960192] (32)Broken pipe: [client 192.168.19.82:50325] AH02651: Error writing request body to script /razwall/web/cgi-bin/uplinks-status.cgi, referer: https://192.168.19.152:10443/cgi-bin/dashboard.cgi
+[Tue Dec 24 18:09:10.984663 2024] [cgid:error] [pid 14047:tid 139816846960192] [client 192.168.19.82:50325] End of script output before headers: uplinks-status.cgi, referer: https://192.168.19.152:10443/cgi-bin/dashboard.cgi
+[Tue Dec 24 18:09:43.401615 2024] [cgid:error] [pid 4093:tid 139817094449088] (13)Permission denied: AH01241: exec of '/razwall/web/cgi-bin/uplinks-status.cgi' failed
+[Tue Dec 24 18:09:43.402270 2024] [cgid:error] [pid 11670:tid 139816888923712] [client 192.168.19.82:50330] End of script output before headers: uplinks-status.cgi, referer: https://192.168.19.152:10443/cgi-bin/dashboard.cgi
+[Tue Dec 24 18:09:52.119135 2024] [cgid:error] [pid 4194:tid 139817094449088] (13)Permission denied: AH01241: exec of '/razwall/web/cgi-bin/uplinks-status.cgi' failed
+[Tue Dec 24 18:09:52.119787 2024] [cgid:error] [pid 11670:tid 139817058825792] [client 192.168.19.82:50348] End of script output before headers: uplinks-status.cgi, referer: https://192.168.19.152:10443/cgi-bin/dashboard.cgi

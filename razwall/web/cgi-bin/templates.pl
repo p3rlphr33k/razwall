@@ -44,6 +44,937 @@ $template{'loading'} = qq~
 <br><center><img src="/images/loading.gif" height="50px"><br>Loading...</center>
 ~;
 
+# Dashboard
+#####################################
+$template{'dashboard'} = qq~
+                <h2>[!TITLE!]</h2>
+                <div>
+                    
+
+
+    <div class="multi-controller-title">Dashboard Settings</div>
+    
+
+<div id="controller_settings">
+    <div align="center"><div id="apply_notification_settings" class="important-fancy hidden">
+    <!--script type="text/javascript">
+        \$(document).ready(function() {
+            \$("#apply_notification_settings").emiapply({
+                action: "apply",
+                controllername: "settings"
+            });
+        });
+    </script-->
+    <div class="content">
+        <table cellpadding="0" cellspacing="0" border="0">
+            <tr>
+                <td class="sign" valign="middle"><img src="/images/bubble_green_sign.png" alt="" border="0" /></td>
+                <td valign="middle">
+                    <div class="text">
+                        
+                    </div>
+                    <input type="button" value="Apply" />
+                    <div class="wait hidden"> </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="bottom"></div>
+</div>
+</div>
+    <div align="center"><div id="info_notification_settings" class="hidden notification-fancy">
+    <script>
+    \$(document).ready(function() {
+        \$("#info_notification_settings").click(function() {
+            \$(this).hide();
+        });
+    });
+    </script>
+    <div class="content">
+        <table cellpadding="0" cellspacing="0" border="0">
+            <tr>
+                <td class="sign" valign="middle"><img src="/images/bubble_yellow_sign.png" alt="" border="0" /></td>
+                <td class="text" valign="middle"></td>
+            </tr>
+        </table>
+    </div>
+    <div class="bottom"></div>
+</div></div>
+    <div align="center"><div id="error_notification_settings" class="hidden error-fancy">
+    <script>
+    \$(document).ready(function() {
+        \$("#error_notification_settings").click(function() {
+            \$(this).hide();
+        });
+    });
+    </script>
+    <div class="content">
+        <table cellpadding="0" cellspacing="0" border="0">
+            <tr>
+                <td class="sign" valign="middle"><img src="/images/bubble_red_sign.png" alt="" border="0" /></td>
+                <td class="text" valign="middle"></td>
+            </tr>
+        </table>
+    </div>
+    <div class="bottom"></div>
+</div></div>
+    <a href="?ACTION=show&CONTROLLERNAME=settings" name="createrule">Show settings</a>
+    <br />
+</div>
+
+    <div class="multi-controller-spacer"></div>
+    
+
+
+    <div id="plugins">
+    <style>
+.draganddropsort-column {
+    float: left;
+    padding-bottom: 100px; /*need to could place item at the end of column. */
+}
+    </style>
+    <script type="text/javascript">
+function draganddropsort_callback(id) {
+    draganddropsort_postCallBack(id, '/manage/commands/commands.dashboard.updateSort');
+};
+var draganddropsort_plugins_lastSend = 0;
+\$(function() {
+    \$( "#draganddropsort-plugins .draganddropsort-column" ).sortable({
+        connectWith: "#draganddropsort-plugins .draganddropsort-column",
+        update: function(){
+            time = new Date().getTime();
+            if(draganddropsort_plugins_lastSend+50 < time) {//because this will be triggerd for each column.
+                draganddropsort_callback("plugins");
+            }
+            draganddropsort_plugins_lastSend = time;
+        }
+    });
+    \$( "#draganddropsort-plugins .draganddropsort-column" ).disableSelection();
+});
+    </script>
+    <div id="draganddropsort-plugins" class="draganddropsort">
+
+        <div class="draganddropsort-column draganddropsort-column-0">
+        
+            <div class="draganddropsort-item">
+                <input type="hidden" name="ID" value="SystemInformationPlugin" />
+                <div id="SystemInformationPlugin">
+    <script>
+function closeablecontainer_callback(id, status) {
+    try {
+        \$.post('/manage/commands/commands.dashboard.updateCloseable', {id:id, status:status});
+    } catch(e) {
+        econsole.debug("CLOSEABLECONTAINER Error occured at callback: "+e);
+    }
+};
+    </script>
+    <script>
+\$(document).ready(function() {
+    if ( \$( "#closeablecontainer-SystemInformationPlugin .closeablecontainer-header span" ).length == 0 ) {
+        \$( "#closeablecontainer-SystemInformationPlugin" )
+            .addClass( "ui-widget ui-helper-clearfix" )
+            .find( ".closeablecontainer-header" )
+            .end() 
+            .find( ".closeablecontainer-content" );
+        
+        \$( "#closeablecontainer-SystemInformationPlugin .closeablecontainer-header" )
+            .prepend( "<span></span>" );
+        \$( "#closeablecontainer-SystemInformationPlugin .closeablecontainer-header span" )
+            .addClass( "closeablecontainer-header-toggle" );
+        
+        \$( "#closeablecontainer-SystemInformationPlugin .closeablecontainer-header" ).click(function() {
+            \$( this ).parents( ".closeablecontainer:first" )
+                .find( ".closeablecontainer-content" )
+                .toggle();
+            \$( "#closeablecontainer-SystemInformationPlugin .closeablecontainer-header" )
+                .toggleClass( "closeablecontainer-header-opened" )
+                .toggleClass( "closeablecontainer-header-closed" );
+            if(\$( "#closeablecontainer-SystemInformationPlugin .closeablecontainer-header-opened" ).length == 0){
+                closeablecontainer_callback('SystemInformationPlugin','closed');
+            } else {
+                closeablecontainer_callback('SystemInformationPlugin','opened');
+            }
+        });
+    } 
+    \$( "#closeablecontainer-SystemInformationPlugin .closeablecontainer-header" )
+        .addClass( "closeablecontainer-header-opened" );
+});
+    </script>
+    <div id="closeablecontainer-SystemInformationPlugin" class="closeablecontainer">
+        <div class="closeablecontainer-header">
+            endian.grand-forks.lib.nd.us
+        </div>
+        <div class="closeablecontainer-content">
+            <div id="SystemInformationPlugin">
+    <script type="text/javascript">
+\$(document).ready(function() {
+    // needs to be done before pageload!!
+    autorefreshwrapper_register('autorefreshwrapper-SystemInformationPlugin',
+                                'systeminformationpluginUpdate',
+                                '/cgi-bin/dash.pl?plugin=system', 
+                                null,
+                                'systeminformationpluginUpdate',
+                                '/cgi-bin/dash.pl?plugin=system',
+                                null,
+                                '',
+                                'True',
+                                5000);
+});
+    </script>
+    
+    <div id="autorefreshwrapper-SystemInformationPlugin" class="autorefreshwrapper">
+        <div class="autorefreshwrapper-loading"></div>
+        <div class="autorefreshwrapper-content autorefreshwrapper-content-hidden">
+                <div id="SystemInformationPlugin">
+    <div id="systeminformationplugin-deactivation" class="systeminformationplugin-disabled" width="100%" style="color:red; text-align:center;">
+        <b></b><br/>&nbsp;
+    </div>
+    <table width="100%">
+        <tbody>
+            <tr id="systeminformationplugin-appliance" class="systeminformationplugin-disabled">
+                <th>Appliance</th><td></td>
+            </tr>
+            <tr id="systeminformationplugin-version" class="systeminformationplugin-disabled">
+                <th>Version</th><td></td>
+            </tr>
+            <tr  id="systeminformationplugin-deployset" class="systeminformationplugin-disabled">
+                <th>Deployset</th><td></td>
+            </tr>
+            <tr  id="systeminformationplugin-kernel-0" class="systeminformationplugin-disabled">
+                <th>Kernel</th><td></td>
+            </tr>
+            <tr  id="systeminformationplugin-kernel-1" class="systeminformationplugin-disabled">
+                <th>Kernel</th>
+                <td>
+                    <a href="/cgi-bin/shutdown.cgi" style="color: red;">
+                        <b>reboot required</b>
+                    </a>
+                </td>
+            </tr>
+            <tr id="systeminformationplugin-uptime" class="systeminformationplugin-disabled">
+                <th>Uptime</th><td></td>
+            </tr>
+            <tr id="systeminformationplugin-update-0" class="systeminformationplugin-disabled">
+                <th>Update status</th>
+                <td>
+                    <div style="color: green;">up to date</div>
+                </td>
+            </tr>
+            <tr id="systeminformationplugin-update-1" class="systeminformationplugin-disabled">
+                <th>Update status</th>
+                <td>
+                    <a href="http://www.endian.com/de/community/efw-updates/" style="color: green;">
+                        <b>please register</b>
+                    </a>
+                </td>
+            </tr>
+            <tr id="systeminformationplugin-update-2" class="systeminformationplugin-disabled">
+                <th>Update status</th>
+                <td>
+                    <a href="/cgi-bin/register.cgi" style="color: red">
+                        <b>please register</b>
+                    </a>
+                </td>
+            </tr>
+            <tr id="systeminformationplugin-update-3" class="systeminformationplugin-disabled">
+                <th>Update status</th>
+                <td>
+                    <a href="/cgi-bin/updates.cgi" style="color:red;">
+                        <b>update required</b>
+                    </a>
+                </td>
+            </tr>
+            <tr id="systeminformationplugin-maintenance-0" class="systeminformationplugin-disabled">
+                <th>Maintenance</th>
+                <td>
+                    <b style="color: red;">not registered</b>
+                </td>
+            </tr>
+            <tr id="systeminformationplugin-maintenance-1" class="systeminformationplugin-disabled">
+                <th>Maintenance</th>
+                <td>
+                    <b style="color: red;"></b>
+                </td>
+            </tr>
+            <tr id="systeminformationplugin-maintenance-2" class="systeminformationplugin-disabled">
+                <th>Maintenance</th>
+                <td>
+                    <b style="color: red;">expired</b>
+                </td>
+            </tr>
+            <tr id="systeminformationplugin-maintenance-3" class="systeminformationplugin-disabled">
+                <th>Maintenance</th>
+                <td>
+                    <div style="color: green;"><span></span> days left</div>
+                </td>
+            </tr>
+            <tr id="systeminformationplugin-maintenance-4" class="systeminformationplugin-disabled">
+                <th>Maintenance</th>
+                <td>
+                    <b style="color: red;"><span></span> days left</b>
+                </td>
+            </tr>
+            <tr id="systeminformationplugin-sophos-0" class="systeminformationplugin-disabled">
+                <th>Sophos</th>
+                <td>
+                    <b style="color: red;">not registered</b>
+                </td>
+            </tr>
+            <tr id="systeminformationplugin-sophos-1" class="systeminformationplugin-disabled">
+                <th>Sophos</th>
+                <td>
+                    <b style="color: red;"></b>
+                </td>
+            </tr>
+            <tr id="systeminformationplugin-sophos-2" class="systeminformationplugin-disabled">
+                <th>Sophos</th>
+                <td>
+                    <div style="color: red;"><span></span> expired</div>
+                </td>
+            </tr>
+            <tr id="systeminformationplugin-sophos-3" class="systeminformationplugin-disabled">
+                <th>Sophos</th>
+                <td>
+                    <b style="color: green;"><span></span> days left</b>
+                </td>
+            </tr>
+            <tr id="systeminformationplugin-sophos-4" class="systeminformationplugin-disabled">
+                <th>Sophos</th>
+                <td>
+                    <b style="color: red;"><span></span> days left</b>
+                </td>
+            </tr>
+            <tr id="systeminformationplugin-commtouch-0" class="systeminformationplugin-disabled">
+                <th>Commtouch</th>
+                <td>
+                    <b style="color: red;">not registered</b>
+                </td>
+            </tr>
+            <tr id="systeminformationplugin-commtouch-1" class="systeminformationplugin-disabled">
+                <th>Commtouch</th>
+                <td>
+                    <b style="color: red;"></b>
+                </td>
+            </tr>
+            <tr id="systeminformationplugin-commtouch-2" class="systeminformationplugin-disabled">
+                <th>Commtouch</th>
+                <td>
+                    <div style="color: red;"><span></span> expired</div>
+                </td>
+            </tr>
+            <tr id="systeminformationplugin-commtouch-3" class="systeminformationplugin-disabled">
+                <th>Commtouch</th>
+                <td>
+                    <b style="color: green;"><span></span> days left</b>
+                </td>
+            </tr>
+            <tr id="systeminformationplugin-commtouch-4" class="systeminformationplugin-disabled">
+                <th>Commtouch</th>
+                <td>
+                    <b style="color: red;"><span></span> days left</b>
+                </td>
+            </tr>
+            <tr id="systeminformationplugin-support-0" class="systeminformationplugin-disabled">
+                <th>Support access</th>
+                <td>
+                    <div style="color: green">disabled</div>
+                </td>
+            </tr>
+            <tr id="systeminformationplugin-support-1" class="systeminformationplugin-disabled">
+                <th>Support access</th>
+                <td>
+                    <b style="color: red"></b>
+                </td>
+            </tr>
+            <tr id="systeminformationplugin-register-0" class="systeminformationplugin-disabled">
+                <th>Community Account</th>
+                <td>
+                    <a href="/cgi-bin/efw-register.cgi" style="color: red">
+                        <b>Register</b>
+                    </a>
+                </td>
+            </tr>
+            <tr id="systeminformationplugin-register-1" class="systeminformationplugin-disabled">
+                <th>Community Account</th>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</div>
+
+            </div>
+        
+            <div class="draganddropsort-item">
+                <input type="hidden" name="ID" value="SignaturesInformationPlugin" />
+                <div id="SignaturesInformationPlugin">
+    <script>
+function closeablecontainer_callback(id, status) {
+    try {
+        \$.post('/manage/commands/commands.dashboard.updateCloseable', {id:id, status:status});
+    } catch(e) {
+        econsole.debug("CLOSEABLECONTAINER Error occured at callback: "+e);
+    }
+};
+    </script>
+    <script>
+\$(document).ready(function() {
+    if ( \$( "#closeablecontainer-SignaturesInformationPlugin .closeablecontainer-header span" ).length == 0 ) {
+        \$( "#closeablecontainer-SignaturesInformationPlugin" )
+            .addClass( "ui-widget ui-helper-clearfix" )
+            .find( ".closeablecontainer-header" )
+            .end() 
+            .find( ".closeablecontainer-content" );
+        
+        \$( "#closeablecontainer-SignaturesInformationPlugin .closeablecontainer-header" )
+            .prepend( "<span></span>" );
+        \$( "#closeablecontainer-SignaturesInformationPlugin .closeablecontainer-header span" )
+            .addClass( "closeablecontainer-header-toggle" );
+        
+        \$( "#closeablecontainer-SignaturesInformationPlugin .closeablecontainer-header" ).click(function() {
+            \$( this ).parents( ".closeablecontainer:first" )
+                .find( ".closeablecontainer-content" )
+                .toggle();
+            \$( "#closeablecontainer-SignaturesInformationPlugin .closeablecontainer-header" )
+                .toggleClass( "closeablecontainer-header-opened" )
+                .toggleClass( "closeablecontainer-header-closed" );
+            if(\$( "#closeablecontainer-SignaturesInformationPlugin .closeablecontainer-header-opened" ).length == 0){
+                closeablecontainer_callback('SignaturesInformationPlugin','closed');
+            } else {
+                closeablecontainer_callback('SignaturesInformationPlugin','opened');
+            }
+        });
+    } 
+    \$( "#closeablecontainer-SignaturesInformationPlugin .closeablecontainer-header" )
+        .addClass( "closeablecontainer-header-opened" );
+});
+    </script>
+    <div id="closeablecontainer-SignaturesInformationPlugin" class="closeablecontainer">
+        <div class="closeablecontainer-header">
+            Signature updates
+        </div>
+        <div class="closeablecontainer-content">
+            <div id="SignaturesInformationPlugin">
+    <script type="text/javascript">
+\$(document).ready(function() {
+    // needs to be done before pageload!!
+    autorefreshwrapper_register('autorefreshwrapper-SignaturesInformationPlugin',
+                                'signaturesinformationpluginUpdate',
+                                '/cgi-bin/dash.pl?plugin=signatures', 
+                                null,
+                                'signaturesinformationpluginUpdate',
+                                '/cgi-bin/dash.pl?plugin=signatures',
+                                null,
+                                '',
+                                'True',
+                                5000);
+});
+    </script>
+    
+    <div id="autorefreshwrapper-SignaturesInformationPlugin" class="autorefreshwrapper">
+        <div class="autorefreshwrapper-loading"></div>
+        <div class="autorefreshwrapper-content autorefreshwrapper-content-hidden">
+                
+<div id="SignaturesInformationPlugin">
+    <table width="100%">
+        <thead>
+            <tr id="signaturesinformationplugin-headers">
+            	<th>Signature</th>
+            	<th>Last update</th>
+            </tr>
+        </thead>
+        <tbody id="signaturesinformationplugin-information">
+        </tbody>
+        <tfoot id="signaturesinformationplugin-footers">
+        </tfoot>
+    </table>
+</div>
+
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</div>
+
+            </div>
+        
+            <div class="draganddropsort-item">
+                <input type="hidden" name="ID" value="HardwareInformationPlugin" />
+                <div id="HardwareInformationPlugin">
+    <script>
+function closeablecontainer_callback(id, status) {
+    try {
+        \$.post('/manage/commands/commands.dashboard.updateCloseable', {id:id, status:status});
+    } catch(e) {
+        econsole.debug("CLOSEABLECONTAINER Error occured at callback: "+e);
+    }
+};
+    </script>
+    <script>
+\$(document).ready(function() {
+    if ( \$( "#closeablecontainer-HardwareInformationPlugin .closeablecontainer-header span" ).length == 0 ) {
+        \$( "#closeablecontainer-HardwareInformationPlugin" )
+            .addClass( "ui-widget ui-helper-clearfix" )
+            .find( ".closeablecontainer-header" )
+            .end() 
+            .find( ".closeablecontainer-content" );
+        
+        \$( "#closeablecontainer-HardwareInformationPlugin .closeablecontainer-header" )
+            .prepend( "<span></span>" );
+        \$( "#closeablecontainer-HardwareInformationPlugin .closeablecontainer-header span" )
+            .addClass( "closeablecontainer-header-toggle" );
+        
+        \$( "#closeablecontainer-HardwareInformationPlugin .closeablecontainer-header" ).click(function() {
+            \$( this ).parents( ".closeablecontainer:first" )
+                .find( ".closeablecontainer-content" )
+                .toggle();
+            \$( "#closeablecontainer-HardwareInformationPlugin .closeablecontainer-header" )
+                .toggleClass( "closeablecontainer-header-opened" )
+                .toggleClass( "closeablecontainer-header-closed" );
+            if(\$( "#closeablecontainer-HardwareInformationPlugin .closeablecontainer-header-opened" ).length == 0){
+                closeablecontainer_callback('HardwareInformationPlugin','closed');
+            } else {
+                closeablecontainer_callback('HardwareInformationPlugin','opened');
+            }
+        });
+    } 
+    \$( "#closeablecontainer-HardwareInformationPlugin .closeablecontainer-header" )
+        .addClass( "closeablecontainer-header-opened" );
+});
+    </script>
+    <div id="closeablecontainer-HardwareInformationPlugin" class="closeablecontainer">
+        <div class="closeablecontainer-header">
+            Hardware information
+        </div>
+        <div class="closeablecontainer-content">
+            <div id="HardwareInformationPlugin">
+    <script type="text/javascript">
+\$(document).ready(function() {
+    // needs to be done before pageload!!
+    autorefreshwrapper_register('autorefreshwrapper-HardwareInformationPlugin',
+                                'hardwareinformationpluginUpdate',
+                                '/cgi-bin/dash.pl?plugin=hardware', 
+                                null,
+                                'hardwareinformationpluginUpdate',
+                                '/cgi-bin/dash.pl?plugin=hardware',
+                                null,
+                                '',
+                                'True',
+                                5000);
+});
+    </script>
+    
+    <div id="autorefreshwrapper-HardwareInformationPlugin" class="autorefreshwrapper">
+        <div class="autorefreshwrapper-loading"></div>
+        <div class="autorefreshwrapper-content autorefreshwrapper-content-hidden">
+                <div id="HardwareInformationPlugin">
+    <table id="hardwareinformationplugin" width="100%">
+    </table>
+</div>
+
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</div>
+
+            </div>
+        
+            <div class="draganddropsort-item">
+                <input type="hidden" name="ID" value="ServiceInformationPlugin" />
+                <div id="ServiceInformationPlugin">
+    <script>
+function closeablecontainer_callback(id, status) {
+    try {
+        \$.post('/manage/commands/commands.dashboard.updateCloseable', {id:id, status:status});
+    } catch(e) {
+        econsole.debug("CLOSEABLECONTAINER Error occured at callback: "+e);
+    }
+};
+    </script>
+    <script>
+\$(document).ready(function() {
+    if ( \$( "#closeablecontainer-ServiceInformationPlugin .closeablecontainer-header span" ).length == 0 ) {
+        \$( "#closeablecontainer-ServiceInformationPlugin" )
+            .addClass( "ui-widget ui-helper-clearfix" )
+            .find( ".closeablecontainer-header" )
+            .end() 
+            .find( ".closeablecontainer-content" );
+        
+        \$( "#closeablecontainer-ServiceInformationPlugin .closeablecontainer-header" )
+            .prepend( "<span></span>" );
+        \$( "#closeablecontainer-ServiceInformationPlugin .closeablecontainer-header span" )
+            .addClass( "closeablecontainer-header-toggle" );
+        
+        \$( "#closeablecontainer-ServiceInformationPlugin .closeablecontainer-header" ).click(function() {
+            \$( this ).parents( ".closeablecontainer:first" )
+                .find( ".closeablecontainer-content" )
+                .toggle();
+            \$( "#closeablecontainer-ServiceInformationPlugin .closeablecontainer-header" )
+                .toggleClass( "closeablecontainer-header-opened" )
+                .toggleClass( "closeablecontainer-header-closed" );
+            if(\$( "#closeablecontainer-ServiceInformationPlugin .closeablecontainer-header-opened" ).length == 0){
+                closeablecontainer_callback('ServiceInformationPlugin','closed');
+            } else {
+                closeablecontainer_callback('ServiceInformationPlugin','opened');
+            }
+        });
+    } 
+    \$( "#closeablecontainer-ServiceInformationPlugin .closeablecontainer-header" )
+        .addClass( "closeablecontainer-header-opened" );
+});
+    </script>
+    <div id="closeablecontainer-ServiceInformationPlugin" class="closeablecontainer">
+        <div class="closeablecontainer-header">
+            Services (<a href="javascript:void(0);" onclick="serviceinformationplugin_openLogs();">Live Log</a>)
+        </div>
+        <div class="closeablecontainer-content">
+            <div id="ServiceInformationPlugin">
+    <script type="text/javascript">
+\$(document).ready(function() {
+    // needs to be done before pageload!!
+    autorefreshwrapper_register('autorefreshwrapper-ServiceInformationPlugin',
+                                'serviceinformationpluginInit',
+                                '/cgi-bin/dash.pl?plugin=service', 
+                                null,
+                                'serviceinformationpluginUpdate',
+                                '/cgi-bin/dash.pl?plugin=service',
+                                {"keys": ["memory/memory-used", "filecount-postfix_queue/files", "tail-smtp/connections-noqueue", "tail-smtp/connections-virus", "tail-smtp/connections-spam", "tail-smtp/connections-clean", "tail-smtp/connections-incoming", "tail-smtp/connections-sent", "tail-pop/connections-spam", "tail-pop/connections-virus", "tail-pop/connections-scanned", "tail-http/connections-hit", "tail-http/connections-miss", "tail-http/connections-denied", "tail-http/connections-virus"]},
+                                '',
+                                'True',
+                                5000);
+});
+    </script>
+    
+    <div id="autorefreshwrapper-ServiceInformationPlugin" class="autorefreshwrapper">
+        <div class="autorefreshwrapper-loading"></div>
+        <div class="autorefreshwrapper-content autorefreshwrapper-content-hidden">
+                <div id="ServiceInformationPlugin">
+    <div class="serviceinformationplugin-service">
+        <div class="serviceInformation-snort-on-show serviceInformation-on-show">
+            <span class="service-livelog">
+                (<a onclick="serviceinformationplugin_openLog('snort');" href="javascript:void(0);">Live log</a>)
+            </span>
+        </div>
+
+      <span id="snort-switch" class="service-on serviceInformation-snort-on-show serviceInformation-on-show">ON</span>
+      <span id="snort-switch" class="service-off serviceInformation-snort-on-hide serviceInformation-on-hide">OFF</span>
+      <span class="service-name" onclick="serviceinformationplugin_swapVisibility('snort-information');">Intrusion Detection</span>
+      <br />
+      <div id="serviceinformationplugin-snort-information">
+      </div>
+
+    </div>
+    <div class="serviceinformationplugin-service">
+        <div class="serviceInformation-postfix-on-show serviceInformation-on-show">
+            <span class="service-livelog">
+                (<a onclick="serviceinformationplugin_openLog('smtp');" href="javascript:void(0);">Live log</a>)
+            </span>
+        </div>
+
+      <span id="postfix-switch" class="service-on serviceInformation-postfix-on-show serviceInformation-on-show">ON</span>
+      <span id="postfix-switch" class="service-off serviceInformation-postfix-on-hide serviceInformation-on-hide">OFF</span>
+      <span class="service-name" onclick="serviceinformationplugin_swapVisibility('postfix-information');">SMTP Proxy</span>
+      <br />
+      <div id="serviceinformationplugin-postfix-information">
+      </div>
+
+    </div>
+    <div class="serviceinformationplugin-service">
+        <div class="serviceInformation-squid-on-show serviceInformation-on-show">
+            <span class="service-livelog">
+                (<a onclick="serviceinformationplugin_openLog('dansguardian,squid');" href="javascript:void(0);">Live log</a>)
+            </span>
+        </div>
+
+      <span id="squid-switch" class="service-on serviceInformation-squid-on-show serviceInformation-on-show">ON</span>
+      <span id="squid-switch" class="service-off serviceInformation-squid-on-hide serviceInformation-on-hide">OFF</span>
+      <span class="service-name" onclick="serviceinformationplugin_swapVisibility('squid-information');">HTTP Proxy</span>
+      <br />
+      <div id="serviceinformationplugin-squid-information">
+      </div>
+
+    </div>
+    <div class="serviceinformationplugin-service">
+
+      <span id="p3scan-switch" class="service-on serviceInformation-p3scan-on-show serviceInformation-on-show">ON</span>
+      <span id="p3scan-switch" class="service-off serviceInformation-p3scan-on-hide serviceInformation-on-hide">OFF</span>
+      <span class="service-name" onclick="serviceinformationplugin_swapVisibility('p3scan-information');">POP3 proxy</span>
+      <br />
+      <div id="serviceinformationplugin-p3scan-information">
+      </div>
+
+    </div>
+</div>
+
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</div>
+
+            </div>
+    
+        </div>
+        <div class="draganddropsort-column draganddropsort-column-1">
+        
+            <div class="draganddropsort-item">
+                <input type="hidden" name="ID" value="NetworkInformationPlugin" />
+                <div id="NetworkInformationPlugin">
+    <script>
+function closeablecontainer_callback(id, status) {
+    try {
+        \$.post('/manage/commands/commands.dashboard.updateCloseable', {id:id, status:status});
+    } catch(e) {
+        econsole.debug("CLOSEABLECONTAINER Error occured at callback: "+e);
+    }
+};
+    </script>
+    <script>
+\$(document).ready(function() {
+    if ( \$( "#closeablecontainer-NetworkInformationPlugin .closeablecontainer-header span" ).length == 0 ) {
+        \$( "#closeablecontainer-NetworkInformationPlugin" )
+            .addClass( "ui-widget ui-helper-clearfix" )
+            .find( ".closeablecontainer-header" )
+            .end() 
+            .find( ".closeablecontainer-content" );
+        
+        \$( "#closeablecontainer-NetworkInformationPlugin .closeablecontainer-header" )
+            .prepend( "<span></span>" );
+        \$( "#closeablecontainer-NetworkInformationPlugin .closeablecontainer-header span" )
+            .addClass( "closeablecontainer-header-toggle" );
+        
+        \$( "#closeablecontainer-NetworkInformationPlugin .closeablecontainer-header" ).click(function() {
+            \$( this ).parents( ".closeablecontainer:first" )
+                .find( ".closeablecontainer-content" )
+                .toggle();
+            \$( "#closeablecontainer-NetworkInformationPlugin .closeablecontainer-header" )
+                .toggleClass( "closeablecontainer-header-opened" )
+                .toggleClass( "closeablecontainer-header-closed" );
+            if(\$( "#closeablecontainer-NetworkInformationPlugin .closeablecontainer-header-opened" ).length == 0){
+                closeablecontainer_callback('NetworkInformationPlugin','closed');
+            } else {
+                closeablecontainer_callback('NetworkInformationPlugin','opened');
+            }
+        });
+    } 
+    \$( "#closeablecontainer-NetworkInformationPlugin .closeablecontainer-header" )
+        .addClass( "closeablecontainer-header-opened" );
+});
+    </script>
+    <div id="closeablecontainer-NetworkInformationPlugin" class="closeablecontainer">
+        <div class="closeablecontainer-header">
+            Network Interfaces
+        </div>
+        <div class="closeablecontainer-content">
+            <div id="NetworkInformationPlugin">
+    <script type="text/javascript">
+\$(document).ready(function() {
+    // needs to be done before pageload!!
+    autorefreshwrapper_register('autorefreshwrapper-NetworkInformationPlugin',
+                                'networkinformationpluginInit',
+                                '/cgi-bin/dash.pl?plugin=network', 
+                                null,
+                                'networkinformationpluginUpdate',
+                                '/cgi-bin/dash.pl?plugin=network',
+                                null,
+                                '',
+                                'True',
+                                5000);
+});
+    </script>
+    
+    <div id="autorefreshwrapper-NetworkInformationPlugin" class="autorefreshwrapper">
+        <div class="autorefreshwrapper-loading"></div>
+        <div class="autorefreshwrapper-content autorefreshwrapper-content-hidden">
+        <div id="NetworkInformationPlugin">
+    <script type="text/javascript">
+var NETWORKINFORMATIONPLUGIN_MAX_GRAPH_CHECKED = 6;
+var NETWORKINFORMATIONPLUGIN_Y_AXIS_TITLE = "KB/s";
+    </script>
+    <table width="100%">
+        <thead>
+            <tr>
+                <th>&nbsp;</th>
+                <th>Device</th>
+                <th>Type</th>
+                <th>Link</th>
+                <th>In</th>
+                <th>Out</th>
+            </tr>
+        </thead>
+        <tbody id="networkinformationplugin-information">
+        </tbody>
+    </table>
+  <div class="dashboard-graph-title">Incoming traffic in KB/s (<span class="db-max-interfaces">max. 6 interfaces</span>)</div>
+
+	<canvas id="cpu-chart" width="462" height="150"></canvas>
+  
+  
+  <div class="dashboard-graph-title">Outgoing traffic in KB/s (<span class="db-max-interfaces">max. 6 interfaces</span>)</div>
+
+	<canvas id="mem-chart" width="462" height="150"></canvas>
+  
+
+</div>
+        </div>
+    </div>
+</div>
+
+  </div>
+ </div>
+</div>
+</div>
+    <script>
+
+var cpuchart = new SmoothieChart({tooltipLine:{strokeStyle:'#bbbbbb'}}),
+    cpucanvas = document.getElementById('cpu-chart'),
+    cpuseries = new TimeSeries();
+	
+var memchart = new SmoothieChart({tooltipLine:{strokeStyle:'#bbbbbb'}}),
+    memcanvas = document.getElementById('mem-chart'),
+    memseries = new TimeSeries();
+
+cpuchart.addTimeSeries(cpuseries, {lineWidth:2,strokeStyle:'#00ff00'});
+cpuchart.streamTo(cpucanvas, 5000);
+
+memchart.addTimeSeries(memseries, {lineWidth:2,strokeStyle:'#00ff00'});
+memchart.streamTo(memcanvas, 5000);
+
+    </script>
+	      
+
+
+
+	  
+<div class="draganddropsort-item">
+                <input type="hidden" name="ID" value="UpLinkInformationPlugin" />
+                <div id="UpLinkInformationPlugin">
+    <script>
+function closeablecontainer_callback(id, status) {
+    try {
+        \$.post('/manage/commands/commands.dashboard.updateCloseable', {id:id, status:status});
+    } catch(e) {
+        econsole.debug("CLOSEABLECONTAINER Error occured at callback: "+e);
+    }
+};
+    </script>
+    <script>
+\$(document).ready(function() {
+    if ( \$( "#closeablecontainer-UpLinkInformationPlugin .closeablecontainer-header span" ).length == 0 ) {
+        \$( "#closeablecontainer-UpLinkInformationPlugin" )
+            .addClass( "ui-widget ui-helper-clearfix" )
+            .find( ".closeablecontainer-header" )
+            .end() 
+            .find( ".closeablecontainer-content" );
+        
+        \$( "#closeablecontainer-UpLinkInformationPlugin .closeablecontainer-header" )
+            .prepend( "<span></span>" );
+        \$( "#closeablecontainer-UpLinkInformationPlugin .closeablecontainer-header span" )
+            .addClass( "closeablecontainer-header-toggle" );
+        
+        \$( "#closeablecontainer-UpLinkInformationPlugin .closeablecontainer-header" ).click(function() {
+            \$( this ).parents( ".closeablecontainer:first" )
+                .find( ".closeablecontainer-content" )
+                .toggle();
+            \$( "#closeablecontainer-UpLinkInformationPlugin .closeablecontainer-header" )
+                .toggleClass( "closeablecontainer-header-opened" )
+                .toggleClass( "closeablecontainer-header-closed" );
+            if(\$( "#closeablecontainer-UpLinkInformationPlugin .closeablecontainer-header-opened" ).length == 0){
+                closeablecontainer_callback('UpLinkInformationPlugin','closed');
+            } else {
+                closeablecontainer_callback('UpLinkInformationPlugin','opened');
+            }
+        });
+    } 
+    \$( "#closeablecontainer-UpLinkInformationPlugin .closeablecontainer-header" )
+        .addClass( "closeablecontainer-header-opened" );
+});
+
+    </script>
+	
+	
+	
+	
+	
+
+    <div id="closeablecontainer-UpLinkInformationPlugin" class="closeablecontainer">
+        <div class="closeablecontainer-header">
+            Uplinks
+        </div>
+        <div class="closeablecontainer-content">
+            <div id="UpLinkInformationPlugin">
+    <script type="text/javascript">
+\$(document).ready(function() {
+    // needs to be done before pageload!!
+    autorefreshwrapper_register('autorefreshwrapper-UpLinkInformationPlugin',
+                                'uplinkinformationpluginInit',
+                                '/cgi-bin/dash.pl?plugin=uplinks', 
+                                null,
+                                'uplinkinformationpluginUpdate',
+                                '/cgi-bin/dash.pl?plugin=uplinks',
+                                null,
+                                '',
+                                'True',
+                                5000);
+});
+    </script>
+    
+    <div id="autorefreshwrapper-UpLinkInformationPlugin" class="autorefreshwrapper">
+        <div class="autorefreshwrapper-loading"></div>
+        <div class="autorefreshwrapper-content autorefreshwrapper-content-hidden">
+                <div id="UpLinkInformationPlugin">
+    <script type="text/javascript">
+var UPLINK_RECONNECT = 'reconnect';
+    </script>
+    <table width="100%">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>IP Address</th>
+                <th>Status</th>
+                <th>Uptime</th>
+                <th>Active</th>
+                <th>Managed</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="uplinkinformationplugin-information">
+
+        </tbody>	
+        <tr><td class="legend" colspan="7"><i>&rarr; = Backup uplink</i></td></tr>
+    </table> 
+</div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</div>
+
+            </div>
+    
+        </div>
+        <div class="cb"> </div>
+    </div>
+</div>
+~;
+
 # Network Setup Wizard Template 1
 #####################################
 $template{'netwiz1'} = qq~

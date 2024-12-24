@@ -1,0 +1,81 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# +--------------------------------------------------------------------------+
+# | Endian Firewall                                                          |
+# +--------------------------------------------------------------------------+
+# | Copyright (c) 2004-2017 Endian S.p.A. <info@endian.com>                  |
+# |         Endian S.p.A.                                                    |
+# |         via Pillhof 47                                                   |
+# |         39057 Appiano (BZ)                                               |
+# |         Italy                                                            |
+# |                                                                          |
+# | This program is free software; you can redistribute it and/or modify     |
+# | it under the terms of the GNU General Public License as published by     |
+# | the Free Software Foundation; either version 2 of the License, or        |
+# | (at your option) any later version.                                      |
+# |                                                                          |
+# | This program is distributed in the hope that it will be useful,          |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of           |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            |
+# | GNU General Public License for more details.                             |
+# |                                                                          |
+# | You should have received a copy of the GNU General Public License along  |
+# | with this program; if not, write to the Free Software Foundation, Inc.,  |
+# | 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.              |
+# +--------------------------------------------------------------------------+
+
+import sys
+import os
+import signal
+import termios
+import subprocess
+
+def reset_signals():
+    try:
+        signal.signal(signal.SIGINT, signal.SIG_DFL)
+        signal.signal(signal.SIGTSTP, signal.SIG_DFL)
+        signal.signal(signal.SIGTERM, signal.SIG_DFL)
+        signal.signal(signal.SIGTTIN, signal.SIG_DFL)
+        signal.signal(signal.SIGTTOU, signal.SIG_DFL)
+        signal.signal(signal.SIGQUIT, signal.SIG_DFL)
+    except:
+        pass
+
+def getkey(prompt=None, echo=False, newline=False):
+    if prompt:
+        sys.stdout.write(prompt)
+        sys.stdout.flush()
+    fd = sys.stdin.fileno()
+    old = termios.tcgetattr(fd)
+    new = termios.tcgetattr(fd)
+    new[3] = new[3] & ~termios.ICANON & ~termios.ECHO
+    new[6][termios.VMIN] = 1
+    new[6][termios.VTIME] = 0
+    termios.tcsetattr(fd, termios.TCSANOW, new)
+    c = None
+    try:
+        try:
+            c = os.read(fd, 1)
+        except:
+            c = None
+    finally:
+        termios.tcsetattr(fd, termios.TCSAFLUSH, old)
+    if echo:
+        if c != None:
+            sys.stdout.write(c)
+        sys.stdout.flush()
+    if newline:
+        sys.stdout.write("\n")
+    return c
+
+def main():
+    sys.stdout.write("*** WARNING: This will destroy all your current settings ***\n\n")
+
+    if getkey("Are you *REALLY* sure that you want to ? [y/N] ", echo=True, newline=True).lower() == "y":
+        reset_signals()
+        sys.stdout.write("\033[H\033[J")
+        sys.stdout.write("Restoring Factory Defaults (system will reboot)...\n")
+        subprocess.call(["/usr/local/bin/factory-default.sh"], shell=False)
+
+if __name__ == '__main__':
+    main()

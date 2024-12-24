@@ -1,7 +1,23 @@
 #
 #        +-----------------------------------------------------------------------------+
-#        | RazWall Firewall - 2024                                                     |
-#        | www.RazWall.com		                                                       |
+#        | RazWall Firewall                                                             |
+#        +-----------------------------------------------------------------------------+
+#        | Copyright (c) 2024 RazWall                                                  |
+#        |                                                                             |
+#        | This program is free software; you can redistribute it and/or               |
+#        | modify it under the terms of the GNU General Public License                 |
+#        | as published by the Free Software Foundation; either version 2              |
+#        | of the License, or (at your option) any later version.                      |
+#        |                                                                             |
+#        | This program is distributed in the hope that it will be useful,             |
+#        | but WITHOUT ANY WARRANTY; without even the implied warranty of              |
+#        | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               |
+#        | GNU General Public License for more details.                                |
+#        |                                                                             |
+#        | You should have received a copy of the GNU General Public License           |
+#        | along with this program; if not, write to the Free Software                 |
+#        | Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA. |
+#        | http://www.fsf.org/                                                         |
 #        +-----------------------------------------------------------------------------+
 #
 
@@ -22,6 +38,7 @@ use Text::Glob qw (match_glob);
 my @white_list = undef;
 my @black_list = undef;
 my $has_gui_profile = 0;
+my $thisAddress = $ENV{'SERVER_NAME'};
 
 sub check_user_profile() {
     my $guiuser_filename = "";
@@ -128,8 +145,6 @@ sub get_version() {
 }
 
 sub get_version_info() {
-    $version_custom = </etc/release*.custom>;
-    $version_vendor = </etc/release*.vendor>;
 
     if ( $version_custom ) {
         $release = $version_custom;
@@ -145,7 +160,7 @@ sub get_version_info() {
     }
 
     if ($read_ver =~ /^$/) {
-        return "Endian Firewall (unknown version)";
+        return "RazWall Firewall NA";
     }
     return $read_ver;
 }
@@ -210,7 +225,7 @@ if ($ENV{'DOCUMENT_ROOT'}) {
     $webroot = $ENV{'DOCUMENT_ROOT'};
 }
 
-my $menuCache = '/var/cache/menu/';
+my $menuCache = '/razwall/web/menus';
 my $menuRegistry = '/razwall/web/menus/';
 
 $version = get_version_info();
@@ -376,7 +391,7 @@ sub checkForLogout() {
 }
 
 sub expireMenuCache() {
-    my $cachefile = "${menuCache}/${useFlavour}.json";
+    my $cachefile = "${menuCache}/${useFlavour}";
     if (-e $cachefile) {
         unlink($cachefile);
     }
@@ -385,7 +400,7 @@ sub expireMenuCache() {
 sub cacheMenu($$) {
     my $menu = shift;
     my $flavour = shift;
-    my $cachefile = "${menuCache}/${flavour}.json";
+    my $cachefile = "${menuCache}/${flavour}";
     if (! open(J, ">$cachefile")) {
 	warn("Could not cache menu to '$cachefile' due to $!");
 	return;
@@ -444,6 +459,9 @@ sub genFlavourMenus() {
 	$flavour =~ s#^.*/([^/]+)$#\1#;
 	if (isMenuCacheExpired($flavour)) {
 	    $menu = registerMenus($flavour);
+		#open(MFL, "> /razwall/web/cgi-bin/MENU_TYPE.txt");
+		#print MFL "$flavour";
+		#close(MFL);
 	} else {
 	    $menu = loadMenuFromCache($flavour);
 	}
@@ -527,6 +545,7 @@ sub is_modem {
 # 'haslave'. A 'hotspot' menu may follow.
 #
 ##
+
 sub genmenu {
     if ($useFlavour ne 'main') {
 	$menu = $flavourmenus->{$useFlavour};
@@ -937,6 +956,7 @@ sub menu_to_json {
     print jsonifyMenu($menu);
 }
 
+### HTML PAGE HEAD
 sub openpage {
     my $title = shift;
     my $boh = shift;
@@ -1022,7 +1042,176 @@ printf <<END
         <script type="text/javascript" src="/include/accordion.js"></script>
 END
 ;
-    if($ENV{'SCRIPT_NAME'} eq '/cgi-bin/main.cgi' && -e '/razwall/web/html/include/uplink.js') {
+    if($ENV{'SCRIPT_NAME'} eq '/cgi-bin/dashboard.cgi') {
+        printf <<END
+		 <link rel="stylesheet" type="text/css" href="/css/smoothie.css"/>
+ <link rel="stylesheet" type="text/css" href="/css/SocketStatus.css"/>
+
+<link rel="stylesheet" type="text/css" href="/toscawidgets/resources/static/css/notification.css" media="all" />
+<script type="text/javascript" src="/include/jquery.min.js"></script>
+<script type="text/javascript" src="/include/toastr.js"></script>
+<script type="text/javascript" src="/toscawidgets/resources/static/js/jquery.emi.toast.js"></script>
+<script type="text/javascript" src="/toscawidgets/resources/static/js/jquery.emi.apply.js"></script>
+<link rel="stylesheet" type="text/css" href="/toscawidgets/resources/static/css/draganddropsort.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/toscawidgets/resources/static/css/dashboardcontainer.css" media="all" />
+<script type="text/javascript" src="/toscawidgets/resources/static/js/consolelogger.js"></script>
+<script type="text/javascript" src="/include/jquery.ui.core.min.js"></script>
+<script type="text/javascript" src="/include/jquery.ui.widget.min.js"></script>
+<script type="text/javascript" src="/include/jquery.ui.mouse.min.js"></script>
+<script type="text/javascript" src="/include/jquery.ui.sortable.min.js"></script>
+<script type="text/javascript" src="/toscawidgets/resources/static/js/draganddropsort.js"></script>
+<link rel="stylesheet" type="text/css" href="/include/style.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/include/jquery-ui-core.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/include/jquery-ui-theme.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/toscawidgets/resources/static/css/closeablecontainer.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/toscawidgets/resources/static/css/plugin.css" media="all" />
+<script type="text/javascript" src="/toscawidgets/resources/static/js/systeminformationplugin.js"></script>
+<script type="text/javascript" src="/toscawidgets/resources/static/js/signaturesinformationplugin.js"></script>
+<script type="text/javascript" src="/toscawidgets/resources/static/js/hardwareinformationplugin.js"></script>
+<script type="text/javascript" src="/toscawidgets/resources/static/js/serviceinformationplugin.js"></script>
+<script type="text/javascript" src="/include/excanvas.min.js"></script>
+<script type="text/javascript" src="/include/jquery.flot.min.js"></script>
+<script type="text/javascript" src="/toscawidgets/resources/static/js/networkinformationplugin.js"></script>
+<script type="text/javascript" src="/toscawidgets/resources/static/js/uplinkinformationplugin.js"></script>
+<script type="text/javascript" src="/toscawidgets/resources/static/js/jobsinformationplugin.js"></script>
+<link rel="stylesheet" type="text/css" href="/toscawidgets/resources/static/css/autorefreshwrapper.css" media="all" />
+<script type="text/javascript" src="/toscawidgets/resources/static/js/autorefreshwrapper.js"></script>
+<link rel="stylesheet" type="text/css" href="/toscawidgets/resources/static/css/systeminformationcontent.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/toscawidgets/resources/static/css/signaturesinformationcontent.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/toscawidgets/resources/static/css/hardwareinformationcontent.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/toscawidgets/resources/static/css/serviceinformationcontent.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/toscawidgets/resources/static/css/networkinformationcontent.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/toscawidgets/resources/static/css/uplinkinformationcontent.css" media="all" />
+     <script type="text/javascript" src="/js/websocket.js"></script>   
+	<script language="javascript" src="/js/smoothie.js"></script>
+	
+	
+        <title>endian.grand-forks.lib.nd.us - Endian Community (64 bit) - Dashboard</title>
+        
+        <script type="text/javascript" src="/include/jquery.stalker.js"></script>
+        <script language="javascript" type="text/javascript">
+\$(document).ready(function() {
+    if ($.browser.msie) {
+        \$("#main_header_logout").removeAttr("href");
+        \$("#main_header_logout").parent().unbind('click').click(function() {
+            \$.ajax({
+                url: "/cgi-bin/logout.cgi",
+                username: 'username',
+                password: 'wrong_password_for_username'
+            });
+        document.location = "/";
+        });
+    }
+    \$("#menu-top-background").stalker();
+    \$("#menu-top").stalker();
+    \$("#menu-left").stalker({offset: 35});
+
+ /*
+	function callReboot(){
+        $.ajax({
+            type: 'POST',
+            url: "/manage/commands/commands.system.reboot",
+            error: function(id, error_type, xhr, ajaxOptions, thrownError) {
+                console.log("js: callReboot error")
+            },
+            success: function () {
+                document.getElementById('page-content').innerHTML = "                    <div id=\"module-content\">                    <div align=\"center\">                    <table width=\"100%\" bgcolor=\"#ffffff\">                    <tbody><tr><td align=\"center\">                    <br><br><img src=\"/images/reboot_splash.png\"><br><br><br>                    </td></tr>                    </tbody></table>                    <br>                    <font size=\"5\">The appliance is being rebooted.</font>                    </div>                    </div>";
+            }
+        });
+    }
+
+    function acknowledgeReboot(){
+        $.ajax({
+            type: 'POST',
+            url: "/manage/commands/commands.system.acknowledge_reboot",
+            error: function(id, error_type, xhr, ajaxOptions, thrownError) {
+                console.log("js: acknowledgeReboot error")
+            }
+        });
+    }
+
+    function pollReboot() {
+        $.ajax({
+            type: 'GET',
+            url: "/manage/commands/commands.system.notify_reboot",
+            success: pollSuccess,
+            error: pollError,
+            dataType: "json"
+        });
+    }
+
+    function pollSuccess(result) {
+        if (result != null) {
+            var status = result['notify_reboot'];
+            if (status == true)
+                makeRebootToast();
+        }
+        setTimeout(pollReboot, 60000);
+    }
+
+    function pollError(id, error_type, xhr, ajaxOptions, thrownError) {
+        setTimeout(pollReboot, 60000);
+    }
+
+    function makeRebootToast(){
+        var toastr_settings = {
+            type: "warning",
+            title: "System reboot required",
+            message: "Reboot is required to complete the installation of software updates.",
+            confirmation_button_label: "Ok, reboot now",
+            confirmation_button: true,
+            confirmation_callback: callReboot,
+            close_callback: acknowledgeReboot,
+            toastr_options: {
+                "closeButton": true,
+                "positionClass": "toast-top-right",
+                "preventDuplicates": true,
+            }
+        };
+
+        $().emitoast(toastr_settings);
+    }
+
+    pollReboot();
+*/	
+});
+        </script>
+        
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <style type="text/css">@import url(/include/menu.css);</style>
+        <style type="text/css">@import url(/include/branding.css);</style>
+        <style type="text/css">@import url(/include/toastr.css);</style>
+        <style type="text/css">
+.state-msg { 
+    margin: 0px;
+    margin-top: 12px; 
+    padding: 5px; 
+    background-color: #f3f3f3; 
+    width: 98%; 
+    border: #cccccc 2px solid; 
+    overflow: hidden; 
+    font-weight: bold;
+    color: #555555; 
+}
+.error-msg { 
+    margin: 0px;
+    margin-top: 12px; 
+    padding: 5px; 
+    background-color: #fff0f0;
+    width: 98%; 
+    border: #d69497 2px solid; 
+    overflow: hidden;
+    font-weight: bold;
+    color: #ca232a; 
+}
+.k-tooltip {
+    margin-top: 10px;
+}
+        </style>
+END
+;
+	}
+    if($ENV{'SCRIPT_NAME'} eq '/cgi-bin/dashboard.cgi' && -e '/razwall/web/html/include/uplink.js') {
         printf <<END
             <script language="javascript" type="text/javascript" src="/include/uplink.js"></script>
             <link rel="stylesheet" type="text/css" media="screen" title="Uplinks Status" href="/include/uplinks-status.css" />
@@ -1071,33 +1260,20 @@ END
 END
 ;
 
-#$image_custom = </razwall/web/html/images/product_*.custom.png>;
-#$image_vendor = </razwall/web/html/images/product_*.vendor.png>;
-$image_orig = </razwall/web/html/images/product_*.png>;
+#### END HEADER
 
-#$logo_custom = </razwall/web/html/images/logo_*.custom.png>;
-#$logo_vendor = </razwall/web/html/images/logo_*.vendor.png>;
+$image_orig = </razwall/web/html/images/product_*.png>;
 $logo_orig = </razwall/web/html/images/logo_*.png>;
     
-#if ( $logo_custom ) {
-#    $logo_path = $logo_custom;
-#} elsif ( $logo_vendor ) {
-#    $logo_path = $logo_vendor;
-#} else {
-    $logo_path = $logo_orig;
-#}
+$logo_path = $logo_orig;
+
 if ( $logo_path ) {
     $filename=substr($logo_path,24);
     print "     <img id=\"logo\" src=\"/images/$filename\" alt=\"Logo\" />";
 };
 
-#if ( $image_custom ) {
-#    $image_path	= $image_custom;
-#} elsif	( $image_vendor ) {
-#    $image_path	= $image_vendor;
-#} elsif	( $image_orig )	{
-    $image_path	= $image_orig;
-#}
+$image_path	= $image_orig;
+
 
 if ( $image_path ) {
     $filename=substr($image_path,24);
@@ -1139,32 +1315,33 @@ _("Help")
 ;
 printf <<END
    </div><!-- header-icons -->
-   </div><!-- header -->
+   </div><!-- HEADER -->
+<!-- BEGIN MENU -->
 END
 ;
 
     &showmenu();
 
 printf <<END
+<!-- END MENU -->
 <div id="content">
+<!-- BEGIN SUB MENU -->
 END
 ;
 	
     &showsubsection($menu);
 
-    printf <<END
-        <div id="page-content">
-            <h2>$h2</h2>
+printf <<END
+<!-- END SUB MENU -->
+    <div id="page-content">
+    <h2>$h2</h2>
+<!-- SHOW SUB SECTION -->
 END
     ;
     
     &showsubsubsection($menu);
-#    eval {
-#	require 'endian-network.pl';
-#	$supported = check_support();
-#	warn_unsupported($supported);
-#    };
-if ( -e '/var/tmp/oldkernel' && $ENV{'SCRIPT_NAME'} eq '/cgi-bin/main.cgi') {
+
+if ( -e '/var/tmp/oldkernel' && $ENV{'SCRIPT_NAME'} eq '/cgi-bin/dashboard.pl') {
     printf <<END                                                                                                                                                                
     <h3 class="warning">%s</h3>                                                                                                                                                 
     <table class="list"><tr><td align="center"><img src="/images/dialog-warning.png"/></td><td align="left">%s</td></tr></table>                                                
@@ -1176,19 +1353,24 @@ _('You are not running the latest kernel version. If your Firewall has been upda
 ;                 
 }
     # Add HTML required to display notifications posted from service(s)
-    printf <<END
+printf <<END
+<!-- END SUB SECTION -->
         <div id="notification-view" class="spinner" style="display:none"></div>
 END
 ;
 
-    printf <<END
+printf <<END
         <div id="module-content">
+		<!-- BEGIN PAGE DATA -->
 END
 ;
 }
 
+
+#### HTML PAGE FOOT
 sub closepage () {
     print <<END
+			  <!-- END PAGE DATA -->
               </div>
               <div id="footer">
 END
@@ -1198,11 +1380,8 @@ END
         $uptime = `/usr/bin/uptime`;
         print '<div style="font-size: 9px"><b>Status:</b> '.$status.' <b>Uptime:</b>'.$uptime.'</div>';
     }
-	if (!is_branded()) {
-	    print "<p>".$version." (c) ".'<a href="http://www.endian.com">Endian</a><span style="font-size: 7px"></span></p>';
-	} else {
-	    print "<p>".$version." (c) ".get_company().'<span style="font-size: 7px"></span></p>';
-	}    
+	print "<p>".$version." (c) ".'<a href="http://www.razwall.com">RazWall</a><span style="font-size: 7px"></span></p>';
+	
 print <<END
               </div>
             </div>
@@ -1210,7 +1389,7 @@ print <<END
           </div><!-- page_content -->
         </div><!-- content -->
 	<script>
-	var RazIP = '192.168.0.15';
+	var RazIP = '$thisAddress';
 	RazConnectWS();
 	</script>
   </body>
@@ -1693,6 +1872,7 @@ sub cleanhtml {
 	$outstring =~ s/>/&gt;/g;
 	return $outstring;
 }
+
 sub connectionstatus {
         my $status;
         opendir UPLINKS, "/razwall/config/uplinks" or die "Cannot read uplinks: $!";
@@ -1722,7 +1902,7 @@ sub connectionstatus {
     return $connstate;
 }
 
-sub srtarray 
+sub srtarray {
 # Darren Critchley - darrenc@telus.net - (c) 2003
 # &srtarray(SortOrder, AlphaNumeric, SortDirection, ArrayToBeSorted)
 # This subroutine will take the following parameters:
@@ -1735,7 +1915,7 @@ sub srtarray
 #
 #   If SortOrder is greater than the elements in array, then it defaults to the first element
 # 
-{
+
 	my ($colno, $alpnum, $srtdir, @tobesorted) = @_;
 	my @tmparray;
 	my @srtedarray;
@@ -1802,8 +1982,7 @@ sub srtarray
 	}
 }
 
-sub speedtouchversion
-{
+sub speedtouchversion {
 	if (-f "/proc/bus/usb/devices")
 	{
 		$speedtouch=`/bin/cat /proc/bus/usb/devices | /bin/grep 'Vendor=06b9 ProdID=4061' | /usr/bin/cut -d ' ' -f6`;
@@ -2614,8 +2793,7 @@ sub fileStayInMemory($) {
     return 1;
 }
 
-sub writehash
-{
+sub writehash {
 	my $filename = $_[0];
 	my $hash = $_[1];
 	
@@ -2647,8 +2825,7 @@ sub writehash
 	close FILE;
 }
 
-sub readhashfile
-{
+sub readhashfile {
 	my $filename = $_[0];
 	my $hash = $_[1];
 	my ($var, $val);
@@ -3035,4 +3212,76 @@ sub last_download_timestamp($) {
     return $timestampshash{$key};
 }
 
+
+############ NEW TEMPLATE ENGINE:
+
+sub loadTemplates { 
+	# Load Templates
+	if(-e $templates) {
+		if(!(do "$templates")) {
+			# Display an error if the template file can't be evaluated successfully.
+print qq~
+Content-type: text/html
+<html>
+<body>
+<h2>RazDC: Error</h2>
+<div>An error occured while loading the RazDC template file:</div>
+<div>$@</div>
+</body></html>
+~;
+		}
+	}
+	else {
+print qq~
+Content-type: text/html
+<html>
+<body>
+<h2>RazDC: Error</h2>
+<div>An error occured while loading the RazDC template file:</div>
+<div>$@</div>
+</body></html>
+~;
+	}
+}
+
+sub doSub { 
+	# Generic "safe" substitution routine that watches for user-inserted substitution markers.
+	# It changes all occurances of [!, [?, !] or ?] to [~~! etc., to be changed back later.
+	# Otherwise users can include substitution markers in their posts, and cause havoc.
+	($subName, $newStr) = @_;
+	$newStr = '' unless ($newStr);
+	$newStr =~ s/\[(!|\?)/\[~~$1/g;
+	$newStr =~ s/(!|\?)\]/$1~~\]/g;
+	$newStr =~ s/\^/~~CARET/g;
+	s/\[!\Q$subName\E!\]/$newStr/g;
+}
+sub printHeader { 
+	# Create the common page header - pass a title parameter.
+	# Compose the regular header template.
+	&getTemplate('header');
+	&doSub("PAGETITLE", $_[0]);
+	&printTemplate;
+}
+sub getTemplate { 
+	# This retrieves a template and does some substitutions common to most templates
+	# The result is returned as $_ to the calling function.
+	# Pass it a template name and hash reference to an @forum_data entry (like $forum_ref).
+	($template_name) = @_;
+	$_ = $template{$template_name};
+	# Make usergroups available everywhere...
+	# s/\[\?ISLOGGEDIN(.)(.*?)\1(.*?)\?\]/$username ? $2 : $3/seg;
+}
+sub printTemplate {
+	# ADD STANDARD REPLACEMENTS HERE:
+	# FUNCTION CALL?
+	# LIST EACH REPLACMENT?
+	# NEED TO PASS VARIBLES?
+	
+	# Print Template
+	################
+ s/\[~~(!|\?)/\[$1/g;
+ s/(!|\?)~~\]/$1\]/g;
+ s/~~CARET/\^/g;
+ print "$_";
+}
 1;

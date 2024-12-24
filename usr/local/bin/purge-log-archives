@@ -1,0 +1,224 @@
+#!/usr/bin/python
+#
+#        +-----------------------------------------------------------------------------+
+#        | Endian Firewall                                                             |
+#        +-----------------------------------------------------------------------------+
+#        | Copyright (c) 2012 Endian                                                   |
+#        |         Endian GmbH/Srl                                                     |
+#        |         Bergweg 41 Via Monte                                                |
+#        |         39057 Eppan/Appiano                                                 |
+#        |         ITALIEN/ITALIA                                                      |
+#        |         info@endian.it                                                      |
+#        |                                                                             |
+#        | This program is free software; you can redistribute it and/or               |
+#        | modify it under the terms of the GNU General Public License                 |
+#        | as published by the Free Software Foundation; either version 2              |
+#        | of the License, or (at your option) any later version.                      |
+#        |                                                                             |
+#        | This program is distributed in the hope that it will be useful,             |
+#        | but WITHOUT ANY WARRANTY; without even the implied warranty of              |
+#        | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               |
+#        | GNU General Public License for more details.                                |
+#        |                                                                             |
+#        | You should have received a copy of the GNU General Public License           |
+#        | along with this program; if not, write to the Free Software                 |
+#        | Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA. |
+#        | http://www.fsf.org/                                                         |
+#        +-----------------------------------------------------------------------------+
+
+import os
+import re
+import sys
+import glob
+import getopt
+
+from endian.core import logger
+from endian.data.ds import DataSource
+
+MOUNT_POINT = '/var/log'
+LOG_ARCHIVE = '%s/archives' % MOUNT_POINT
+
+# Default percentage of mount point that have to be free.
+LOGS_FREE_PERCENTAGE = 10
+
+HELP = """purge-log-archives - Remove older archived log files to free the /var/log partition up to a given amount.
+Options:
+    -p percent  free partition up to the given amount.
+    --percentage
+
+    -f          force removal even if disabled in setting file.
+    --force
+
+    -n          do not act.
+    --dry -run
+
+    -h          print this help and exit.
+    --help
+"""
+
+reDate = re.compile(r'-([0-9]{8})')
+
+
+def partitionInfo(mountPoint):
+    """Return information about a mount point.
+
+    :param mountPoint: mount point to inspect.
+    :type mountPoint: str
+    :return: information on total, used and free space.
+    :rtype: dict"""
+    infoFd = os.popen('df -P %s' % mountPoint)
+    infoFd.readline()
+    info = infoFd.readline().strip()
+    infoFd.close()
+    infoSplit = info.split()
+    if not infoSplit:
+        logger.error('unable to read partition information')
+    return {'total': int(infoSplit[1]) * 1024,
+            'used': int(infoSplit[2]) * 1024,
+            'free': int(infoSplit[3]) * 1024}
+
+
+def sizeByDay(logArchive):
+    """Return a dictionary where the keys are dates (YYYYMMDD format)
+    and the values are dictionaries containing the 'size' (total size
+    of the files, in bytes) and 'files' (a list of file paths).
+
+    :param logArchive: path to descend.
+    :type logArchive: str
+    :return: information on the files related to a given date and their total size.
+    :rtype: dict"""
+    dates = {}
+    for fileName in glob.glob('%s/*-*' % logArchive) + \
+            glob.glob('%s/*/*-*' % logArchive):
+        if not os.path.isfile(fileName):
+            continue
+        dateRes = reDate.search(fileName)
+        if not dateRes:
+            continue
+        date = dateRes.groups()[0]
+        dates.setdefault(date, {'size': 0L, 'files': []})
+        dates[date]['size'] += os.path.getsize(fileName)
+        dates[date]['files'].append(fileName)
+    return dates
+
+
+def _freePercentage(free, total):
+    """Calculate the percentage of free space.
+
+    :param free: free space in bytes.
+    :type free: int
+    :param total: total space in bytes.
+    :type total: int
+    :return: percentage of the free space.
+    :rtype: float"""
+    return ((free * 100.) / total)
+
+
+def datesToDelete(datesInfo, partInfo, freePercentage):
+    """Return information on dates that must be deleted
+    to reach the required percentage of free space.
+    The returned value is a list of tuples with the date
+    as the first item and a list of files as the second item.
+
+    :param datesInfo: information about files separated by dates.
+    :type datesInfo: dict
+    :param partInfo: information about the partition.
+    :type partInfo: dict
+    :param freePercentage: percentage of partition that should stay free.
+    :type freePercentage: int
+    :return: list of files to delete, separate by date
+    :rtype: list"""
+    toDelete = []
+    freed = partInfo['free']
+    total = partInfo['total']
+    # Dates are processed in order.
+    dates = datesInfo.keys()
+    dates.sort()
+    for date in dates:
+        if _freePercentage(freed, total) > freePercentage:
+            break
+        freed += datesInfo[date]['size']
+        toDelete.append((date, datesInfo[date]['files']))
+    return toDelete
+
+
+def removeFiles(toDelete, dryRun=False):
+    """Remove the given files.
+
+    :param toDelete: output of datesToDelete
+    :type toDelete: list
+    :param dryRun: if True, files are not actually removed.
+    :type dryRun: bool
+    :return: True if all the files were successfully removed.
+    :rtype: bool"""
+    success = True
+    for date, files in toDelete:
+        logger.debug('processing date: %s', date)
+        for fileName in files:
+            try:
+                if not dryRun:
+                    os.unlink(fileName)
+            except OSError, e:
+                success = False
+                logger.warn('unable to remove file %s: %s', fileName, e)
+            logger.info('removed %s' % fileName)
+    return success
+
+
+def main(freePercentage=None, force=False, dryRun=False):
+    """Remove archived logs to make space.
+
+    :param freePercentage: percentage of space that must be free
+                        (if not specified, it's taken from the setting file).
+    :type freePercentage: int
+    :param force: force removal, even if disabled in setting file.
+    :type force: bool
+    :param dryRun: if True, files are not actually removed.
+    :type dryRun: bool"""
+    settings = DataSource('logging').settings
+    if settings.get('LOGS_REMOVE') != 'on' and not force:
+        logger.info('removal of archived logs disabled')
+        return
+    if freePercentage is None:
+        freePercentage = settings.get('LOGS_FREE_PERCENTAGE',
+                                        LOGS_FREE_PERCENTAGE)
+    freePercentage = int(freePercentage)
+    partInfo = partitionInfo(MOUNT_POINT)
+    logger.info('%.1f%% of %s partition free' %
+            (_freePercentage(partInfo['free'], partInfo['total']), MOUNT_POINT))
+    datesInfo = sizeByDay(LOG_ARCHIVE)
+    if not datesInfo:
+        logger.info('nothing to remove')
+        return
+    toDelete = datesToDelete(datesInfo, partInfo, freePercentage)
+    if not toDelete:
+        logger.info('no need to remove logs')
+        return
+    removeFiles(toDelete, dryRun)
+    partInfo = partitionInfo(MOUNT_POINT)
+    logger.info('after the removal: %.1f%% of %s partition free' %
+            (_freePercentage(partInfo['free'], partInfo['total']), MOUNT_POINT))
+
+
+if __name__ == '__main__':
+    optlist, args = getopt.getopt(sys.argv[1:], 'p:nfh',
+            ['percentage=', 'dry-run', 'force', 'help'])
+    if args:
+        print HELP
+        print 'No args required.'
+        sys.exit(2)
+    dryRun = False
+    force = False
+    freePercentage = None
+    for opt, arg in optlist:
+        if opt in ('-p', '--percentage'):
+            freePercentage = arg
+        elif opt in ('-h', '--help'):
+            print HELP
+            sys.exit(1)
+        elif opt in ('-n', '--dry-run'):
+            dryRun = True
+        elif opt in ('-f', '--force'):
+            force = True
+    main(freePercentage, force, dryRun)
+

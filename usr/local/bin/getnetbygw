@@ -1,0 +1,57 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# +--------------------------------------------------------------------------+
+# | Endian Firewall                                                          |
+# +--------------------------------------------------------------------------+
+# | Copyright (c) 2004-2018 Endian S.p.A. <info@endian.com>                  |
+# |         Endian S.p.A.                                                    |
+# |         via Pillhof 47                                                   |
+# |         39057 Appiano (BZ)                                               |
+# |         Italy                                                            |
+# |                                                                          |
+# | This program is free software; you can redistribute it and/or modify     |
+# | it under the terms of the GNU General Public License as published by     |
+# | the Free Software Foundation; either version 2 of the License, or        |
+# | (at your option) any later version.                                      |
+# |                                                                          |
+# | This program is distributed in the hope that it will be useful,          |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of           |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            |
+# | GNU General Public License for more details.                             |
+# |                                                                          |
+# | You should have received a copy of the GNU General Public License along  |
+# | with this program; if not, write to the Free Software Foundation, Inc.,  |
+# | 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.              |
+# +--------------------------------------------------------------------------+
+
+import iplib
+import commands
+import sys
+
+if len(sys.argv) <= 1:
+    print("Usage: %s <gateway>" % sys.argv[0])
+    sys.exit(1)
+
+gateway = sys.argv[1]
+
+(status, values) = commands.getstatusoutput('ip -o route')
+if status != 0:
+    sys.exit(1)
+
+
+for lines in values.split("\n"):
+    tok = lines.split()
+    net = tok[0]
+    try:
+        c = iplib.CIDR(net)
+    except:
+        continue
+    if c.is_valid_ip(gateway):
+        dev = tok[2]
+        src = tok[8]
+        netaddr = c.get_network_ip().get()
+        cidr = c.get_netmask().get_bits()
+        print("%s %s %s %s %s" % (net, netaddr, cidr, dev, src))
+        sys.exit(0)
+
+sys.exit(1)

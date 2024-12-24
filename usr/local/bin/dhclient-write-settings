@@ -1,0 +1,75 @@
+#!/usr/bin/python
+
+import os
+import sys
+from endian.datatypes.network import CIDR
+from endian.data import DataSource
+from endian.data.container.settings import SettingsFile
+
+DONOTHING = [
+    'MEDIUM',
+    'ARPCHECK',
+    'ARPSEND',
+    'PREINIT',
+    ]
+
+def getZone(nic):
+    ds = DataSource('ethernet').settings
+    if ds.GREEN_DEV == nic:
+        return 'GREEN'
+    elif ds.ORANGE_DEV == nic:
+        return 'ORANGE'
+    elif ds.BLUE_DEV == nic:
+        return 'BLUE'
+    else:
+        return None
+
+def bailout(s):
+    print "ERROR: %s" % s
+    sys.exit(1)
+
+
+if 'interface' not in os.environ:
+    bailout("No 'interface' found in DHCP environment")
+
+if 'reason' not in os.environ:
+    bailout("No variable 'reason' found in DHCP environment")
+
+if os.environ['reason'] in DONOTHING:
+    sys.exit(0)
+
+iff = os.environ['interface']
+zone = getZone(iff)
+if zone is None:
+    bailout("Interface is not part of a Zone!")
+
+
+s = ''
+if os.environ.get('new_ip_address', '') != '':
+    s = "%s/%s" % (
+        os.environ.get('new_ip_address'),
+        os.environ.get('new_subnet_mask')
+        )
+else:
+    s = "%s/%s" % (
+        os.environ.get('old_ip_address'),
+        os.environ.get('old_subnet_mask')
+        )
+ip = CIDR(s)
+
+if os.environ.get('new_routers', '') != '':
+    s = os.environ.get('new_routers', '')
+    s = s.split(' ')[0]
+    s = s + "/32"
+gw = CIDR(s)
+
+settings = SettingsFile("/var/lib/efw/ethernet/settings.%s" % zone)
+settings["%s_ADDRESS" % zone] = ip.address
+settings["%s_BROADCAST" % zone] = ip.broadcast
+settings["%s_CIDR" % zone] = ip.bits
+settings["%s_IPS" % zone] = str(ip)
+settings["%s_NETADDRESS" % zone] = ip.netaddress
+settings["%s_NETMASK" % zone] = ip.netmask
+settings["%s_GATEWAY" % zone] = gw.address
+settings.write()
+sys.exit(0)

@@ -1,0 +1,85 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# +--------------------------------------------------------------------------+
+# | Endian Firewall                                                          |
+# +--------------------------------------------------------------------------+
+# | Copyright (c) 2004-2018 Endian S.p.A. <info@endian.com>                  |
+# |         Endian S.p.A.                                                    |
+# |         via Pillhof 47                                                   |
+# |         39057 Appiano (BZ)                                               |
+# |         Italy                                                            |
+# |                                                                          |
+# | This program is free software; you can redistribute it and/or modify     |
+# | it under the terms of the GNU General Public License as published by     |
+# | the Free Software Foundation; either version 2 of the License, or        |
+# | (at your option) any later version.                                      |
+# |                                                                          |
+# | This program is distributed in the hope that it will be useful,          |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of           |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            |
+# | GNU General Public License for more details.                             |
+# |                                                                          |
+# | You should have received a copy of the GNU General Public License along  |
+# | with this program; if not, write to the Free Software Foundation, Inc.,  |
+# | 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.              |
+# +--------------------------------------------------------------------------+
+
+from __future__ import print_function
+import argparse
+import sys
+import os
+import os.path
+try:
+   input = raw_input # Python 2
+except NameError:
+   pass
+from endian.authentication import auth_client
+
+__author__ = "Andrea Bonomi <a.bonomi@endian.com>"
+__date__ = "2018-06-12"
+
+def help():
+    exe = os.path.basename(sys.argv[0])
+    print("usage: %s [--force-dns] domain [domain1..domainN]" % exe)
+    sys.exit(2)
+
+def execute_cmd(names, force_dns_challenge=False):
+    cert_name = names[0]
+    cert_subjectaltname = ",".join(['DNS:%s' % x for x in names[1:]]) or None
+    try:
+        output = auth_client.acme_create_certificate(cert_name=cert_name, cert_subjectaltname=cert_subjectaltname, force_dns_challenge=force_dns_challenge)
+    except auth_client.ClientAuthException as ex:
+        print(ex)
+        sys.exit(1)
+    if 'cert_filename' in output:
+        print('Certificate "%s" generated' % output['cert_filename'])
+        sys.exit(0)
+    for challenge in output.values():
+        print('Please deploy a DNS TXT record under the name')
+        print('%s with the following value:' % challenge['record'])
+        print('')
+        print(challenge['value'])
+        print('')
+    print('Once this is deployed,')
+    print('Press ENTER to continue')
+    try:
+        raw_input()
+    except:
+        sys.exit(1)
+    try:
+        output = auth_client.acme_verify_certificate_request(cert_name=cert_name)
+    except auth_client.ClientAuthException as ex:
+        print(ex)
+        sys.exit(1)
+    print('Certificate "%s" generated' % output['cert_filename'])
+    sys.exit(0)
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--force-dns', action='store_true')
+    parser.add_argument('domain', nargs='+')
+    args = parser.parse_args()
+    execute_cmd(args.domain, force_dns_challenge=args.force_dns)
+
+if __name__ == "__main__":
+    main()

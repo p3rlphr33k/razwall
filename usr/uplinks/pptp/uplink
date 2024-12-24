@@ -1,0 +1,70 @@
+#!/bin/sh
+
+. /etc/rc.d/efw_lib.sh
+. ${UPLINK_SCRIPTS}/common
+. ${UPLINK_SCRIPTS}/generic/static.sh
+. ${UPLINK_SCRIPTS}/generic/route.sh
+. ${UPLINK_SCRIPTS}/generic/dhcp.sh
+. ${UPLINK_SCRIPTS}/generic/pptp.sh
+
+function stop() {
+    local ret=0
+
+    pptp_stop $uplink
+    ret=$(($ret + $?))
+    base_remove $uplink "stop"
+    ret=$(($ret + $?))
+
+    return $ret
+}
+
+function base_remove() {
+    local uplink="$1"
+    local stop="${2:-stop}"
+    local ret=0
+
+    init_variables "$uplink" "$stop" "base"
+
+    if [ "$stop" == "start" ]; then
+	loadSettings "${UPLINK_VAR}/${uplink}/base"
+    fi
+
+    if [ "$METHOD" == "DHCP" ]; then
+	dhcp_stop
+	ret=$(($ret + $?))
+    elif [ "$METHOD" == "STATIC" ]; then
+	route_stop
+	ret=$(($ret + $?))
+	static_down
+	ret=$(($ret + $?))
+    else
+        failure "No METHOD set for uplink $uplink"
+    fi
+    return $?
+}
+
+function base_failure() {
+    base_remove $uplink "start"
+    failure
+}
+
+function start() {
+    if [ "$METHOD" == "DHCP" ]; then
+	dhcp_kill $interface
+	dhcp_start || failure
+    elif [ "$METHOD" == "STATIC" ]; then
+	static_start || failure
+    else
+        failure "No METHOD set for uplink $uplink"
+    fi
+    init_variables "$uplink" "start" "base"
+
+    pptp_init || base_failure
+    pptp_write_peer $uplink $gateway || base_failure
+    pptp_call $uplink || base_failure
+    return 0
+}
+
+switch "$1"
+
+exit 0

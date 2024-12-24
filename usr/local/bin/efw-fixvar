@@ -1,0 +1,138 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# +--------------------------------------------------------------------------+
+# | Endian Firewall                                                          |
+# +--------------------------------------------------------------------------+
+# | Copyright (c) 2004-2021 Endian S.p.A. <info@endian.com>                  |
+# |         Endian S.p.A.                                                    |
+# |         via Ipazia 2                                                     |
+# |         39100 Bolzano (BZ)                                               |
+# |         Italy                                                            |
+# |                                                                          |
+# | This program is free software; you can redistribute it and/or modify     |
+# | it under the terms of the GNU General Public License as published by     |
+# | the Free Software Foundation; either version 2 of the License, or        |
+# | (at your option) any later version.                                      |
+# |                                                                          |
+# | This program is distributed in the hope that it will be useful,          |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of           |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            |
+# | GNU General Public License for more details.                             |
+# |                                                                          |
+# | You should have received a copy of the GNU General Public License along  |
+# | with this program; if not, write to the Free Software Foundation, Inc.,  |
+# | 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.              |
+# +--------------------------------------------------------------------------+
+from __future__ import print_function
+
+import argparse
+import errno
+import os
+import stat
+import sys
+from grp import getgrnam
+from pwd import getpwnam
+from subprocess import call
+
+import rpm
+
+
+def fix_perms(args):
+    root = args.rootdir
+    if not os.path.isdir(root):
+        print("Root directory {} doesn't exists".format(root), file=sys.stderr)
+        sys.exit(1)
+
+    print(
+        "Create /var directory structure in '{}'".format(root), file=sys.stderr
+    )
+
+    # Fix rpm db link
+    rpmdb_link = os.path.join(root, "var", "lib", "rpm")
+    if not os.path.islink(rpmdb_link):
+        call(["mkdir", "{}/var/lib/".format(root)])
+        call(["ln", "-s", "/usr/share/rpm", rpmdb_link])
+
+    ts = rpm.TransactionSet()
+    mi = ts.dbMatch()
+
+    dirs = {}
+
+    os.umask(0000)
+
+    for pkg in mi:
+        files = pkg[rpm.RPMTAG_FILENAMES]
+        modes = pkg[rpm.RPMTAG_FILEMODES]
+        users = pkg[rpm.RPMTAG_FILEUSERNAME]
+        groups = pkg[rpm.RPMTAG_FILEGROUPNAME]
+
+        for i in range(len(files)):
+            fname = files[i]
+            if not fname.startswith("/var"):
+                continue
+            mode = modes[i]
+            if not stat.S_ISDIR(mode):
+                # we create only directories, /var is not for packaged FILES!
+                continue
+            if fname == "/var":
+                continue
+
+            item = {
+                "fname": fname,
+                "mode": mode,
+                "user": users[i],
+                "group": groups[i],
+                "perm": stat.S_IMODE(mode),
+                "strperm": oct(stat.S_IMODE(mode)),
+            }
+            dirs[fname] = item
+
+    for k, v in sorted(dirs.items()):
+        v["fname"] = os.path.join(root, v["fname"])
+        print("%(fname)s\t\t%(user)s:%(group)s\t%(strperm)s" % v)
+        uid = 0
+        gid = 0
+        try:
+            uid = getpwnam(v["user"])[2]
+        except Exception:
+            print(
+                "%(fname)s: User '%(user)s' does not exist! Use user root" % v,
+                file=sys.stderr,
+            )
+        try:
+            gid = getgrnam(v["group"])[2]
+        except Exception:
+            print(
+                "%(fname)s: Group '%(group)s' does not exist! Use group root"
+                % v,
+                file=sys.stderr,
+            )
+        try:
+            os.makedirs(v["fname"])
+        except OSError as e:
+            if e.errno != errno.EEXIST:
+                print(
+                    "Could not create '%(fname)s' with perm '%(strperm)s'" % v,
+                    file=sys.stderr,
+                )
+                continue
+        try:
+            os.chmod(v["fname"], v["perm"])
+            os.chown(v["fname"], uid, gid)
+        except Exception:
+            print(
+                "Error fixing permissions and ownership of %(fname)s with perm %(strperm)s"  # noqa
+                % v,
+                file=sys.stderr,
+            )
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Fix /var permissions")
+    parser.add_argument("--rootdir", default="/", help="Root directory")
+    args = parser.parse_args()
+    fix_perms(args)
+
+
+if __name__ == "__main__":
+    main()

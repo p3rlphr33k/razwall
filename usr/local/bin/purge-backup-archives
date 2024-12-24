@@ -1,0 +1,115 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# +--------------------------------------------------------------------------+
+# | Endian Firewall                                                          |
+# +--------------------------------------------------------------------------+
+# | Copyright (c) 2004-2016 S.p.A. <info@endian.com>                         |
+# |         Endian S.p.A.                                                    |
+# |         via Pillhof 47                                                   |
+# |         39057 Appiano (BZ)                                               |
+# |         Italy                                                            |
+# |                                                                          |
+# | This program is free software; you can redistribute it and/or modify     |
+# | it under the terms of the GNU General Public License as published by     |
+# | the Free Software Foundation; either version 2 of the License, or        |
+# | (at your option) any later version.                                      |
+# |                                                                          |
+# | This program is distributed in the hope that it will be useful,          |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of           |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            |
+# | GNU General Public License for more details.                             |
+# |                                                                          |
+# | You should have received a copy of the GNU General Public License along  |
+# | with this program; if not, write to the Free Software Foundation, Inc.,  |
+# | 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.              |
+# +--------------------------------------------------------------------------+
+
+import os
+import re
+import sys
+import glob
+from endian.core import logger
+from endian.data.ds import DataSource
+
+
+BACKUP_DIR = '/var/backups/'
+BACKUP_ARCHIVE = 'backup*.tar.gz'
+BACKUP_RETENTION_DEFAULT = 10
+HELP = """Keep BACKUP_RETENTION-1 on %s
+
+-e	keeps the exact number, and not BACKUP_RETENTION-1
+""" % BACKUP_DIR
+
+
+re_date = re.compile(r'backup-([0-9]{14})')
+
+
+def get_files(glob_expr):
+    """Generate a list of files, candidate for deletion, sorted by date."""
+    files = []
+
+    def _append_file(files_list, file_name):
+        base_name = os.path.basename(file_name)
+        match = re_date.match(base_name)
+        if not match:
+            return
+        date = match.group(1)
+        files_list.append((date, file_name))
+    for file_name in glob.glob(glob_expr):
+        if os.path.islink(file_name):
+            continue
+        base_name = os.path.basename(file_name)
+        if 'cron' in base_name:
+            _append_file(files, file_name)
+        else:
+            meta_name = '%s.meta' % file_name
+            if not os.path.isfile(meta_name):
+                continue
+            try:
+                fd = open(meta_name, 'r')
+                meta_content = fd.read()
+                fd.close()
+            except Exception, e:
+                logger.warn('Unable to read %: %', file_name, e)
+                meta_content = ''
+            if 'USB' in meta_content:
+                _append_file(files, file_name)
+    files.sort()
+    return [x[1] for x in files]
+
+
+def remove_old(files):
+    """Remove old files."""
+    settings = DataSource('backup').settings
+    keep = settings.get('BACKUP_RETENTION')
+    try:
+        keep = int(keep)
+    except Exception, e:
+        keep = BACKUP_RETENTION_DEFAULT
+        logger.info('Unable to get the number of backups to keep, falling back to %s: %s',
+                    BACKUP_RETENTION_DEFAULT, e)
+    if '-e' in sys.argv[1:]:
+        keep += 1
+    if keep < 2:
+        keep = 2
+    to_delete = files[::-1][keep - 1:][::-1]
+    for file_name in to_delete:
+        for fn_expanded in glob.glob(file_name + '*'):
+            try:
+                os.unlink(fn_expanded)
+            except Exception, e:
+                logger.warn('Unable to remove %: %', file_name, e)
+                continue
+
+
+def main():
+    if '-h' in sys.argv[1:] or '--help' in sys.argv[1:]:
+        print HELP
+        sys.exit(0)
+    glob_expr = os.path.join(BACKUP_DIR, BACKUP_ARCHIVE)
+    files = get_files(glob_expr)
+    remove_old(files)
+
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,5 @@
+#!/bin/sh
+pid=$(ps fax | grep notification_daemon.py | grep -v grep | cut -d'?' -f1 | tr -d " ")
+if [ 'x'$pid != 'x' ]; then
+    kill -s USR1 $pid
+fi

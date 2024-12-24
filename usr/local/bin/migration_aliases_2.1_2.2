@@ -1,0 +1,85 @@
+#!/usr/bin/python
+#
+#        +-----------------------------------------------------------------------------+
+#        | Endian Firewall                                                             |
+#        +-----------------------------------------------------------------------------+
+#        | Copyright (c) 2005-2006 Endian                                              |
+#        |         Endian GmbH/Srl                                                     |
+#        |         Bergweg 41 Via Monte                                                |
+#        |         39057 Eppan/Appiano                                                 |
+#        |         ITALIEN/ITALIA                                                      |
+#        |         info@endian.it                                                      |
+#        |                                                                             |
+#        | This program is free software; you can redistribute it and/or               |
+#        | modify it under the terms of the GNU General Public License                 |
+#        | as published by the Free Software Foundation; either version 2              |
+#        | of the License, or (at your option) any later version.                      |
+#        |                                                                             |
+#        | This program is distributed in the hope that it will be useful,             |
+#        | but WITHOUT ANY WARRANTY; without even the implied warranty of              |
+#        | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               |
+#        | GNU General Public License for more details.                                |
+#        |                                                                             |
+#        | You should have received a copy of the GNU General Public License           |
+#        | along with this program; if not, write to the Free Software                 |
+#        | Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA. |
+#        | http://www.fsf.org/                                                         |
+#        +-----------------------------------------------------------------------------+
+#
+
+from endian.core.logger import *
+from uplinksdaemon.uplinks import Uplink
+from endian.core.csvfile import CSVFile
+import sys
+import os
+
+logger.setLevel(logging.INFO)
+
+ALIASESFILE='/var/efw/ethernet/aliases'
+
+class Aliases:
+    def __init__(self):
+        self._meta = ['ip', 'enabled', 'remark']
+        self.enabled = 'on'
+        self.ip = ''
+        self.remark = ''
+
+
+if not os.path.exists(ALIASESFILE):
+    sys.exit(0)
+
+try:
+    mainsettings = Uplink("main").getSettings()
+except:
+    sys.exit(0)
+
+redcidr = mainsettings.get('RED_CIDR', '32')
+if redcidr == '':
+    redcidr = '32'
+redips = mainsettings.get('RED_IPS', '').split(',')
+
+debug("Check for migration of aliases file")
+config = CSVFile(ALIASESFILE, Aliases(), tolerant=True).load()
+i=0
+dirty=False
+for rule in config._data:
+    i += 1
+    addr = "%s/%s"%(rule.ip,redcidr)
+    debug("Process line %s: %s"%(i, addr))
+    if rule.enabled != 'on':
+        debug("Line %s is disabled"%i)
+    if addr not in redips:
+        debug("Add %s to RED_IPS"%addr)
+        redips.append(addr)
+        dirty=True
+    else:
+        debug("%s already within RED_IPS"%addr)
+
+if dirty:
+    debug("Write down main uplink settings file")
+    redips = filter(lambda x: x != None and x != '', redips)
+    mainsettings['RED_IPS'] = ",".join(redips)
+    mainsettings.write()
+
+debug("Remove aliases configuration file")
+os.unlink(ALIASESFILE)

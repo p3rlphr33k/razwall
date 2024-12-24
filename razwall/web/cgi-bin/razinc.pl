@@ -31,9 +31,9 @@ require 'header.pl';
 my $register_status_hash;
 my $mactabfile = '/razwall/config/ethernet/mactab';
 my $bondfiles = '/razwall/config/ethernet/bond*';
-my $ifacesjson = '/var/cache/ethconfig/interfaces.json';
+my $ifacesjson = '/razwall/cache/ethconfig/interfaces.json';
 my $ethernet_settings_file = '/razwall/config/ethernet/settings';
-my $ips_settings_file = '/usr/lib/efw/snort/default/settings';
+my $ips_settings_file = '/razwall/defaults/efw/snort/default/settings';
 my $session = 0;
 my %ifaces = {};
 my @validifaces= qw 'eth vlan';
@@ -847,7 +847,11 @@ sub load_ethconfig($) {
     my $i = 0;
 
     if (! -e $ifacesjson) {
-	system("sudo /usr/sbin/ethconfig --json --output $ifacesjson");
+	#open(TMP, "> /razwall/web/cgi-bin/temp.txt") or die $!;
+	#print TMP "$ifacesjson";
+	#close(TMP);
+	
+	system("perl /razwall/scripts/ethconfig.pl --json --output $ifacesjson");
     }
     open(J, $ifacesjson);
     my $jsonobj = JSON::XS->new->utf8->decode (join('', <J>));

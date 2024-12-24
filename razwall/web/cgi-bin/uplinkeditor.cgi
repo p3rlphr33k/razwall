@@ -22,7 +22,7 @@
 #        +-----------------------------------------------------------------------------+
 #
 
-
+use lib '/razwall/web/cgi-bin/';
 require 'header.pl';
 require 'razinc.pl';
 require 'modemtools.pl';

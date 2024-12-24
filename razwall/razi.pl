@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 #use strict;
 #use warnings;
+use lib './';
 use SimpleCurses;
 
 =pod
@@ -75,6 +76,7 @@ sub write_colored_text {
     print "\e[${y};${x}H$bg_color$fg_color$text$reset_color";
 }
 
+sub main_screen {
 # Write menu items with a blue background
 write_colored_text(10, 10, 'Menu:', $menu_color, $text_color);
 
@@ -95,11 +97,18 @@ write_colored_text($left_width + 5, 16, 'Device eth0 [UP]', $info_color, "\e[30m
 
 write_colored_text($left_width + 5, 19, 'WAN Zone', $info_color, "\e[30m");
 write_colored_text($left_width + 5, 20, 'Device eth1 [UP]', $info_color , "\e[30m");
+}
 
 # Wait for a key press to exit
 #write_colored_text(3, $height - 1, 'Press any key to exit...', $menu_color, $text_color);
+&main_screen;
 my $key = $screen->get_input();
-print "$key";
+if($key == 0) {
+#$screen->end_screen();
+system('clear');
+exit;
+}
+#print "$key";
 # End the screen session
 #$screen->end_screen();
 

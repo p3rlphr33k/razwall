@@ -1,0 +1,58 @@
+#!/bin/bash
+
+killall -9 /usr/bin/freshclam 2>/dev/null
+rm -rf /var/signatures/clamav/clamav-*.tmp 2>/dev/null
+
+chown -R clamav:clamav /var/signatures/clamav 2> /dev/null
+
+jobcontrol call sync clamav.run_freshclam 2> /dev/null
+
+lastupdate=`tac /var/log/clamav/clamd.log 2> /dev/null | grep -m1 "Database updated"`
+maincvd=`tac /var/log/clamav/clamd.log 2> /dev/null | grep -m1 "main.cvd"`
+mainupdated=`tac /var/log/clamav/clamd.log 2> /dev/null | grep -m1 "main.cvd updated"`
+dailycvd=`tac /var/log/clamav/clamd.log 2> /dev/null | grep -Em1 "daily.(inc|cvd)"`
+dailyupdated=`tac /var/log/clamav/clamd.log 2> /dev/null | grep -Em1 "daily.(inc|cvd) updated"`
+
+lastupdate_old=`tac /var/signatures/clamav/info 2> /dev/null | grep -m1 "Database updated"`
+maincvd_old=`tac /var/signatures/clamav/info 2> /dev/null | grep -m1 "main.cvd"`
+mainupdated_old=`tac /var/signatures/clamav/info 2> /dev/null | grep -m1 "main.cvd updated"`
+dailycvd_old=`tac /var/signatures/clamav/info 2> /dev/null | grep -Em1 "daily.(inc|cvd)"`
+dailyupdated_old=`tac /var/signatures/clamav/info 2> /dev/null | grep -Em1 "daily.(inc|cvd) updated"`
+
+rm /var/signatures/clamav/info 2> /dev/null
+touch /var/signatures/clamav/info 2> /dev/null
+chown nobody:nogroup /var/signatures/clamav/info 2> /dev/null
+
+if [ "$lastupdate" != "" ]; then  # only use this value if not empty
+    echo "$lastupdate" >> /var/signatures/clamav/info
+elif [ "$lastupdate_old" != "" ]; then # only use old value if not empty
+    echo "$lastupdate_old" >> /var/signatures/clamav/info
+fi
+if [ "$mainupdated" != "" ]; then
+    if [ "$maincvd" != "$mainupdated" ]; then # prevent duplicated entries
+        echo "$mainupdated" >> /var/signatures/clamav/info
+    fi
+elif [ "$mainupdated_old" != "" ]; then
+    if [ "$maincvd_old" != "$mainupdated_old" ]; then # use old if not duplicated
+        echo "$mainupdated_old" >> /var/signatures/clamav/info
+    fi
+fi
+if [ "$maincvd" != "" ]; then
+    echo "$maincvd" >> /var/signatures/clamav/info
+elif [ "$maincvd_old" != "" ]; then
+    echo "$maincvd_old" >> /var/signatures/clamav/info
+fi
+if [ "$dailyupdated" != "" ]; then
+    if [ "$dailycvd" != "$dailyupdated" ]; then
+        echo "$dailyupdated" >> /var/signatures/clamav/info
+    fi
+elif [ "$dailyupdated_old" != "" ]; then
+    if [ "$dailycvd_old" != "$dailyupdated_old" ]; then
+        echo "$dailyupdated_old" >> /var/signatures/clamav/info
+    fi
+fi
+if [ "$dailycvd" != "" ]; then
+    echo "$dailycvd" >> /var/signatures/clamav/info
+elif [ "$dailycvd_old" != "" ]; then
+    echo "$dailycvd_old" >> /var/signatures/clamav/info
+fi

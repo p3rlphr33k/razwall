@@ -1,0 +1,67 @@
+#!/usr/bin/python
+#
+#        +-----------------------------------------------------------------------------+
+#        | Endian Firewall                                                             |
+#        +-----------------------------------------------------------------------------+
+#        | Copyright (c) 2005-2006 Endian                                              |
+#        |         Endian GmbH/Srl                                                     |
+#        |         Bergweg 41 Via Monte                                                |
+#        |         39057 Eppan/Appiano                                                 |
+#        |         ITALIEN/ITALIA                                                      |
+#        |         info@endian.it                                                      |
+#        |                                                                             |
+#        | This program is free software; you can redistribute it and/or               |
+#        | modify it under the terms of the GNU General Public License                 |
+#        | as published by the Free Software Foundation; either version 2              |
+#        | of the License, or (at your option) any later version.                      |
+#        |                                                                             |
+#        | This program is distributed in the hope that it will be useful,             |
+#        | but WITHOUT ANY WARRANTY; without even the implied warranty of              |
+#        | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               |
+#        | GNU General Public License for more details.                                |
+#        |                                                                             |
+#        | You should have received a copy of the GNU General Public License           |
+#        | along with this program; if not, write to the Free Software                 |
+#        | Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA. |
+#        | http://www.fsf.org/                                                         |
+#        +-----------------------------------------------------------------------------+
+#
+
+"""
+synchronizes the rt_tables names used within efw uplinks with the systems rt_table file
+"""
+
+from endian.firewall.rtable import RT_TableNames
+from glob import glob
+from os.path import basename, dirname
+
+UPLINKS='/var/efw/uplinks'
+
+def sync():
+    uplinks = {}
+    for uplink in glob("%s/*/settings"%UPLINKS):
+	uplinkname = basename(dirname(uplink))
+	uplinks[uplinkname] = True
+
+    rt = RT_TableNames()
+    rt.load()
+
+    # remove uplink names from rt_table namespace which do
+    # not exist anymore in the system
+    for value in rt.data.values():
+        if not value.startswith('uplink-'):
+            continue
+        if uplinks.has_key(value):
+            continue
+        rt.removeTable(value)
+
+    # add new new uplink names to rt_table namespace
+    for value in uplinks.keys():
+        tablename='uplink-'+value
+        if rt.data.has_key(tablename):
+            continue
+        rt.getTable(tablename)
+
+if __name__ == '__main__':
+    sync()
+

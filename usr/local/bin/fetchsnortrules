@@ -1,0 +1,78 @@
+#!/usr/bin/python
+#
+#        +-----------------------------------------------------------------------------+
+#        | Endian Firewall                                                             |
+#        +-----------------------------------------------------------------------------+
+#        | Copyright (c) 2005-2006 Endian                                              |
+#        |         Endian GmbH/Srl                                                     |
+#        |         Bergweg 41 Via Monte                                                |
+#        |         39057 Eppan/Appiano                                                 |
+#        |         ITALIEN/ITALIA                                                      |
+#        |         info@endian.it                                                      |
+#        |                                                                             |
+#        | This program is free software; you can redistribute it and/or               |
+#        | modify it under the terms of the GNU General Public License                 |
+#        | as published by the Free Software Foundation; either version 2              |
+#        | of the License, or (at your option) any later version.                      |
+#        |                                                                             |
+#        | This program is distributed in the hope that it will be useful,             |
+#        | but WITHOUT ANY WARRANTY; without even the implied warranty of              |
+#        | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               |
+#        | GNU General Public License for more details.                                |
+#        |                                                                             |
+#        | You should have received a copy of the GNU General Public License           |
+#        | along with this program; if not, write to the Free Software                 |
+#        | Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA. |
+#        | http://www.fsf.org/                                                         |
+#        +-----------------------------------------------------------------------------+
+#
+
+from optparse import OptionParser
+from endian.job.engine_control import send_cmd_to_engine
+
+def main():
+    usage = "usage: %prog <options> [rules_file custom_target_directory]"
+    parser = OptionParser(usage)    
+    parser.add_option("-d", "--debug", dest="debug", action="store_true",
+                      help="Be more verbose", default=False)
+    parser.add_option("-f", "--force", dest="force", action="store_true",
+                      help="Forces update(Even wrong "+\
+                                  "rules are not removed anymore).",
+                      default=False)
+    parser.add_option("--rulesfile", dest="rules_file", 
+                      help="Rules file", metavar="FILE", default=None)
+    parser.add_option("--targetdir", dest="custom_target_directory", 
+                      help="Target directory", metavar="DIR", default=None)
+    parser.add_option("--no_block_rules", dest="no_block_rules",
+                      action="store_true",
+                      help="Filter *BLOCK* rules.",
+                      default=True)
+    parser.add_option("-p", "--no_pre", dest="no_pre", action="store_true",
+                      help="Skip pre hook.", default=False)
+    parser.add_option("-c", "--no_post_un_compress",
+                      dest="no_post_un_compress", action="store_true",
+                      help="Skip post_un_compress hook.", default=False)
+    parser.add_option("-o", "--no_post", dest="no_post", action="store_true",
+                      help="Skip post hook.", default=False)
+    parser.add_option("-t", "--tmp_dir", dest="tmp_dir", metavar="FILE",
+                      help="Use this dir as temporary directory",
+                      default=False)
+    parser.add_option("-u", "--http_user_name", dest="http_username",
+                      metavar="FILE",
+                      help="Use this username for http authentication",
+                      default=False)
+    parser.add_option("-x", "--http_password", dest="http_password",
+                      metavar="FILE",
+                      help="Use this password for http authentication",
+                      default=False)
+
+
+    (options, args) = parser.parse_args()
+    if len(args) > 1:
+    	options.rules_file = args[0]
+    	options.custom_target_directory = args[1]
+    
+    send_cmd_to_engine("restart fetchsnortrules", options=options)
+
+if __name__ == "__main__":
+    main()

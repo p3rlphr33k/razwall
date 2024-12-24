@@ -1,0 +1,137 @@
+#!/usr/bin/python
+
+import sys
+import os
+import time
+import subprocess
+import signal
+
+signals = [signal.SIGHUP,
+           signal.SIGINT,
+           signal.SIGQUIT,
+           signal.SIGILL,
+           signal.SIGTRAP,
+           signal.SIGABRT,
+           signal.SIGFPE,
+           signal.SIGSEGV,
+           signal.SIGPIPE,
+           signal.SIGTERM,
+           signal.SIGUSR1,
+           signal.SIGUSR2]
+
+pid = 0
+out = subprocess.PIPE
+filename = ''
+
+def signalHandler(signum,frame):
+    if pid != 0:
+        os.kill(pid,signal.SIGTERM)
+    if out != subprocess.PIPE:
+        try:
+            out.close()
+            if filename.endswith('.gz'):
+                os.unlink(filename[:-3])
+            else:
+                os.unlink("%s.gz"%filename)
+        except:
+            pass
+    time.sleep(0.1)
+    print("Failed.")
+    sys.exit(1)
+
+def printStatus(pid,source,size):
+    time.sleep(1)
+    start = int(time.time())
+    dir = '/proc/%s/fd'%pid
+    infodir = '/proc/%s/fdinfo'%pid
+    realfile = None
+    for file in os.listdir(dir):
+        fname = "%s/%s"%(dir,file)
+        if os.path.realpath(fname) == source:
+            realfile = file
+            break
+    if not realfile:
+        return
+    realfile = "%s/%s" %(infodir,realfile)
+    while True:
+        now = int(time.time())
+        try:
+            f = open(realfile,'r')
+            content = f.readlines()
+            f.close()
+            status = int(content[0].split(':')[1].strip())
+            progress = status/float(size) * 100
+            diff = now - start
+            todo = 100 - progress
+            eta = int((diff * todo) / progress)
+            minutes = eta / 60
+            seconds = eta % 60
+            print "Progress: %2.1f%%, ETA: %d:%02d minutes" %(progress,minutes,seconds)
+        except IndexError,e:
+            pass
+        # File has been g(un)zipped
+        except IOError,e:
+            return True
+        time.sleep(5)
+
+if __name__ == '__main__':
+    filename = sys.argv[-1]
+    path = sys.argv[0]
+    arguments = sys.argv[1:-1]
+
+    if len(sys.argv) < 2:
+        sys.stderr.write("Missing filename\n")
+        sys.exit(1)
+    filename = os.path.abspath(filename)
+    if not os.path.exists(filename):
+        sys.stderr.write("File %s does not exist.\n" %(filename))
+        sys.exit(1)
+
+    executable = '/bin/gzip'
+    if os.path.basename(path) == 'gunzip-progress':
+        executable = '/bin/gunzip'
+    arguments.insert(0,executable)
+    arguments.append(filename)
+
+    size = os.path.getsize(filename)
+
+    if executable == '/bin/gunzip' and '-c' in arguments:
+        if not os.path.exists(filename[:-3]):
+            try:
+                out = open(filename[:-3],'w')
+            except:
+                print "Failed."
+                sys.exit(1)
+        else:
+            print "Failed."
+            sys.exit(1)
+    elif '-c' in arguments:
+        if not os.path.exists("%s.gz"%filename):
+            try:
+                out = open("%s.gz"%filename,'w')
+            except:
+                print "Failed."
+                sys.exit(1)
+        else:
+            print "Failed."
+            sys.exit(1)
+        
+
+    for s in signals:
+        signal.signal(s,signalHandler)
+
+    p = subprocess.Popen(arguments,
+                         stderr=subprocess.PIPE,
+                         stdout=out)
+    pid = p.pid
+
+    printStatus(pid,filename,size)
+    p.communicate()
+    ret = p.returncode
+    if executable == '/bin/gunzip' and '-c' in arguments:
+        out.close()
+    if ret == 0:
+        print "Done."
+    else:
+        print "Failed."
+    sys.exit(ret)

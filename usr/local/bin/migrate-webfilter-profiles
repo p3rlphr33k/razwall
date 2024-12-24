@@ -1,0 +1,220 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# +--------------------------------------------------------------------------+
+# | Endian Firewall                                                          |
+# +--------------------------------------------------------------------------+
+# | Copyright (c) 2004-2021 Endian Srl <info@endian.com>                     |
+# |         Endian Srl                                                       |
+# |         via Ipazia 2                                                     |
+# |         39100 Bolzano (BZ)                                               |
+# |         Italy                                                            |
+# |                                                                          |
+# | This program is free software; you can redistribute it and/or modify     |
+# | it under the terms of the GNU General Public License as published by     |
+# | the Free Software Foundation; either version 2 of the License, or        |
+# | (at your option) any later version.                                      |
+# |                                                                          |
+# | This program is distributed in the hope that it will be useful,          |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of           |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            |
+# | GNU General Public License for more details.                             |
+# |                                                                          |
+# | You should have received a copy of the GNU General Public License along  |
+# | with this program; if not, write to the Free Software Foundation, Inc.,  |
+# | 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.              |
+# +--------------------------------------------------------------------------+
+
+import glob
+import os
+import re
+import shutil
+
+from endian.core.csvfile import CSVFile
+from endian.core.runner import run
+from endian.data import DataSource
+from endian.data.container.settings import SettingsFile
+
+DANSGUARDIAN_PATH = "/var/efw/dansguardian"
+DANSGUARDIAN_PROFILES = "/var/efw/dansguardian/profiles"
+DANSGUARDIAN_SETTINGS = "/var/efw/dansguardian/settings"
+DANSGUARDIAN_SETTINGS_DEFAULT = "/usr/lib/efw/dansguardian/default/settings"
+
+WEBFILTER_PROFILES = "/var/efw/webfilter/profiles"
+
+MIGRATE_CATEGORIES = "/usr/local/bin/migrate-webfilter-categories"
+
+REMOVE_DIR = "/etc/dansguardian/lists/"
+
+CONFLIST = [
+    "bannedextensionlist",
+    "bannedphraselist" "weightedphraselist",
+    "exceptionphraselist",
+    "bannedsitelist",
+    "greysitelist",
+    "exceptionsitelist",
+    "bannedurllist",
+    "greyurllist",
+    "exceptionurllist",
+    "exceptionregexpurllist",
+    "bannedregexpurllist",
+    "contentregexplist",
+    "urlregexplist",
+    "exceptionextensionlist",
+    "exceptionmimetypelist",
+    "bannedextensionlist",
+    "bannedmimetypelist",
+    "exceptionfilesitelist",
+    "exceptionfileurllist",
+    "logsitelist",
+    "logurllist",
+    "logregexpurllist",
+    "headerregexplist",
+    "bannedregexpheaderlist",
+    "anonregexplist",
+    "greyregexpurllist",
+]
+
+re_excludeChars = re.compile(r"[^a-zA-Z_]")
+
+
+def file_exists(file):
+    """
+    ... autofunction::: file_exists
+        Returns true if the file exist.
+    """
+    return os.access(file, os.F_OK)
+
+
+class Profile:
+    def __init__(self):
+        self._meta = [
+            "name",
+            "blacklist",
+            "phraselist",
+            "exceptionsitelist",
+            "bannedsitelist",
+            "havp",
+            "pics_enable",
+            "naughtynesslimit",
+        ]
+
+        self.id = -1
+        self.name = ""
+        self.blacklist = ""
+        self.phraselist = ""
+        self.exceptionsitelist = ""
+        self.bannedsitelist = ""
+        self.havp = "on"
+        self.pics_enable = ""
+        self.naughtynesslimit = "160"
+
+
+def get_profiles():
+    if file_exists(DANSGUARDIAN_SETTINGS):
+        profiles = [DANSGUARDIAN_SETTINGS]
+    else:
+        profiles = [DANSGUARDIAN_SETTINGS_DEFAULT]
+    profiles += glob.glob("%s/*/settings" % DANSGUARDIAN_PROFILES)
+    profiles = map(lambda p: os.path.dirname(p), profiles)
+    return profiles
+
+
+def _clean(l):
+    return filter(None, [x.strip() for x in l])
+
+
+def migrate_profile(storage, profile_path, number):
+    profile_settings = SettingsFile("%s/settings" % profile_path)
+
+    profile = Profile()
+
+    if os.path.basename(profile_path) in ["default", "dansguardian"]:
+        name = "Default"
+    else:
+        name = profile_settings.get("NAME")
+
+    if not name:
+        name = os.path.basename(profile_path)
+
+    profile.name = re_excludeChars.sub("", name).lower()
+    profile.blacklist = "&".join(
+        _clean(profile_settings.get("BLACKLIST", "").split(";"))
+    )
+    profile.phraselist = ""
+    profile.havp = profile_settings.get("HAVP", "on")
+    profile.pics_enable = ""
+    profile.naughtynesslimit = ""
+
+    # process keys
+    for conf_name in CONFLIST:
+        try:
+            # check if there is a custom entries and copy them into the profile dir
+            # to be able to check them for changes
+            old_conf_path = "%s/%s" % (profile_path, conf_name)
+            if os.path.exists(old_conf_path):
+                if conf_name == "exceptionsitelist":
+                    profile.exceptionsitelist = "&".join(
+                        _clean(open(old_conf_path, "r").readlines())
+                    )
+                    os.remove(old_conf_path)
+                    continue
+                if conf_name == "bannedsitelist":
+                    profile.bannedsitelist = "&".join(
+                        _clean(open(old_conf_path, "r").readlines())
+                    )
+                    os.remove(old_conf_path)
+                    continue
+                new_conf_path = "%s/%s%s" % (
+                    DANSGUARDIAN_PATH,
+                    conf_name,
+                    number,
+                )
+                shutil.move(old_conf_path, new_conf_path)
+        except Exception as e:
+            print "# Error copying %s: %s" % (old_conf_path, e)
+
+    storage._data.append(profile)
+
+    if os.path.basename(profile_path) not in ["default", "dansguardian"]:
+        shutil.rmtree(profile_path)
+    return profile
+
+
+def migrate_proxy_rule(storage, old, new):
+    if storage is None:
+        return
+    for i in storage:
+        if i.filtertype == old:
+            i.filtertype = new
+
+
+def main():
+    """migrate old profile format into csv"""
+
+    if os.path.exists(WEBFILTER_PROFILES):
+        return False
+    obj = Profile()
+    storage = CSVFile(WEBFILTER_PROFILES, obj)
+
+    proxypolicy = DataSource("proxy").policyrules
+    migrate_proxy_rule(proxypolicy, "content1", "default")
+    for i, profile in enumerate(get_profiles()):
+        oldname = os.path.basename(profile)
+        newprofile = migrate_profile(storage, profile, i + 1)
+        migrate_proxy_rule(proxypolicy, oldname, newprofile.name)
+    storage.store()
+    os.system("chown nobody.nogroup %s" % storage.filename)
+    if proxypolicy:
+        proxypolicy.write()
+        os.system("chown nobody.nogroup %s" % proxypolicy.filename)
+
+    if os.path.exists(DANSGUARDIAN_PROFILES):
+        shutil.rmtree(DANSGUARDIAN_PROFILES)
+
+    if os.path.exists(REMOVE_DIR):
+        shutil.rmtree(REMOVE_DIR)
+
+
+if __name__ == "__main__":
+    main()
+    run(MIGRATE_CATEGORIES)

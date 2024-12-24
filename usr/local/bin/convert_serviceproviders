@@ -1,0 +1,89 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# +--------------------------------------------------------------------------+
+# | Endian Firewall                                                          |
+# +--------------------------------------------------------------------------+
+# | Copyright (c) 2004-2019 Endian S.p.A. <info@endian.com>                  |
+# |         Endian S.p.A.                                                    |
+# |         via Ipazia 2                                                     |
+# |         39100 Bolzano (BZ)                                               |
+# |         Italy                                                            |
+# |                                                                          |
+# | This program is free software; you can redistribute it and/or modify     |
+# | it under the terms of the GNU General Public License as published by     |
+# | the Free Software Foundation; either version 2 of the License, or        |
+# | (at your option) any later version.                                      |
+# |                                                                          |
+# | This program is distributed in the hope that it will be useful,          |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of           |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            |
+# | GNU General Public License for more details.                             |
+# |                                                                          |
+# | You should have received a copy of the GNU General Public License along  |
+# | with this program; if not, write to the Free Software Foundation, Inc.,  |
+# | 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.              |
+# +--------------------------------------------------------------------------+
+
+import argparse
+import json
+from xml.etree import cElementTree as et
+
+
+def get_tag(element, tag_name, default=None):
+    e = element.find(tag_name)
+    if e is None:
+        return default
+    return e.text
+
+
+def get_tags(element, tag_name, default=None):
+    e = element.findall(tag_name)
+    if not e:
+        return default
+    return map(lambda x: x.text, e)
+
+
+def convert(filename):
+    ret = {}
+    root = et.parse(filename).getroot()
+    for country in root.getchildren():
+        country_code = country.get("code")
+        for provider in country.findall("provider"):
+            provider_name = provider.find("name").text
+            for gsm in provider.findall("gsm"):
+                for apn in gsm.findall("apn"):
+                    apn_url = apn.get("value")
+                    try:
+                        auth_method = apn.find("authentication").get("method")
+                    except Exception:
+                        auth_method = None
+                    d3 = dict(
+                        name=get_tag(apn, "name", apn_url),
+                        apn=apn_url,
+                        username=get_tag(apn, "username"),
+                        password=get_tag(apn, "password"),
+                        dns=get_tags(apn, "dns"),
+                        authentication=auth_method,
+                    )
+                    ret.setdefault("gsm", dict()).setdefault(country_code, dict()).setdefault(provider_name, dict())[apn_url] = d3
+            for cdma in provider.findall("cdma"):
+                username = get_tag(cdma, "username")
+                password = get_tag(cdma, "password")
+                d3 = dict(
+                    username=username,
+                    password=password,
+                )
+                ret.setdefault("cdma", dict()).setdefault(country_code, dict()).setdefault(provider_name, []).append(d3)
+    return ret
+
+SERVICEPROVIDERS_XML = "/usr/share/mobile-broadband-provider-info/serviceproviders.xml"
+SERVICEPROVIDERS_JSON = "/usr/share/mobile-broadband-provider-info/serviceproviders.json"
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-i", "--input", default=SERVICEPROVIDERS_XML)
+parser.add_argument("-o", "--output", default=SERVICEPROVIDERS_JSON)
+args = parser.parse_args()
+
+data = convert(args.input)
+j = json.dumps(data, ensure_ascii=False).encode("utf8")
+open(args.output, "w").write(j)

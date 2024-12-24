@@ -1,0 +1,75 @@
+#!/usr/bin/python
+#
+#        +-----------------------------------------------------------------------------+
+#        | Endian Firewall                                                             |
+#        +-----------------------------------------------------------------------------+
+#        | Copyright (c) 2005-2006 Endian                                              |
+#        |         Endian GmbH/Srl                                                     |
+#        |         Bergweg 41 Via Monte                                                |
+#        |         39057 Eppan/Appiano                                                 |
+#        |         ITALIEN/ITALIA                                                      |
+#        |         info@endian.it                                                      |
+#        |                                                                             |
+#        | This program is free software; you can redistribute it and/or               |
+#        | modify it under the terms of the GNU General Public License                 |
+#        | as published by the Free Software Foundation; either version 2              |
+#        | of the License, or (at your option) any later version.                      |
+#        |                                                                             |
+#        | This program is distributed in the hope that it will be useful,             |
+#        | but WITHOUT ANY WARRANTY; without even the implied warranty of              |
+#        | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               |
+#        | GNU General Public License for more details.                                |
+#        |                                                                             |
+#        | You should have received a copy of the GNU General Public License           |
+#        | along with this program; if not, write to the Free Software                 |
+#        | Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA. |
+#        | http://www.fsf.org/                                                         |
+#        +-----------------------------------------------------------------------------+
+#
+
+from endian.core.logger import *
+from uplinksdaemon.uplinks import UplinksPool
+from uplinksdaemon.uplinks import Uplink
+
+logger.setLevel(logging.INFO)
+
+def migrateIPS(ul):
+    settings = ul.getSettings()
+    if settings['RED_TYPE'] != 'STATIC':
+        debug("Skip uplink %s, because it is not static, it's '%s'."%(ul.uplinkname, settings['RED_TYPE']))
+        return
+
+    addr=""
+    try:
+        addr="%s/%s"%(settings['RED_ADDRESS'], settings['RED_CIDR'])
+    except:
+        debug("Uplink %s has no RED_ADDRESS/RED_CIDR"%ul.uplinkname)
+        return
+
+    primary=settings.get('RED_IPS', '').split(',')[0]
+    debug("Primary address from RED_IPS of uplink %s is '%s'"%(ul.uplinkname, primary))
+    debug("RED_ADDRESS/RED_CIDR of uplink %s is '%s'"%(ul.uplinkname, addr))
+    if primary != addr:
+        debug("They differ -> migrate!")
+        if settings.get('RED_IPS', '') == '':
+            settings['RED_IPS'] = addr
+        else:
+            settings['RED_IPS'] = addr + ',' + settings.get('RED_IPS', '')
+        debug("New RED_IPS is '%s'"%settings['RED_IPS'])
+        settings.write()
+        debug("Written down new config of uplink %s"%ul.uplinkname)
+
+def migrateSettings(ul):
+    settings = ul.getSettings()
+    if not settings.has_key('ONBOOT'):
+        settings['ONBOOT'] = settings.get('ONBOOT', 'on')
+        settings['AUTOSTART'] = settings.get('AUTOSTART', 'on')
+        settings['ENABLED'] = settings.get('ENABLED', 'on')
+        settings['MANAGED'] = settings.get('MANAGED', 'on')
+        settings.write()
+        debug("Written down new config of uplink %s"%ul.uplinkname)
+
+for ul in UplinksPool().iterUplinks():
+    debug("Processing uplink %s"%ul.uplinkname)
+    migrateIPS(ul)
+    migrateSettings(ul)

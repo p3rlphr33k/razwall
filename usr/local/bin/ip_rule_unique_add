@@ -1,0 +1,12 @@
+#!/bin/sh
+if [ $# -ne 1 ]; 
+    then echo "illegal number of parameters"
+    exit 1
+fi
+cur_num=$(ip rule | grep "^20:" | grep "lookup main" | grep "\b$1\b" | wc -l)
+if [ $cur_num -gt 0 ]; then
+    echo "rule already exists!"
+    exit 1;
+else
+    ip rule add prio 20 to $1 lookup main
+fi

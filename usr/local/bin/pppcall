@@ -1,0 +1,249 @@
+#!/usr/bin/python
+#
+#        +-----------------------------------------------------------------------------+
+#        | Endian Firewall                                                             |
+#        +-----------------------------------------------------------------------------+
+#        | Copyright (c) 2005-2006 Endian                                              |
+#        |         Endian GmbH/Srl                                                     |
+#        |         Bergweg 41 Via Monte                                                |
+#        |         39057 Eppan/Appiano                                                 |
+#        |         ITALIEN/ITALIA                                                      |
+#        |         info@endian.it                                                      |
+#        |                                                                             |
+#        | This program is free software; you can redistribute it and/or               |
+#        | modify it under the terms of the GNU General Public License                 |
+#        | as published by the Free Software Foundation; either version 2              |
+#        | of the License, or (at your option) any later version.                      |
+#        |                                                                             |
+#        | This program is distributed in the hope that it will be useful,             |
+#        | but WITHOUT ANY WARRANTY; without even the implied warranty of              |
+#        | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               |
+#        | GNU General Public License for more details.                                |
+#        |                                                                             |
+#        | You should have received a copy of the GNU General Public License           |
+#        | along with this program; if not, write to the Free Software                 |
+#        | Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA. |
+#        | http://www.fsf.org/                                                         |
+#        +-----------------------------------------------------------------------------+
+#
+
+"""
+--- PPP monitor ---
+@author Peter Warasin <peter@endian.it>
+@copyright (c) Endian 2007
+
+calls pppd and waits until ip-up has been triggered or pppd exits with an error
+
+"""
+
+from optparse import OptionParser
+from sys import stderr
+from os import mkfifo
+from os import path
+from os import unlink
+import os
+from sys import exit
+import signal
+from subprocess import Popen
+from glob import glob
+from time import sleep
+from endian.core.daemon import daemonize
+
+PIDDIR="/var/run/ppp"
+IPUP=0
+IPDOWN=156
+FAILURE=155
+TIMEOUT=120
+
+fifoname=""
+fifofd=None
+peername=""
+
+pidobj=None
+pppdpid=-1
+
+class Pidfile:
+    def __init__(self, pidname):
+        self.pidname = pidname
+        self.mypid = os.getpid()
+
+    def getPid(self):
+        try:
+            f = open(self.pidname, "r")
+            pid = f.readline()
+            pid = pid.strip()
+            f.close()
+            return pid
+        except:
+            return -1
+    pid = property(getPid)
+
+    def getRunning(self):
+        pid = self.getPid()
+        if pid == "":
+            return False
+        if os.path.exists("/proc/%s/"%pid):
+            return True
+        return False
+    running = property(getRunning)
+
+    def create(self, removestale=True):
+        pid = self.getPid()
+        if pid != -1:
+            if not removestale:
+                raise Exception("Pidfile '%s' does already exist" % self.pidname)
+            if self.running:
+                raise Exception("Process of pidfile '%s' does run with pid '%s'" % (self.pidname, pid))
+            os.unlink(self.pidname)
+
+        f = open(self.pidname, "w+")
+        f.write(str(self.mypid))
+        f.close()
+
+    def remove(self):
+        if os.path.exists(self.pidname):
+            os.unlink(self.pidname)
+
+def warn(msg):
+    stderr.write(msg+"\n")
+
+def cleanup():
+    if fifofd:
+        try:
+            fifofd.close()
+        except:
+            pass
+    if path.exists(fifoname):
+        unlink(fifoname)
+    if pidobj:
+        pidobj.remove()
+
+def bailout(msg, exitcode=FAILURE):
+    if exitcode > FAILURE:
+        exitcode = FAILURE
+    warn(msg)
+    cleanup()
+    exit(exitcode)
+
+def createfifo(fifoname):
+    if path.exists(fifoname):
+        unlink(fifoname)
+    mkfifo(fifoname, 0660)
+
+def waitfornotify(fifoname):
+    global fifofd
+    while True:
+        fifofd = open(fifoname, "r")
+        for line in fifofd:
+            line = line.strip()
+            if line == 'OK':
+                print "pppd connected successfully to '%s'."%peername
+                return IPUP
+            if line == 'FAILED':
+                warn ("pppd failed connecting '%s'"%peername)
+                return IPDOWN
+
+def kill(pid, signum):
+#    print "KILL %s with %s"%(pid, signum)
+    try:
+        os.kill(pid, signum)
+    except:
+        pass
+
+def handler(signum, frame):
+    if signum == signal.SIGALRM:
+        warn("Timeout exceeded. pppd is probably dead. Exiting...")
+
+    signal.signal(signum, signal.SIG_DFL)
+    cleanup()
+
+    # this kills only the initial pppd!!
+    # the detached pppd will not be killed with this!!
+    kill(pppdpid, signal.SIGTERM)
+    kill(-pppdpid, signal.SIGTERM)
+    sleep(3)
+    kill(-pppdpid, signal.SIGKILL)
+    kill(pppdpid, signal.SIGKILL)
+    exit(1)
+
+def spawn(cmd):
+     try:
+         pid = os.fork()
+     except OSError, e:
+         # ERROR (return a tuple)
+         return((e.errno, e.strerror))
+     if pid == -1:
+         return FAILURE
+     if pid != 0:
+         # we are the parent
+ 
+         signal.signal(signal.SIGTERM, handler)
+         signal.signal(signal.SIGQUIT, handler)
+         signal.signal(signal.SIGINT, handler)
+         signal.signal(signal.SIGALRM, handler)
+         signal.alarm(TIMEOUT)
+ 
+         # returns child pid
+         return pid
+ 
+     try:
+         # make sure pppd is the leader of its process group
+         #os.setsid()
+         #os.setpgrp()
+         #os.close(0)
+         os.execvp(cmd[0], cmd)
+     except:
+         pass
+     exit(1)
+
+
+def main():
+    global fifoname
+    global peername
+    global peername
+    global pidobj
+    global pppdpid
+
+    usage = "usage: %prog <options> peername"
+    parser = OptionParser(usage)
+    parser.add_option("-f", "--fifofile", dest="filename", help="use FIFONAME as fifo for listening", metavar="FIFONAME")
+
+    (options, args) = parser.parse_args()
+
+    if (options.filename == None):
+        parser.error("--fifofile is mandatory")
+
+    if len(args) < 1:
+        parser.error("Specify a peername which should be called")
+    peername = args[0]
+
+    pidname = "%s/%s.pid"%(PIDDIR, peername)
+    fifoname = "%s/%s.fifo"%(options.filename, peername)
+
+    pidobj = Pidfile(pidname)
+    try:
+        pidobj.create(removestale=True)
+    except IOError, (n, str):
+        bailout("Could not create pidfile '%s'. (%s) Exiting..." % (pidname, str))
+    except Exception, str:
+        warn("Could not call '%s'. (%s) Exiting..." % (peername, str))
+        exit(FAILURE)
+
+    try:
+        createfifo(fifoname)
+    except Exception, str:
+        bailout("Could not create FIFO '%s' because of %s." % (fifoname, str))
+
+    pppdpid = spawn(["pppd", "call", peername])
+
+    (childpid, ret) = os.waitpid(pppdpid, 0)
+    if ret != 0:
+        bailout("pppd exits with error!", ret)
+
+    ret = waitfornotify(fifoname)
+    cleanup()
+    exit(ret)
+
+if __name__ == '__main__':
+    main()
+

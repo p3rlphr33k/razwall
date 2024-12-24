@@ -33,8 +33,9 @@
 #
 
 #BEGIN {push @INC, '..'}
-require('header.pl');
-require '/razwall/web/cgi-bin/netwiz.cgi';
+use lib '/razwall/web/cgi-bin/';
+require 'header.pl';
+require 'netwiz.cgi';
 
 getcgihash(\%par);
 

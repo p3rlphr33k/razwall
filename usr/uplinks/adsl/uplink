@@ -1,0 +1,47 @@
+#!/bin/sh
+
+. /etc/rc.d/efw_lib.sh
+. ${UPLINK_SCRIPTS}/common
+. ${UPLINK_SCRIPTS}/generic/adsl.sh
+
+if [ ! "$TYPE" ]; then
+    failure "no adsl type set"
+fi
+
+ADSLDIR=${UPLINK_SCRIPTS}/adsl/$TYPE
+
+if [ ! -d $ADSLDIR ]; then
+    failure "unknown adsl type '$TYPE'"
+fi
+
+export ADSL_PROTOCOL=$(adsl_get_protocol $uplink)
+export ADSL_METHOD=$(adsl_get_method $uplink)
+export ADSL_TYPE=$(adsl_get_type $uplink)
+export ADSL_ENCAP=$(adsl_get_encap $uplink)
+export ADSL_CONTROLLER=$(adsl_get_controller $uplink)
+
+function start() {
+    ADSLSTART=$ADSLDIR/start
+
+    echo "protocol: $ADSL_PROTOCOL"
+    echo "method: $ADSL_METHOD"
+    echo "type: $ADSL_TYPE"
+    echo "encap: $ADSL_ENCAP"
+    echo "controller: $ADSL_CONTROLLER"
+
+    if [ -f "$ADSLSTART" ]; then
+	. $ADSLSTART
+    fi
+}
+
+function stop() {
+    ADSLSTOP=$ADSLDIR/stop
+    
+    if [ -f $ADSLSTOP ]; then
+	. $ADSLSTOP
+    fi
+}
+
+switch "$1"
+
+exit 0

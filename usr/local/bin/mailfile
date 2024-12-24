@@ -1,0 +1,96 @@
+#!/usr/bin/python
+#
+# Copyright: Endian (c) 2006
+# License: GPL
+# Date: 04.02.2006
+#
+
+from sys import exit
+from sys import stdin
+
+from endian.core.logger import *
+from optparse import OptionParser
+from endian.core.mailfile import MailSender
+
+def get_text():
+    print 'Enter Text, end with ctrl + D'
+    msg = ''
+    while 1:
+        try:
+            line = raw_input()
+        except EOFError:
+            break
+        if line == None:
+            break
+        msg = '%s\n%s' % (msg, line)
+    print 'Text saved!'
+    return msg
+
+
+
+if __name__=='__main__':
+    parser = OptionParser()
+    parser.add_option("-t", "--to", dest="to_addr", help="Send mail to MAIL", metavar="MAIL")
+    parser.add_option("-f", "--from", dest="from_addr", help="Set sender e-mail to MAIL (default: root@localhost)", metavar="MAIL", default="root@localhost")
+    parser.add_option("-m", "--mailserver", dest="mailhost", help="SMTP server to use (default: localhost)", default="localhost")
+    parser.add_option("-a", "--attachment", dest="filename", help="Attachement")
+    parser.add_option("-s", "--subject", dest="subject", help="Subject")
+    parser.add_option("-v", "--text", dest="text", help="Body text, if you do not use cheetah and stdin")
+    parser.add_option("-b", "--body", dest="body", help="Body cheetah template")
+    parser.add_option("-M", "--mailtemplate", dest="mailtemplate", help="Full mail cheetah template")
+    parser.add_option("-D", "--variables", dest="variables", type="string",
+                      help="Space-separated list of KEY=VALUE pairs, which represent "
+                      "substitution values for cheetah templates. If VALUE is "
+                      "file:FILENAME the content is read out from file FILENAME.")
+    parser.add_option("-S", "--variables-stdin", dest="variablesstdin",
+                      action="store_true", default=False,
+                      help="Read substitution values for cheetah templates as list "
+                      "of KEY=VALUE pairs from stdin")
+    parser.add_option("-d", "--debug", dest="debug",
+                      action="store_true",
+                      help="be more verbose", default=False)
+    parser.add_option("-c", "--caller", dest="caller", metavar="CALLER",
+                      help="add CALLER to log lines", default=False)
+
+    (options, args) = parser.parse_args()
+
+    if options.debug:
+        logger.setLevel(logging.DEBUG)
+    else:
+        logger.setLevel(logging.INFO)
+
+    if (options.variablesstdin and
+            options.body == None and
+            options.text == None and
+            options.mailtemplate == None):
+        error("--variables-stdin cannot be read out "
+              "from stdin when mail body will be read out"
+              "from stdin.")
+        parser.print_help()
+        exit(1)
+
+    if not options.to_addr:
+        error("No destination e-mail set")
+        parser.print_help()
+        exit(1)
+
+    if options.body == None and options.text == None and options.mailtemplate == None:
+        options.text = get_text()
+    elif options.variablesstdin:
+        debug("Read variables from stdin")
+        tmp = " ".join(stdin.readlines())
+        options.variables = str(options.variables) + " " + tmp.replace("\n", " ")
+
+    caller = ""
+    if options.caller:
+        caller = " Mail caller: '%s'" % options.caller
+
+    ms = MailSender(options.from_addr, options.to_addr, options.mailhost, caller)
+    ms.sendmail(
+        subject=options.subject,
+        attachment=options.filename,
+        text=options.text,
+        cheetah_body=options.body,
+        mailtemplate= options.mailtemplate,
+        variables=options.variables
+    )

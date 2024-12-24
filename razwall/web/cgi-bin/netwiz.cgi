@@ -1023,7 +1023,7 @@ sub print_template($) {
 	$filename .= "_".$lever."_".$live_data->{'substep'};
     }
 
-    my $content = get_template('/usr/share/netwizard/' .$filename.'.tmpl', $values);
+    my $content = get_template('/razwall/web/netwizard/' .$filename.'.tmpl', $values);
     session_save($session_id, $session);
     my $header = '';
 

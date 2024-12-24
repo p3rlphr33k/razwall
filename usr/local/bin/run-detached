@@ -1,0 +1,17 @@
+#!/usr/bin/env python
+# encoding: utf-8
+"""
+run-detached.py
+
+Created by Lukas Pitschl.
+Copyright (c) 2007 Endian. All rights reserved.
+"""
+
+from endian.core.daemon import daemonize
+import sys
+import os
+
+if __name__ == '__main__':
+    cmd = " ".join(sys.argv[1:])
+    daemonize()
+    os.system(cmd)

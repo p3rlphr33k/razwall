@@ -22,7 +22,7 @@
 #        | http://www.fsf.org/                                                         |
 #        +-----------------------------------------------------------------------------+
 #
-
+use lib '/razwall/web/cgi-bin/';
 require 'routing.pl';
 
 my $l2tp = 0;
