@@ -1,0 +1,17 @@
+<div class="fields-row <TMPL_VAR NAME=V_TOGGLE_ID> <TMPL_IF NAME=V_HIDDEN>hidden</TMPL_IF>">
+    <span class="field"> 
+        <TMPL_IF NAME=T_LABEL>
+        <label id="<TMPL_VAR NAME=V_ID>_field" for="<TMPL_VAR NAME=V_ID>">
+            <TMPL_VAR NAME=T_LABEL>&nbsp;<TMPL_IF NAME=V_REQUIRED>*</TMPL_IF>
+        </label>
+        <TMPL_IF NAME=T_DESCRIPTION>
+        <a class="info" onmouseout="return nd();" onmouseover="return overlib('<TMPL_VAR NAME=T_DESCRIPTION>',STICKY, MOUSEOFF);" href="javascript:void(0);">?</a>
+        </TMPL_IF>
+        <br />
+        </TMPL_IF>
+        <div id='example' class='ui-slider-1' style="margin:10px;">
+            <div class='field-slider'></div>	
+        </div>
+    </span> 
+    <br class="cb" /> 
+</div>

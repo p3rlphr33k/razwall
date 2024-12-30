@@ -1,0 +1,101 @@
+#!/bin/bash
+# chkconfig: 2345 95 20
+# description: RazWall Firewall
+# processname: RazWall
+
+binary="/razwall/firewall/fwfire.sh"
+lockfile="/var/lock/subsys/RazWall"
+pidfile="/var/run/RazWall.pid"
+config_files=(
+    "/razwall/firewall/firewall.conf"
+    "/razwall/firewall/interfaces.conf"
+    "/razwall/firewall/rules.conf"
+)
+
+echo "Debug: Script started"
+
+# Check if the binary is executable
+[ -x $binary ] || { echo "Debug: $binary is not executable"; exit 0; }
+
+# Check for required configuration files
+for config_file in "${config_files[@]}"; do
+    [ -f "$config_file" ] || { echo "Debug: Missing required file: $config_file"; exit 1; }
+done
+
+RETVAL=0
+
+start() {
+    echo "Debug: Starting RazWall Firewall"
+    $binary -f > /dev/null 2>&1 &
+    PID=$!
+    RETVAL=$?
+    if [ $RETVAL -eq 0 ]; then
+        echo "Debug: Process started with PID $PID"
+        echo $PID > $pidfile
+        touch $lockfile
+    else
+        echo "Debug: Failed to start RazWall Firewall"
+    fi
+}
+
+stop() {
+    echo "Debug: Stopping RazWall Firewall"
+    if [ -f $pidfile ]; then
+        PID=$(cat $pidfile)
+        kill $PID
+        RETVAL=$?
+        if [ $RETVAL -eq 0 ]; then
+            rm -f $lockfile $pidfile
+            echo "Debug: Process stopped"
+        else
+            echo "Debug: Failed to stop RazWall Firewall"
+        fi
+    else
+        echo "Debug: Service not running (PID file not found)"
+    fi
+}
+
+status() {
+    echo "Debug: Checking status"
+    if [ -f $pidfile ]; then
+        PID=$(cat $pidfile)
+        if ps -p $PID > /dev/null 2>&1; then
+            echo "RazWall Firewall is running with PID $PID"
+            RETVAL=0
+        else
+            echo "RazWall Firewall is not running, but PID file exists"
+            RETVAL=1
+        fi
+    else
+        echo "RazWall Firewall is not running"
+        RETVAL=3
+    fi
+}
+
+restart() {
+    echo "Debug: Restarting RazWall Firewall"
+    stop
+    sleep 2
+    start
+}
+
+case "$1" in
+    start)
+        start
+    ;;
+    stop)
+        stop
+    ;;
+    restart)
+        restart
+    ;;
+    status)
+        status
+    ;;
+    *)
+        echo "Usage: $0 {start|stop|restart|status}"
+        RETVAL=2
+    ;;
+esac
+
+exit $RETVAL

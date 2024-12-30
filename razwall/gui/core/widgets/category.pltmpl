@@ -1,0 +1,34 @@
+<div class="fields-row field-category">
+    <span class="field">
+        <div class="category-head">
+            <TMPL_IF NAME=V_HIDDEN>
+            <img class="toggle" src="/images/expand.png"/>
+            <TMPL_ELSE>
+            <img class="toggle" src="/images/collapse.png"/>
+            </TMPL_IF>
+            <h3 class="title">
+                <TMPL_VAR NAME=T_TITLE>&nbsp;
+                <TMPL_IF NAME=T_DESCRIPTION>
+                <a class="info" onmouseout="return nd();" onmouseover="return overlib('<TMPL_VAR NAME=T_DESCRIPTION>',STICKY, MOUSEOFF);" href="javascript:void(0);">?</a>
+                </TMPL_IF>    
+            </h3>
+            <img class="status" name="<TMPL_VAR NAME=V_NAME>" src="/images/accept.png" />
+            <br class="cb"/>
+        </div>
+        <div class="category-container <TMPL_IF NAME=V_HIDDEN>hidden</TMPL_IF>">
+            <TMPL_LOOP NAME=V_SUBCATEGORIES>
+            <div class="subcategory">
+                <a class="title" <TMPL_IF NAME=V_HREF>href="<TMPL_VAR NAME=V_HREF>"<TMPL_ELSE>href="javascript:void(0);"</TMPL_IF> <TMPL_IF NAME=T_DESCRIPTION>onmouseout="return nd();" onmouseover="return overlib('<TMPL_VAR NAME=T_DESCRIPTION>',STICKY, MOUSEOFF);"</TMPL_IF>><TMPL_VAR NAME=T_TITLE></a>
+                <TMPL_IF NAME=V_ALLOWED>
+                <img class="status" name="<TMPL_VAR NAME=V_NAME>" src="/images/accept.png"/>
+                <TMPL_ELSE>
+                <img class="status" name="<TMPL_VAR NAME=V_NAME>" src="/images/deny.png"/>
+                </TMPL_IF>
+                <br class="cb"/>
+                <input style="margin: 0px; padding: 0px;" type="hidden" name="<TMPL_VAR NAME=V_NAME>" value="<TMPL_VAR NAME=V_ALLOWED>" />
+            </div>
+            </TMPL_LOOP>
+        </div>
+        <br class="cb" />
+    </span>
+</div>

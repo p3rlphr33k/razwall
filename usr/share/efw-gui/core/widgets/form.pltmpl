@@ -1,0 +1,13 @@
+<div class="efw-form">
+    <div class="section first multi-column">
+        <TMPL_LOOP NAME=V_FIELDS>
+        <TMPL_IF NAME=V_TOGGLE_ID>
+        <div class="<TMPL_VAR NAME=V_TOGGLE_ID> <TMPL_IF NAME=V_HIDDEN>hidden</TMPL_IF>">
+        </TMPL_IF>
+            <TMPL_VAR NAME=H_FIELD>
+        <TMPL_IF NAME=V_TOGGLE_ID>
+        </div>
+        </TMPL_IF>
+        </TMPL_LOOP>
+    </div>
+</div>

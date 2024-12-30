@@ -49,22 +49,9 @@ $template{'loading'} = qq~
 $template{'dashboard'} = qq~
                 <h2>[!TITLE!]</h2>
                 <div>
-                    
-
-
-    <div class="multi-controller-title">Dashboard Settings</div>
-    
-
+                      
 <div id="controller_settings">
     <div align="center"><div id="apply_notification_settings" class="important-fancy hidden">
-    <!--script type="text/javascript">
-        \$(document).ready(function() {
-            \$("#apply_notification_settings").emiapply({
-                action: "apply",
-                controllername: "settings"
-            });
-        });
-    </script-->
     <div class="content">
         <table cellpadding="0" cellspacing="0" border="0">
             <tr>
@@ -118,7 +105,6 @@ $template{'dashboard'} = qq~
     </div>
     <div class="bottom"></div>
 </div></div>
-    <a href="?ACTION=show&CONTROLLERNAME=settings" name="createrule">Show settings</a>
     <br />
 </div>
 

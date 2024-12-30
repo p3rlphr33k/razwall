@@ -27,12 +27,6 @@
 # this file makes the wizard ipcop capable.
 ##############################################################################
 
-
-#
-# IPCop stuff
-#
-
-#BEGIN {push @INC, '..'}
 use lib '/razwall/web/cgi-bin/';
 require 'header.pl';
 require 'netwiz.cgi';

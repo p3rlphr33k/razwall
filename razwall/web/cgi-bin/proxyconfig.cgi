@@ -25,6 +25,7 @@
 # -------------------------------------------------------------
 # some definitions
 # -------------------------------------------------------------
+use lib '/razwall/web/cgi-bin/';
 require 'proxy.pl';
 
 my $appliance_settings = "${swroot}/product/settings";

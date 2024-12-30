@@ -36,8 +36,8 @@ undef $pagename;
 undef $nomenu;
 undef $nostatus;
 
-#readhash($productfile, \%producthash);
-#readhash($wizardfile, \%wizardhash);
+readhash($productfile, \%producthash);
+readhash($wizardfile, \%wizardhash);
 
 # build system paths
 $cgi_path = $1 if (($ENV{'SCRIPT_FILENAME'}||$0) =~ m/^(.*)(\\|\/)(.+?)$/);
@@ -47,7 +47,9 @@ $templates = $cgi_path . '/templates.pl';
 &loadTemplates;
 
 showhttpheaders();
+
 openpage('Dashboard');
+
 &getTemplate('dashboard');
 &doSub('TITLE', 'RazWall Dashboard');
 &printTemplate;

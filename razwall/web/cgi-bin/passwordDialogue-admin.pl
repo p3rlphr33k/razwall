@@ -20,6 +20,7 @@
 #        | http://www.fsf.org/                                                         |
 #        +-----------------------------------------------------------------------------+
 #
+use lib '/razwall/web/cgi-bin/';
 require 'passwd-lib.pl';
 
 registerPasswordDialogues("ADMIN", 

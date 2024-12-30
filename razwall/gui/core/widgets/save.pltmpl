@@ -1,0 +1,7 @@
+<div class="editorsubmit">
+    <div style="float: left;">
+        <input class="submitbutton save-button" type="submit" value="<TMPL_VAR NAME=T_SAVE_BUTTON>" name="submit" />
+    </div>
+    <div style="float: right; padding-top: 4px;">* <TMPL_VAR NAME=T_REQUIRED_HINT></div>
+    <br class="cb" />
+</div>

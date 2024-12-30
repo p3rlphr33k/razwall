@@ -1,0 +1,4 @@
+BACKUP_SCHEDULE=weekly
+BACKUP_RCPTTO=bryan.king@gflibrary.com
+BACKUP_ENABLED=on
+BACKUP_MAILFROM=administrator@gflibrary.com

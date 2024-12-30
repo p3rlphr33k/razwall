@@ -1,0 +1,25 @@
+<div>
+<TMPL_LOOP NAME=V_ZONES>
+<div class="section first multi-column">
+    <div class="fields-row field-select">
+        <span class="zone-field"> 
+            <label id="<TMPL_VAR NAME=NAME>_zone_field" for="<TMPL_VAR NAME=V_NAME>_zone">
+                <font class="<TMPL_VAR NAME=V_COLOR>"><TMPL_VAR NAME=T_DESCRIPTION></font>
+            </label>
+            <br />
+        <TMPL_IF NAME=V_OPTIONS>
+            <select id="<TMPL_VAR NAME=V_NAME>_zone" name="<TMPL_VAR NAME=V_NAME>_ENABLED">
+            <TMPL_LOOP NAME=V_OPTIONS>
+                <option value="<TMPL_VAR NAME=V_NAME>" <TMPL_IF NAME=V_SELECTED>selected="selected"</TMPL_IF> ><TMPL_VAR NAME=T_DESCRIPTION></option>
+            </TMPL_LOOP>
+            </select>
+        <TMPL_ELSE>
+            <p id="<TMPL_VAR NAME=NAME>_zone"><TMPL_VAR NAME=T_ZONE_NOT_AVAILABLE></p>
+        </TMPL_IF>
+        </span> 
+    </div>
+</div>
+</TMPL_LOOP>
+<br class="cb"/>
+<br />
+</div>

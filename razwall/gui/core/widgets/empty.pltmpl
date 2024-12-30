@@ -1,0 +1,11 @@
+<div class="fields-row field-emtpy <TMPL_VAR NAME=V_TOGGLE_ID> <TMPL_IF NAME=V_HIDDEN>hidden</TMPL_IF>"  style="<TMPL_VAR NAME=V_STYLE>">
+    <TMPL_IF NAME=T_LABEL>
+    <label id="<TMPL_VAR NAME=V_ID>_field" for="<TMPL_VAR NAME=V_ID>">
+        <TMPL_VAR NAME=T_LABEL>
+    </label>
+    <br />
+    </TMPL_IF>
+    <TMPL_IF NAME=T_TEXT>
+    <p id="<TMPL_VAR NAME=V_ID>"><TMPL_VAR NAME=T_TEXT></p>
+    </TMPL_IF>
+</div>

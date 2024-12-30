@@ -1,0 +1,61 @@
+<div class="fields-row field-select <TMPL_VAR NAME=V_TOGGLE_ID> <TMPL_IF NAME=V_HIDDEN>hidden</TMPL_IF>">
+    <div  style="float: left; padding-right: 38px;">
+        <span class="field">
+            <label id="starthour_field" for="starthour">
+                <TMPL_VAR NAME=T_LABELSTARTHOUR>&nbsp*
+            <br />
+            <select style="width: 140px;" id="starthour" name="starthour" class="check_on_change">
+                <TMPL_LOOP NAME=V_STARTHOURS>
+                <option value="<TMPL_VAR NAME=V_VALUE>" <TMPL_IF NAME=V_SELECTED>selected="selected"</TMPL_IF> ><TMPL_VAR NAME=T_OPTION></option>
+                </TMPL_LOOP>
+            </select>
+        </span>
+        <br class="cb" /> 
+    </div>
+    <div style="float: left;">
+        <span class="field">
+            <label id="startminute_field" for="startminute">
+                <TMPL_VAR NAME=T_LABELSTARTMINUTE>&nbsp;*
+            </label>
+            <br />
+            <select style="width: 140px;" id="startminute" name="startminute" class="check_on_change">
+                <TMPL_LOOP NAME=V_STARTMINUTES>
+                <option value="<TMPL_VAR NAME=V_VALUE>" <TMPL_IF NAME=V_SELECTED>selected="selected"</TMPL_IF> ><TMPL_VAR NAME=T_OPTION></option>
+                </TMPL_LOOP>
+            </select>
+        </span>
+        <br class="cb" /> 
+    </div> 
+    <br class="cb" /> 
+</div>
+<div class="fields-row field-select <TMPL_VAR NAME=V_TOGGLE_ID> <TMPL_IF NAME=V_HIDDEN>hidden</TMPL_IF>" style="padding-bottom: 24px;">
+    <div style="float: left; padding-right: 38px;">
+        <span class="field" style="float: left;">
+            <label id="stophour_field" for="stophour">
+                <TMPL_VAR NAME=T_LABELSTOPHOUR>&nbsp;*
+            </label>
+            <br />
+            <select style="width: 140px;" id="stophour" name="stophour" class="check_on_change">
+                <TMPL_LOOP NAME=V_STOPHOURS>
+                <option value="<TMPL_VAR NAME=V_VALUE>" <TMPL_IF NAME=V_SELECTED>selected="selected"</TMPL_IF> ><TMPL_VAR NAME=T_OPTION></option>
+                </TMPL_LOOP>
+            </select>
+        </span>
+        <br class="cb" /> 
+    </div>
+    <div style="float: left;">
+        <span class="field" style="float: left;">
+            <label id="stopminute_field" for="stopminute">
+                <TMPL_VAR NAME=T_LABELSTOPMINUTE>&nbsp;*
+            </label>
+            <br />
+            <select style="width: 140px;" id="stopminute" name="stopminute" class="check_on_change">
+                <TMPL_LOOP NAME=V_STOPMINUTES>
+                <option value="<TMPL_VAR NAME=V_VALUE>" <TMPL_IF NAME=V_SELECTED>selected="selected"</TMPL_IF> ><TMPL_VAR NAME=T_OPTION></option>
+                </TMPL_LOOP>
+            </select>
+        </span> 
+        <br class="cb" /> 
+    </div>
+    <br class="cb" /> 
+</div>

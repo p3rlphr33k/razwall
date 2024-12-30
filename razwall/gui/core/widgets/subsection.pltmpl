@@ -1,0 +1,9 @@
+<div id="<TMPL_VAR NAME=V_ID>">
+    <ul>
+        <TMPL_LOOP NAME=V_SUBMENUS>
+        <li <TMPL_IF NAME=V_SELECTED>class="selected"</TMPL_IF>>
+            <a href="<TMPL_VAR NAME=P_LINK>"><TMPL_VAR NAME=T_TITLE></a>
+        </li>
+        </TMPL_LOOP>
+    </ul>
+</div>

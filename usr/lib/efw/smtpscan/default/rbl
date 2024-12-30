@@ -1,0 +1,23 @@
+bl.spamcop.net|bl.spamcop.net|IP|http://www.spamcop.net
+zen.spamhaus.org|zen.spamhaus.org|IP|http://www.spamhaus.org/zen/
+dbl.spamhaus.org|dbl.spamhaus.org|DOMAIN|http://www.spamhaus.org/dbl/
+cbl.abuseat.org|cbl.abuseat.org|IP|http://cbl.abuseat.org
+dnsbl.sorbs.net|dnsbl.sorbs.net - all dnsbl lists aggregated|IP|http://www.au.sorbs.net
+safe.dnsbl.sorbs.net|safe.dnsbl.sorbs.net - only reviewed lists|IP|http://www.au.sorbs.net
+relays.dnsbl.sorbs.net|relays.dnsbl.sorbs.net - only open relays|IP|http://www.au.sorbs.net
+spam.dnsbl.sorbs.net|spam.dnsbl.sorbs.net - only spam hosts|IP|http://www.au.sorbs.net
+zombie.dnsbl.sorbs.net|zombie.dnsbl.sorbs.net - only zombie hosts|IP|http://www.au.sorbs.net
+dul.dnsbl.sorbs.net|dul.dnsbl.sorbs.net - only dynamic IP addresses|IP|http://www.au.sorbs.net
+rhsbl.sorbs.net|rhsbl.dnsbl.sorbs.net - all rhsbl lists aggregated|DOMAIN|http://www.au.sorbs.net
+nomail.rhsbl.sorbs.net|nomail.rhsbl.dnsbl.sorbs.net|DOMAIN|http://www.au.sorbs.net
+badconf.rhsbl.sorbs.net|badconf.rhsbl.dnsbl.sorbs.net|DOMAIN|http://www.au.sorbs.net
+dnsbl-1.uceprotect.net|dnsbl-1.uceprotect.net - level 1: conservative|IP|http://www.uceprotect.net
+dnsbl-2.uceprotect.net|dnsbl-2.uceprotect.net - level 2: strict|IP|http://www.uceprotect.net
+dnsbl-3.uceprotect.net|dnsbl-3.uceprotect.net - level 3: draconic|IP|http://www.uceprotect.net
+b.barracudacentral.org|b.barracudacentral.org|IP|http://www.barracudacentral.org/rbl
+ix.dnsbl.manitu.net|ix.dnsbl.manitu.net|IP|http://www.dnsbl.manitu.net
+dnsbl.dronebl.org|dnsbl.dronebl.org|IP|https://dronebl.org
+spamrbl.imp.ch|spamrbl.imp.ch|IP|http://antispam.imp.ch
+combined.abuse.ch|combined.abuse.ch|IP|https://abuse.ch
+psbl.surriel.com|psbl.surriel.com|IP|https://psbl.org
+multi.surbl.org|multi.surbl.org - all surbl lists aggregated|DOMAIN|http://www.surbl.org/lists

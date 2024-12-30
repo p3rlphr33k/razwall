@@ -23,6 +23,7 @@
 #
 use RRDs;
 use POSIX qw(uname);
+use lib '/razwall/web/cgi-bin/';
 require 'header.pl';
 
 

@@ -1,0 +1,8 @@
+PRODUCT_ID=community-x64
+PRODUCT_NAME=Community (64 bit)
+LCD_TYPE=
+ENTERPRISE=
+VERSION_SERVER=http://registeredversion.endian.org
+UNREGISTERED_VERSION_SERVER=http://version.endian.org
+NVRAM_TYPE=filesystem
+NVRAM_PATH=/var/efw/main/nvstorage

@@ -1,0 +1,47 @@
+<table width="100%" cellspacing="0" cellpadding="0" class="ruleslist">
+    <tr>
+        <th><a href="/cgi-bin/smtpdomains.cgi?DOMAIN"><b>Domain</b></a></th>
+        <th>Actions</th>
+    </tr>
+    
+    <tr class="odd">
+        <td>sdfasf</td>
+            <form action="/cgi-bin/smtpdomains.cgi" method="post">
+<input type="hidden" value="edit" name="ACTION"/>
+<input type="image" title="Edit" alt="Edit" src="/images/edit.png" name="submit" class="imagebutton"/>
+<input type="hidden" value="0" name="KEY1"/>
+</form>
+</td>
+
+<td align="center">
+<form action="/cgi-bin/smtpdomains.cgi" method="post">
+<input type="hidden" value="remove" name="ACTION"/>
+<input type="image" title="Remove" alt="Remove" src="/images/delete.png" name="submit" class="imagebutton"/>
+<input type="hidden" value="0" name="KEY1"/>
+</form>
+</td>
+
+
+</tr>
+<tr class="even">
+<td align="center">fff</td>
+<td align="center">ffff</td>
+<td align="center">
+<form action="/cgi-bin/smtpdomains.cgi" method="post">
+<input type="hidden" value="edit" name="ACTION"/>
+<input type="image" title="Edit" alt="Edit" src="/images/edit.png" name="submit" class="imagebutton"/>
+<input type="hidden" value="1" name="KEY1"/>
+</form>
+</td>
+
+<td align="center">
+<form action="/cgi-bin/smtpdomains.cgi" method="post">
+<input type="hidden" value="remove" name="ACTION"/>
+<input type="image" title="Remove" alt="Remove" src="/images/delete.png" name="submit" class="imagebutton"/>
+<input type="hidden" value="1" name="KEY1"/>
+</form>
+</td>
+
+
+</tr>
+</tbody></table>

@@ -22,6 +22,7 @@
 #        +-----------------------------------------------------------------------------+
 #
 
+use lib '/razwall/web/cgi-bin/';
 require 'header.pl';
 require 'passwd-lib.pl';
 

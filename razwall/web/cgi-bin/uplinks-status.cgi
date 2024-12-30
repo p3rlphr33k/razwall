@@ -1,10 +1,9 @@
+#!/usr/bin/perl 
 use strict;
 use warnings;
 use JSON;
 
 my $UPLINKS_DIR = "/razwall/config/uplinks";
-my $ACTIVE_FILE = "$UPLINKS_DIR/%s/active";
-my $uplinks_cmd = "sudo /etc/rc.d/uplinks %s %s --with-hooks";
 
 sub pool_info {
     opendir my $dh, $UPLINKS_DIR or die "Cannot open $UPLINKS_DIR: $!";
@@ -13,101 +12,99 @@ sub pool_info {
 
     my @info;
     foreach my $folder (@folders) {
+        my %uplink;
+        $uplink{name} = $folder;
+
+        # Read settings file
         my $settings_file = "$UPLINKS_DIR/$folder/settings";
-        next unless -e $settings_file;
-
-        open my $fh, '<', $settings_file or die "Cannot open $settings_file: $!";
-        my %settings;
-        while (<$fh>) {
-            chomp;
-            my ($key, $value) = split(/=/, $_, 2);
-            $settings{$key} = $value;
+        if (-e $settings_file) {
+            open my $fh, '<', $settings_file or die "Cannot open $settings_file: $!";
+            while (<$fh>) {
+                chomp;
+                my ($key, $value) = split(/=/, $_, 2);
+                $uplink{$key} = $value;
+            }
+            close $fh;
         }
-        close $fh;
 
-        push @info, { uplinkChain => [ { name => $folder, %settings } ] };
+        # Check for active file
+        my $active_file = "$UPLINKS_DIR/$folder/active";
+        if (-e $active_file) {
+            $uplink{status} = "ACTIVE";
+            open my $fh, '<', $active_file or die "Cannot open $active_file: $!";
+            $uplink{defaultGatewayTimestamp} = <$fh>;
+            chomp $uplink{defaultGatewayTimestamp};
+            close $fh;
+        } else {
+            $uplink{status} = "INACTIVE";
+            $uplink{defaultGatewayTimestamp} = -1;
+        }
+
+        # Read data file
+        my $data_file = "$UPLINKS_DIR/$folder/data";
+        if (-e $data_file) {
+            open my $fh, '<', $data_file or die "Cannot open $data_file: $!";
+            while (<$fh>) {
+                chomp;
+                my ($key, $value) = split(/=/, $_, 2);
+                $uplink{data}{$key} = $value;
+            }
+            close $fh;
+        }
+
+        push @info, \%uplink;
     }
 
     return \@info;
 }
 
 sub list_ {
-    init();
+    my $cache_time = time();
     my $info = pool_info();
-    my @link_infos;
+    my @uplinks;
 
-    foreach my $link (@$info) {
-        my $uplink = $link->{uplinkChain}->[0];
-        $uplink->{uptime} = age($uplink->{name});
-        $uplink->{data} = { ip => $uplink->{RED_ADDRESS}, type => $uplink->{RED_TYPE}, gateway => $uplink->{DEFAULT_GATEWAY} };
-        push @link_infos, $uplink;
+    foreach my $uplink (@$info) {
+        my %uplink_info = (
+            status                 => $uplink->{status},
+            defaultGatewayTimestamp => $uplink->{defaultGatewayTimestamp},
+            managed                => $uplink->{MANAGED} // "off",
+            shouldBeUp             => ($uplink->{ENABLED} && $uplink->{ENABLED} eq 'on') ? JSON::true : JSON::false,
+            canStart               => JSON::true,
+            isLinkAlive            => JSON::true,
+            data                   => {
+                name      => $uplink->{NAME} // "",
+                ip        => $uplink->{WAN_ADDRESS} // "",
+                last_retry => "",
+                interface => $uplink->{WAN_DEV} // "",
+                type      => $uplink->{WAN_TYPE} // "",
+                gateway   => $uplink->{DEFAULT_GATEWAY} // "",
+            },
+            defaultGateway         => ($uplink->{DEFAULT_GATEWAY}) ? JSON::true : JSON::false,
+            uptime                 => age($uplink->{name}),
+            name                   => $uplink->{name},
+            isLinkActive           => ($uplink->{status} eq 'ACTIVE') ? JSON::true : JSON::false,
+            enabled                => $uplink->{ENABLED} // "off",
+            autostart              => $uplink->{AUTOSTART} // "off",
+            hasChanged             => JSON::true,
+        );
+        push @uplinks, \%uplink_info;
     }
 
-    print encode_json(\@link_infos);
-}
+    my %output = (
+        cacheHitAt => $cache_time,
+        cachedOn   => $cache_time,
+        time       => $cache_time,
+        uplinks    => \@uplinks,
+        cached     => JSON::true,
+    );
 
-sub start {
-    my ($uplink) = @_;
-    return unless $uplink;
-    return change_status($uplink, "start");
-}
-
-sub stop {
-    my ($uplink) = @_;
-    return unless $uplink;
-    return change_status($uplink, "stop");
-}
-
-sub change_status {
-    my ($uplink, $status) = @_;
-    my $cmd = sprintf($uplinks_cmd, $status, $uplink);
-    my $res = system($cmd);
-    return $res == 0;
-}
-
-sub to_date {
-    my ($timestamp) = @_;
-    return "" if $timestamp == 0;
-    my @lt = localtime($timestamp);
-    return sprintf("%02d:%02d:%02d", $lt[2], $lt[1], $lt[0]);
-}
-
-sub uplink_data {
-    my ($up) = @_;
-    return {
-        ip          => $up->{RED_ADDRESS},
-        type        => $up->{RED_TYPE},
-        interface   => $up->{RED_DEV},
-        gateway     => $up->{DEFAULT_GATEWAY},
-        last_retry  => to_date($up->{failureTimestamp}),
-    };
-}
-
-sub status {
-    my ($uplink, $error) = @_;
-    my $info = { name => $uplink };
-    my $data = pool_info();
-    foreach my $link (@$data) {
-        if ($link->{uplinkChain}->[0]->{name} eq $uplink) {
-            $info = $link->{uplinkChain}->[0];
-            last;
-        }
-    }
-    $info->{uptime} = age($uplink);
-    $info->{error} = $error if $error;
-    $info->{data} = uplink_data($info);
-
-    init();
-    print encode_json($info);
-}
-
-sub init {
-    print "Content-type: text/html\r\n\r\n";
+    print "Content-Type: application/json\n\n";
+    print encode_json(\%output);
 }
 
 sub age {
     my ($uplink) = @_;
-    my $active_file = sprintf($ACTIVE_FILE, $uplink);
+    my $active_file = "$UPLINKS_DIR/$uplink/active";
     return "" unless -e $active_file;
 
     my $mtime = (stat($active_file))[9];
@@ -124,66 +121,5 @@ sub age {
     return sprintf("%sd %sh %sm %ss", $days, $hours, $mins, $secs);
 }
 
-sub manage_flag {
-    my ($uplink, $flag) = @_;
-    my $settings_file = "$UPLINKS_DIR/$uplink/settings";
-    open my $fh, "+<", $settings_file or die "Cannot open $settings_file: $!";
-    my %settings;
-
-    while (<$fh>) {
-        chomp;
-        my ($key, $value) = split(/=/, $_, 2);
-        $settings{$key} = $value;
-    }
-
-    $settings{MANAGED} = $flag ? "on" : "off";
-
-    seek($fh, 0, 0);
-    foreach my $key (keys %settings) {
-        print $fh "$key=$settings{$key}\n";
-    }
-    truncate($fh, tell($fh));
-    close $fh;
-}
-
-sub manage {
-    my ($uplink) = @_;
-    manage_flag($uplink, 1);
-}
-
-sub unmanage {
-    my ($uplink) = @_;
-    manage_flag($uplink, 0);
-}
-
 # Main Execution
-my $action = undef;
-my $uplink = undef;
-
-if (@ARGV) {
-    $uplink = $ARGV[0];
-    $action = $ARGV[1];
-}
-else {
-    foreach my $arg (@ARGV) {
-        if ($arg =~ /action=(.+)/) {
-            $action = $1;
-        } elsif ($arg =~ /uplink=(.+)/) {
-            $uplink = $1;
-        }
-    }
-}
-
-if (!$action || $action eq "list") {
-    list_();
-} elsif ($action eq "start") {
-    start($uplink);
-} elsif ($action eq "stop") {
-    stop($uplink);
-} elsif ($action eq "status") {
-    status($uplink);
-} elsif ($action eq "manage") {
-    manage($uplink);
-} elsif ($action eq "unmanage") {
-    unmanage($uplink);
-}
+list_();

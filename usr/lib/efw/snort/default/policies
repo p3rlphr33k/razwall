@@ -1,0 +1,9 @@
+auto/emerging-web_client.rules,alert,off
+auto/emerging-malware.rules,alert,off
+auto/emerging-shellcode.rules,alert,off
+auto/emerging-botcc.rules,alert,off
+auto/emerging-icmp.rules,alert,off
+auto/emerging-rbn.rules,alert,off
+auto/emerging-drop.rules,alert,off
+auto/emerging-tor.rules,alert,off
+auto/emerging-exploit.rules,alert,off

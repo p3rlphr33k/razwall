@@ -117,33 +117,6 @@ sub escape_quotes($) {
     return $var;
 }
 
-sub get_major_version() {
-    my %version_settings = ();
-    &readhash("/razwall/config/version/settings", \%version_settings);
-    my $major_version = $version_settings{'MAJOR_VERSION'} ne "" ? $version_settings{'MAJOR_VERSION'} : "";
-    return $major_version;
-}
-
-sub get_minor_version() {
-    my %version_settings = ();
-    &readhash("/razwall/config/version/settings", \%version_settings);
-    my $minor_version = $version_settings{'MINOR_VERSION'} ne "" ? $version_settings{'MINOR_VERSION'} : "";
-    return $minor_version;
-}
-
-sub get_version() {
-    my $major_version = get_major_version();
-    my $minor_version = get_minor_version();
-    if ($major_version ne "" && $minor_version ne "") {
-        return $major_version . "." . $minor_version;
-    } elsif ($major_version ne "") {
-        return $major_version;
-    } elsif ($minor_version ne "") {
-        return $minor_version;
-    }
-    return ""
-}
-
 sub get_version_info() {
 
     if ( $version_custom ) {
@@ -160,7 +133,7 @@ sub get_version_info() {
     }
 
     if ($read_ver =~ /^$/) {
-        return "RazWall Firewall NA";
+        return "RazWall Firewall";
     }
     return $read_ver;
 }
@@ -187,52 +160,19 @@ sub get_brand_settings {
     }
 }
 
-# Is the firewall branded or not.
-sub is_branded() {
-    return $branded;
-}
-
-sub get_company() {
-    &get_brand_settings(\%brandsettings);
-    
-    chomp($brandsettings{'COMPANY'});
-    return (is_branded()) ? $brandsettings{'COMPANY'} : "Endian";
-}
-
-sub get_brand() {
-    &get_brand_settings(\%brandsettings);
-    
-    chomp($brandsettings{'BRAND'});
-    return (is_branded()) ? $brandsettings{'BRAND'} : "Endian";
-}
-
-sub get_product() {
-    &get_brand_settings(\%brandsettings);
-    
-    chomp($brandsettings{'PRODUCT'});
-    return $brandsettings{'PRODUCT'} || get_settings_product_name() || "Firewall";
-}
-
-sub get_network_brand() {
-    &get_brand_settings(\%brandsettings);
-    
-    chomp($brandsettings{'EN_BRAND'});
-    return (is_branded()) ? $brandsettings{'EN_BRAND'} : "Network";
-}
-
 my $webroot = '/razwall/web/cgi-bin/';
 if ($ENV{'DOCUMENT_ROOT'}) {
     $webroot = $ENV{'DOCUMENT_ROOT'};
 }
 
-my $menuCache = '/razwall/web/menus';
+my $menuCache = '/razwall/web/menus/cache/';
 my $menuRegistry = '/razwall/web/menus/';
 
-$version = get_version_info();
-$brand = get_brand();
-$product = get_product();
-$en_brand = get_network_brand();
-$network_name = $brand.' '.$en_brand;
+$version = "1.0.0";
+$brand = "RazWall";
+$product = "Firewall";
+
+$network_name = $brand.' '.$product;
 # Is the firewall branded?
 $branded = 0;
 $revision = 'final';
@@ -391,7 +331,7 @@ sub checkForLogout() {
 }
 
 sub expireMenuCache() {
-    my $cachefile = "${menuCache}/${useFlavour}";
+    my $cachefile = "${menuCache}/${useFlavour}.json";
     if (-e $cachefile) {
         unlink($cachefile);
     }
@@ -400,7 +340,7 @@ sub expireMenuCache() {
 sub cacheMenu($$) {
     my $menu = shift;
     my $flavour = shift;
-    my $cachefile = "${menuCache}/${flavour}";
+    my $cachefile = "${menuCache}/${flavour}.json";
     if (! open(J, ">$cachefile")) {
 	warn("Could not cache menu to '$cachefile' due to $!");
 	return;
@@ -459,9 +399,6 @@ sub genFlavourMenus() {
 	$flavour =~ s#^.*/([^/]+)$#\1#;
 	if (isMenuCacheExpired($flavour)) {
 	    $menu = registerMenus($flavour);
-		#open(MFL, "> /razwall/web/cgi-bin/MENU_TYPE.txt");
-		#print MFL "$flavour";
-		#close(MFL);
 	} else {
 	    $menu = loadMenuFromCache($flavour);
 	}
@@ -578,7 +515,7 @@ sub showhttpheaders {
     } else {
         my $host = getHTTPRedirectHost();
         print "Content-type: text/html\n";
-        print "Location: https://$host/cgi-bin/ha_slave.cgi\r\n\r\n";
+        print "Location: https://$host/cgi-bin/ha_slave.cgi\n\n";
     }
 }
 
@@ -766,13 +703,14 @@ EOF
 sub getselected($) {
     my $root = shift;
     if (!$root) {
+		#print "NO ROOT SENT FOR SELECTION!";
 	return 0;
     }
 
     foreach my $item (%$root) {
-	if ($root->{$item}{'selected'}) {
-	    return $root->{$item};
-	}
+		if ($root->{$item}{'selected'}) {
+			return $root->{$item};
+		}
     }
 }
 
@@ -781,15 +719,36 @@ sub showsubsection($$) {
     my $id = shift;
     if ($id eq '') {
         $id = 'menu-left';
-        printf <<EOF
+printf <<EOF
 <script language="javascript" type="text/javascript">
 \$(document).ready(function() {
     \$("#menu-left").stalker({offset: 35});
 });
 </script>
 EOF
-        ;
+;
     }
+
+=pod	
+my @stack = (\%{$root});
+while (@stack) {
+    my $current = pop @stack;
+    if (ref $current eq 'HASH') {
+        foreach my $key (sort keys %$current) {
+            my $value = $current->{$key};
+            if (ref $value eq 'HASH') {
+                print "HASH: $key:<br>\n";
+                push @stack, $value;
+            } elsif (ref $value eq 'ARRAY') {
+                print " ARRAY $key: [", join(', ', @$value), "]<br>\n";
+            } else {
+                print "$key: $value,<br>\n";
+            }
+        }
+    }
+}
+=cut
+
     if (! $root) {
         print '<div style="width: 85px;"></div>';
         return;
@@ -929,11 +888,11 @@ sub get_helpuri($) {
         $uri =~ s/efw.//g
     }
     
-    my $version = get_version();
+    #my $version = get_version();
     $rooturi =~ s/\%\(VERSION\)s/$version/g;
-    my $major_version = get_major_version();
+    #my $major_version = get_major_version();
     $rooturi =~ s/\%\(MAJOR_VERSION\)s/$major_version/g;
-    my $doc_type = get_documentation_type();
+    #my $doc_type = get_documentation_type();
     $rooturi =~ s/\%\(DOCUMENTATION_TYPE\)s/$doc_type/g;
     $rooturi =~ s/\%\(LANGUAGE\)s/$language/g;
     
@@ -962,10 +921,10 @@ sub openpage {
     my $boh = shift;
     my $extrahead = shift;
 
-    &readhash("${swroot}/main/settings", \%settings);
-    if(!($nomenu == 1)) {
+    #&readhash("${swroot}/main/settings", \%settings);
+    #if(!($nomenu == 1)) {
         &genmenu();
-    }
+    #}
     my $h2 = gettitle($menu);
     my $helpuri = get_helpuri($menu);
 
@@ -1085,13 +1044,12 @@ END
      <script type="text/javascript" src="/js/websocket.js"></script>   
 	<script language="javascript" src="/js/smoothie.js"></script>
 	
-	
-        <title>endian.grand-forks.lib.nd.us - Endian Community (64 bit) - Dashboard</title>
+        <title>RazWall Firewall</title>
         
         <script type="text/javascript" src="/include/jquery.stalker.js"></script>
         <script language="javascript" type="text/javascript">
 \$(document).ready(function() {
-    if ($.browser.msie) {
+    if (\$.browser.msie) {
         \$("#main_header_logout").removeAttr("href");
         \$("#main_header_logout").parent().unbind('click').click(function() {
             \$.ajax({
@@ -1106,22 +1064,22 @@ END
     \$("#menu-top").stalker();
     \$("#menu-left").stalker({offset: 35});
 
- /*
+ 
 	function callReboot(){
-        $.ajax({
+        \$.ajax({
             type: 'POST',
             url: "/manage/commands/commands.system.reboot",
             error: function(id, error_type, xhr, ajaxOptions, thrownError) {
                 console.log("js: callReboot error")
             },
             success: function () {
-                document.getElementById('page-content').innerHTML = "                    <div id=\"module-content\">                    <div align=\"center\">                    <table width=\"100%\" bgcolor=\"#ffffff\">                    <tbody><tr><td align=\"center\">                    <br><br><img src=\"/images/reboot_splash.png\"><br><br><br>                    </td></tr>                    </tbody></table>                    <br>                    <font size=\"5\">The appliance is being rebooted.</font>                    </div>                    </div>";
+                document.getElementById('page-content').innerHTML = "<div id=\"module-content\">                    <div align=\"center\">                    <table width=\"100%\" bgcolor=\"#ffffff\">                    <tbody><tr><td align=\"center\">                    <br><br><img src=\"/images/reboot_splash.png\"><br><br><br>                    </td></tr>                    </tbody></table>                    <br>                    <font size=\"5\">The appliance is being rebooted.</font>                    </div>                    </div>";
             }
         });
     }
 
     function acknowledgeReboot(){
-        $.ajax({
+        \$.ajax({
             type: 'POST',
             url: "/manage/commands/commands.system.acknowledge_reboot",
             error: function(id, error_type, xhr, ajaxOptions, thrownError) {
@@ -1131,7 +1089,7 @@ END
     }
 
     function pollReboot() {
-        $.ajax({
+        \$.ajax({
             type: 'GET',
             url: "/manage/commands/commands.system.notify_reboot",
             success: pollSuccess,
@@ -1169,11 +1127,11 @@ END
             }
         };
 
-        $().emitoast(toastr_settings);
+        \$().emitoast(toastr_settings);
     }
 
     pollReboot();
-*/	
+
 });
         </script>
         
@@ -1262,7 +1220,6 @@ END
 
 #### END HEADER
 
-$image_orig = </razwall/web/html/images/product_*.png>;
 $logo_orig = </razwall/web/html/images/logo_*.png>;
     
 $logo_path = $logo_orig;
@@ -1272,13 +1229,6 @@ if ( $logo_path ) {
     print "     <img id=\"logo\" src=\"/images/$filename\" alt=\"Logo\" />";
 };
 
-$image_path	= $image_orig;
-
-
-if ( $image_path ) {
-    $filename=substr($image_path,24);
-    print "     <img id=\"logo-product\" src=\"/images/$filename\" alt=\"Product Logo\" />";
-};
 
 printf <<END
 	<div id="header-icons">
@@ -1551,11 +1501,7 @@ sub log {
 	my $logmessage = $_[0];
 	$logmessage =~ /([\w\W]*)/;
 	$logmessage = $1;
-	if (is_branded()){
-	    system('/usr/bin/logger', '-t', "$brand", $logmessage)
-	} else {
-    	system('/usr/bin/logger', '-t', 'efw', $logmessage);
-	}
+	system('/usr/bin/logger', '-t', 'efw', $logmessage);
 }
 
 sub age {

@@ -32,6 +32,7 @@ use URI::Escape ('uri_escape');
 use RRDs ();
 use Data::Dumper ();
 
+use lib '/razwall/web/cgi-bin/';
 require 'header.pl';
 
 

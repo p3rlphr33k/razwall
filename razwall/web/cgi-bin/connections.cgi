@@ -29,7 +29,7 @@ my @masklen;
 my @colour;
 
 use Net::IPv4Addr qw( :all );
-
+use lib '/razwall/web/cgi-bin/';
 require 'header.pl';
 
 &getcgihash(\%par);

@@ -21,7 +21,7 @@
 #        | http://www.fsf.org/                                                         |
 #        +-----------------------------------------------------------------------------+
 #
-
+use lib '/razwall/web/cgi-bin/';
 require 'routing.pl';
 require 'razinc.pl';
 

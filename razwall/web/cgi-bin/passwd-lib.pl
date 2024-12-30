@@ -25,8 +25,9 @@
 sub chpass($) {
     my $pass = shift;
     use IPC::Open3;
-    $pid = open3(\*WRITE, \*READ, \*ERROR, '/usr/bin/sudo', '/usr/local/bin/chrootpasswd');
-    print WRITE "$pass\n";
+    #$pid = open3(\*WRITE, \*READ, \*ERROR, '/usr/bin/sudo', '/usr/local/bin/chrootpasswd');
+    $pid = open3(\*WRITE, \*READ, \*ERROR, '/usr/local/bin/chrootpasswd');
+	print WRITE "$pass\n";
     close READ;
     close WRITE;
     close ERROR;
@@ -37,7 +38,8 @@ sub chsmbpass($$) {
     my $user = shift;
     my $pass = shift;
     use IPC::Open3;
-    $pid = open3(\*WRITE, \*READ, \*ERROR, '/usr/bin/sudo', '/usr/bin/smbpasswd', '-s', '-a', $user);
+    #$pid = open3(\*WRITE, \*READ, \*ERROR, '/usr/bin/sudo', '/usr/bin/smbpasswd', '-s', '-a', $user);
+	$pid = open3(\*WRITE, \*READ, \*ERROR, '/usr/bin/smbpasswd', '-s', '-a', $user);
     print WRITE "$pass\n";
     print WRITE "$pass\n";
     close READ;
@@ -79,7 +81,9 @@ sub doPasswordSave($$$) {
 
     if ($type eq 'web') {
         $password1 =~ s/'/\'/g;
-        system('/usr/bin/sudo /usr/bin/htpasswd -m -b ' . ${swroot} . '/auth/users ' . $user . ' \'' . ${password1} . '\'');
+       # system('/usr/bin/sudo /usr/bin/htpasswd -m -b ' . ${swroot} . '/auth/users ' . $user . ' \'' . ${password1} . '\'');
+	    $cmd = '/usr/bin/htpasswd -m -b ' . ${swroot} . '/auth/users ' . $user . ' \'' . ${password1} . '\'';
+		system($cmd);
     } 
     elsif ($type eq 'smb') {
         chsmbpass($user, $password1);

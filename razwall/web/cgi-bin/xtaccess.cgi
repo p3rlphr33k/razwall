@@ -21,6 +21,7 @@
 #        | http://www.fsf.org/                                                         |
 #        +-----------------------------------------------------------------------------+
 #
+use lib '/razwall/web/cgi-bin/';
 require 'header.pl';
 require 'razinc.pl';
 my $l2tp = 0;

@@ -1,0 +1,6 @@
+BACKGROUND_WIDTH=212
+BACKGROUND_HEIGHT=48
+BACKGROUND_IMAGE=/toscawidgets/resources/endian.emi/static/images/network_selector_bg.png
+INTERFACE_WIDTH=9.9
+INTERFACE_HEIGHT=38.5
+ZOOM_FACTOR=1.7

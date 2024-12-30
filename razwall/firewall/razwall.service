@@ -1,0 +1,13 @@
+[Unit]
+Description=RazWall Firewall
+ConditionFileNotEmpty=/razwall/firewall/firewall.conf
+ConditionFileNotEmpty=/razwall/firewall/interfaces.conf
+ConditionFileNotEmpty=/razwall/firewall/rules.conf
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/razwall/firewall/fwfire.sh -f
+
+[Install]
+WantedBy=basic.target

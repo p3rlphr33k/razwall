@@ -1,0 +1,144 @@
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <title>Endian Firewall - <TMPL_VAR NAME=V_TITLE></title>
+        <link rel="shortcut icon" href="/favicon.ico" />
+	<TMPL_LOOP NAME=V_CSS_INCLUDE>
+        <style type="text/css">@import url(<TMPL_VAR NAME=URL>);</style>
+        </TMPL_LOOP>
+
+	<TMPL_LOOP NAME=V_JS_INCLUDE>
+        <script language="JavaScript" type="text/javascript" src="<TMPL_VAR NAME=URL>"></script>
+	</TMPL_LOOP>
+
+        <script language="javascript" type="text/javascript">
+            $(document).ready(function() {
+                try {
+                    $.ifixpng('/images/clear.gif');
+                    $('img').ifixpng();
+                    $('input').ifixpng();
+                }
+                catch(e) {
+                    
+                }
+            });
+        </script>
+        
+    
+        <script type="text/javascript">
+            overlib_pagedefaults(WIDTH,300,FGCOLOR,'#ffffcc',BGCOLOR,'#666666');
+            function swapVisibility(id) {
+                el = document.getElementById(id);
+                if(el.style.display != 'block') {
+                    el.style.display = 'block'
+                }
+                else {
+                    el.style.display = 'none'
+                }
+            }
+        </script>
+      </head>
+      <body>
+<!-- EFW HEADER -->
+
+<div id="flames">
+<div id="main">
+
+<div id="header">
+<img id="logo-product" src="/images/logo_endian.png" alt="Endian" />     <img id="logo-endian" src="/images/product_software.png" alt="Endian Firewall Appliance" />	<div id="header-icons">
+
+<ul>
+    <li id="logout-icon" onclick="window.location.href='/cgi-bin/logout.cgi';">
+        <a href="#" onclick="return false;">Logout</a>
+    </li>
+    <li id="help-icon" onclick="javascript:window.open('http://docs.endian.com/2.2/en/','_blank','height=700,width=1000,location=no,menubar=no,scrollbars=yes');">
+        <a href="#" onclick="return false;">Help</a>
+    </li>
+</ul>
+   </div><!-- header-icons -->
+
+  <div id="menu-top">
+    <ul>
+
+<li>    <div class="rcorner">
+      <a href="/cgi-bin/main.cgi">System</a>
+    </div>
+  </li>
+<li>    <div class="rcorner">
+      <a href="/cgi-bin/status.cgi">Status</a>
+    </div>
+  </li>
+
+<li>    <div class="rcorner">
+      <a href="/cgi-bin/hosts.cgi">Network</a>
+    </div>
+  </li>
+<li>    <div class="rcorner">
+      <a href="/cgi-bin/dhcp.cgi">Services</a>
+    </div>
+  </li>
+
+<li>    <div class="rcorner">
+      <a href="/cgi-bin/portfw.cgi">Firewall</a>
+    </div>
+  </li>
+<li>    <div class="rcorner">
+      <a href="/cgi-bin/advproxy.cgi">Proxy</a>
+    </div>
+  </li>
+
+<li>    <div class="rcorner">
+      <a href="/cgi-bin/openvpn_server.cgi">VPN</a>
+    </div>
+  </li>
+<li>    <div class="rcorner">
+      <a href="/cgi-bin/hotspot.cgi">Hotspot</a>
+    </div>
+  </li>
+
+<li>    <div class="rcorner">
+      <a href="/cgi-bin/logs_live_list.cgi">Logs</a>
+    </div>
+  </li>
+
+<li class="selected">    <div class="rcorner">
+      <a href="/cgi-bin/virtualization.cgi">Virtualization</a>
+    </div>
+  </li>
+    </ul>
+  </div>
+</div><!-- header -->
+<div id="content">
+  <table cellpadding="0" cellspacing="0" align="center" style="margin-left: 1px;">
+
+    <tr>
+      <td valign="top">
+	<TMPL_VAR NAME=V_MENU_LEFT>
+      </td>
+        <td valign="top" width="792">
+        <div id="page-content">
+            <h2><TMPL_VAR NAME=V_TITLE></h2>
+
+<TMPL_VAR NAME=V_MENU_SUBTOP>
+<div class="page-content">       
+ <TMPL_VAR NAME=V_CONTENT>
+</div>
+<div align="center" style="padding-top: 10px;">
+ <div style="font-size: 9px"><b><!-- Status: --></b> <span class='ipcop_StatusBig'>&nbsp;</span> <b>Uptime:</b> <TMPL_VAR NAME=V_UPTIME></div>
+ <p><TMPL_VAR NAME=V_ISSUE> (c) 2004-<TMPL_VAR NAME=V_CURRENT_YEAR><span style="font-size: 7px"></span></p> 
+</div>
+</div><!-- page_content -->
+
+              </td> 
+            </tr>
+          </table>
+        </div><!-- content -->
+      </div><!-- main -->
+    </div><!-- flames -->
+  </body>
+</html>
+

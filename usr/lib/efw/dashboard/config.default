@@ -1,0 +1,6 @@
+SystemInformationPlugin,on,off,60000,0,0
+SignaturesInformationPlugin,on,off,60000,0,1
+HardwareInformationPlugin,on,off,5000,0,2
+ServiceInformationPlugin,on,off,10000,0,3
+NetworkInformationPlugin,on,off,10000,1,0
+UpLinkInformationPlugin,on,off,5000,1,1

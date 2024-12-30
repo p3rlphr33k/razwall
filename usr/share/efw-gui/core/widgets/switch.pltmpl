@@ -1,0 +1,51 @@
+<script type="text/javascript">
+    $(document).ready(function() {
+        var SERVICE_STAT_DESCRIPTION = {
+            'on' : '<TMPL_VAR NAME=T_SERVICE_STARTING ESCAPE=HTML>',
+            'off' : '<TMPL_VAR NAME=T_SERVICE_SHUTDOWN ESCAPE=HTML>',
+            'restart' : '<TMPL_VAR NAME=T_SERVICE_RESTARTING ESCAPE=HTML>'
+        };
+        
+        <TMPL_IF NAME=V_SERVICE_NOTIFICATION_NAME>
+        display_notifications(
+            ["<TMPL_VAR NAME=V_SERVICE_NOTIFICATION_NAME>"], 
+            {
+                "startMessage": "<TMPL_VAR NAME=T_SERVICE_RESTARTING ESCAPE=HTML>",
+                "updateContent": ".service-switch-form", 
+                "type": "commit",
+                "endMessage": "<TMPL_VAR NAME=T_SERVICE_STARTED ESCAPE=HTML>",
+                "interval": "500"
+            }
+        );
+        </TMPL_IF>
+        
+        var sswitch = new ServiceSwitch(url='<TMPL_VAR NAME=P_SCRIPT_NAME>', status_description=SERVICE_STAT_DESCRIPTION, ajaxian_save=<TMPL_VAR NAME=V_SERVICE_AJAXIAN_SAVE>, partial_reload=<TMPL_VAR NAME=V_SERVICE_PARTIAL_RELOAD>, validate_enable=<TMPL_VAR NAME=V_SERVICE_VALIDATION>);
+        
+        <TMPL_IF NAME=V_SERVICE_AJAXIAN_SAVE>
+        $(".submitbutton").click(function() {
+            $('.service-switch-form').unbind('submit');
+        });
+        </TMPL_IF>
+    });
+</script>
+
+    <input type="hidden" class="service-status" name="SERVICE_STATUS" value="<TMPL_VAR NAME=V_SERVICE_STATUS>" />
+    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+            <td valign="top">
+                <div id="access-policy" class="service-switch">
+                    <div><span class="title"><TMPL_VAR NAME=T_SERVICE_TITLE></span>
+                        <span class="image"><img class="<TMPL_VAR NAME=V_SERVICE_STATUS>" align="absbottom" src="/images/switch-<TMPL_VAR NAME=V_SERVICE_STATUS>.png" alt="" border="0"/></span>
+                    </div>
+                    <div class="content">
+                        <div class="description <TMPL_IF NAME=V_SERVICE_ON>hidden</TMPL_IF>"><TMPL_VAR NAME=T_SERVICE_DESCRIPTION></div>
+                        <div class="spinner working"></div>
+                        <div class="options-container efw-form <TMPL_UNLESS NAME=V_SERVICE_ON>hidden</TMPL_UNLESS>">
+                            <TMPL_VAR NAME=H_OPTIONS_CONTAINER>
+                            <TMPL_VAR NAME=H_SAVE>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
