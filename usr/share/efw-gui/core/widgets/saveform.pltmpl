@@ -1,4 +1,0 @@
-<form enctype='multipart/form-data' class="service-switch-form" method='post' action='<TMPL_VAR NAME=P_SCRIPT_NAME>'>
-    <input type="hidden" name="ACTION" value="save" />
-    <TMPL_VAR NAME=H_FORM_CONTAINER>
-</form>

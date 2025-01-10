@@ -1,0 +1,192 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# +--------------------------------------------------------------------------+
+# | Endian Firewall                                                          |
+# +--------------------------------------------------------------------------+
+# | Copyright (c) 2004-2016 S.p.A. <info@endian.com>                         |
+# |         Endian S.p.A.                                                    |
+# |         via Pillhof 47                                                   |
+# |         39057 Appiano (BZ)                                               |
+# |         Italy                                                            |
+# |                                                                          |
+# | This program is free software; you can redistribute it and/or modify     |
+# | it under the terms of the GNU General Public License as published by     |
+# | the Free Software Foundation; either version 2 of the License, or        |
+# | (at your option) any later version.                                      |
+# |                                                                          |
+# | This program is distributed in the hope that it will be useful,          |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of           |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            |
+# | GNU General Public License for more details.                             |
+# |                                                                          |
+# | You should have received a copy of the GNU General Public License along  |
+# | with this program; if not, write to the Free Software Foundation, Inc.,  |
+# | 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.              |
+# +--------------------------------------------------------------------------+
+
+import sys
+from optparse import OptionParser
+
+OPENVPN_CONNECT_TRIGGERS = "/etc/openvpn/client-connect.d"
+OPENVPN_DISCONNECT_TRIGGERS = "/etc/openvpn/client-disconnect.d"
+
+
+class OpenVPNUserError(Exception):
+    pass
+
+
+class OpenVPNUser(object):
+
+    @classmethod
+    def do_action(cls, command, args, options):
+        do_action = getattr(cls, 'do_' + command, None)
+        if not do_action:
+            raise OpenVPNUserError("Invalid command:" + command)
+        return do_action(args, options)
+
+    @classmethod
+    def do_kill(cls, args, options):
+        from openvpnutils.remote import OVPNremote
+        username = args[1]
+        if OVPNremote().kill(username):
+            return 0
+        else:
+            return 1
+
+    @classmethod
+    def do_status(cls, args, options):
+        from openvpnutils.remote import OVPNremote
+        print OVPNremote().parsed_status()
+        return 0
+
+    @classmethod
+    def do_list(cls, args, options):
+        import openvpnutils
+        try:
+            entries = openvpnutils.getPasswdEntries()
+        except Exception, e:
+            raise OpenVPNUserError(e)
+        ll = entries.keys()
+        ll.sort()
+        for i in ll:
+            print i
+        return 0
+
+    @classmethod
+    def do_fakeconnect(cls, args, options):
+        # Simulate an user connection
+        from endian.job.engine_control import send_cmd_to_engine
+        from openvpnutils.status import OPENVPN_FAKE_STATUS_FILE
+        username = args[1]
+        dev = len(args) > 2 and args[2] or "tap0"
+        config_pathname = '/tmp/fakeconnect.%s' % username.replace('/', '_')
+        local = "169.254.%d.%d" % (hash(username) / 256 % 254, hash(username) % 254)
+        remote = "169.254.%d.%d" % ((hash(username) / 256 + 1) % 254, (hash(username) + 1) % 254)
+        remote_port = hash(username) % 65535 + 1
+        print send_cmd_to_engine(
+            "call openvpnjob.client_connect",
+            options={
+                'config_pathname': config_pathname,
+                'common_name': username,
+                'local': local,
+                'remote': remote,
+                'remote_port': remote_port,
+                'dev': dev
+            })
+        # Add the user to the list of the fake connected user
+        f = None
+        try:
+            f = open(OPENVPN_FAKE_STATUS_FILE, "r+")
+            for line in f:
+                line = line.strip()
+                try:
+                    pair = line.split(",")
+                    if username == pair[0].strip():  # already connected
+                        return
+                except Exception, ex:
+                    print ex
+                    continue
+        except IOError, ex:
+            pass
+        if f is None:
+            f = open(OPENVPN_FAKE_STATUS_FILE, "w+")
+        f.write("%s\n" % username)
+        if f is not None:
+            f.close()
+        return 0
+
+    @classmethod
+    def do_fakedisconnect(cls, args, options):
+        # Simulate an user connection
+        from endian.job.engine_control import send_cmd_to_engine
+        from openvpnutils.status import OPENVPN_FAKE_STATUS_FILE
+        username = args[1]
+        dev = len(args) > 2 and args[2] or "tap0"
+        local = "169.254.%d.%d" % (hash(username) / 256 % 254, hash(username) % 254)
+        remote = "169.254.%d.%d" % ((hash(username) / 256 + 1) % 254, (hash(username) + 1) % 254)
+        remote_port = hash(username) % 65535 + 1
+        print send_cmd_to_engine("call openvpnjob.client_disconnect",
+                                 options={'common_name': username,
+                                          'local': local,
+                                          'remote': remote,
+                                          'remote_port': remote_port,
+                                          'dev': dev})
+        # Remove the user from the list of the fake connected user
+        try:
+            f = open(OPENVPN_FAKE_STATUS_FILE, "r")
+            lines = f.readlines()
+            f.close()
+            lines = [x for x in lines if x != username or not x.startswith("%s," % username)]
+            f = open(OPENVPN_FAKE_STATUS_FILE, "w")
+            for line in lines:
+                if line.strip() != username and not line.startswith("%s," % username):
+                    f.write(line)
+            f.close()
+        except IOError:
+            pass
+        return 0
+
+
+def opthandler():
+    usage = """%prog [options] <command> [user]
+
+Commands:
+    list:        List users
+    status:      Display current openvpn status
+    kill <USER>: Kill user USER
+
+Debug Commands:
+    fakeconnect <USER> [DEV]: Simulate an user connection
+    fakedisconnect <USER>:    Simulate an user disconnection"""
+    parser = OptionParser(usage)
+
+    parser.add_option("-d", "--debug", dest="debug",
+                      action="store_true",
+                      help="be more verbose", default=False)
+
+    (options, args) = parser.parse_args()
+
+    command = ''
+    if len(args) == 0:
+        parser.error("Need to specify a command")
+        sys.exit(1)
+
+    command = args[0]
+    if command in ['kill', 'fakeconnect', 'fakedisconnect']:
+        if len(args) < 2:
+            parser.error("Username required")
+            sys.exit(1)
+
+    return (command, args, options)
+
+
+def main():
+    try:
+        (command, args, options) = opthandler()
+        return OpenVPNUser.do_action(command, args, options)
+    except OpenVPNUserError, ex:
+        print "ERROR: ", ex
+        return 1
+
+if __name__ == "__main__":
+    sys.exit(main())

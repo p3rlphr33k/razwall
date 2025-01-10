@@ -1,0 +1,4 @@
+on,,208.67.222.222,UPLINK:main,DNS of Uplink main,,udp&tcp,53,,off,,off
+on,,208.67.220.220,UPLINK:main,DNS of Uplink main,,udp&tcp,53,,off,,off
+on,,208.67.222.222,UPLINK:uplink1,DNS of Uplink uplink1,,udp&tcp,53,,off,,off
+on,,208.67.220.220,UPLINK:uplink1,DNS of Uplink uplink1,,udp&tcp,53,,off,,off

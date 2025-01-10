@@ -1,0 +1,140 @@
+#def rule(islog=False, isAppMark=False, invertDirection=False, proxy=False)
+  #set chain="OUTGOINGFW"
+  #if $proxy
+    #set chain="PROXYOUTGOINGFW"
+  #end if
+  #if $onlychain != '' and $onlychain != $chain:
+    #return
+  #end if
+iptables -t filter -A $chain #slurp
+  #if not $invertDirection
+    #set Fsrc_range="src-range"
+    #set Fs="s"
+    #set Fdst_range="dst-range"
+    #set Fd="d"
+    #set Fdport="dport"
+    #set Fdirection="dst"
+    #set Fi="i"
+    #set Fo="o"
+    #set Fphysdev_in="physdev-in"
+    #set Fphysdev_out="physdev-out"
+    #set Fout_physdev_is_bridged="--physdev-is-bridged"
+    #set Fin_physdev_is_bridged=""
+  #else
+    #set Fsrc_range="dst-range"
+    #set Fs="d"
+    #set Fdst_range="src-range"
+    #set Fd="s"
+    #set Fdport="sport"
+    #set Fdirection="src"
+    #set Fi="o"
+    #set Fo="i"
+    #set Fphysdev_in="physdev-out"
+    #set Fphysdev_out="physdev-in"
+    #set Fout_physdev_is_bridged=""
+    #set Fin_physdev_is_bridged="--physdev-is-bridged"
+  #end if
+  #if $src_set
+-m set --match-set $src_set src #slurp
+  #else if $src_ip != ''
+-$Fs $src_ip #slurp
+  #end if
+  #if not $proxy
+    #if $physdev_in or $physdev_out
+-m physdev #slurp
+    #end if
+    #if $src_dev != ''
+      #if $physdev_in
+--$Fphysdev_in $src_dev $Fin_physdev_is_bridged #slurp
+      #else
+-$Fi $src_dev #slurp
+      #end if
+    #end if
+  #end if
+  #if $dst_set
+-m set --match-set $dst_set dst #slurp
+  #else if $dst_ip != ''
+-$Fd $dst_ip #slurp
+  #end if
+  #if not $proxy
+    #if $dst_dev != ''
+      #if $physdev_out
+--$Fphysdev_out $dst_dev $Fout_physdev_is_bridged #slurp
+      #else
+-$Fo $dst_dev #slurp
+      #end if
+    #end if
+  #end if
+  #if $proto != ''
+-p $proto #slurp
+    #if $proto == 'icmp'
+-m hashlimit --hashlimit 3/second --hashlimit-mode srcip,dstip --hashlimit-name outicmp #slurp
+      #if $dst_port != '':
+--icmp-type $dst_port #slurp
+      #end if
+    #else if $proto == 'tcp' or $proto == 'udp'
+      #if $dst_port_set
+-m set --match-set $dst_port_set $Fdirection #slurp
+      #else if $dst_port != '':
+--$Fdport $dst_port #slurp
+      #end if
+    #end if
+  #end if
+  #if $mac:
+-m mac --mac-source $mac #slurp
+  #end if
+  #if $invertDirection
+-m state --state ESTABLISHED,RELATED #slurp
+  #end if
+  #if $app
+    #if $app.startswith("!")
+-m connlabel ! --label $app[1:] #slurp
+    #else
+-m connlabel --label $app #slurp
+    #end if
+  #else
+    #if $useApplication
+-m connlabel --label NDPI-OVER #slurp
+    #end if
+  #end if
+  #if $islog
+-j NFLOG --nflog-prefix 'OUTGOINGFW:$target:$i' #slurp
+  #else if $isAppMark
+    #set appmark = $applicationAcceptMark
+    #if $target == 'REJECT'
+      #set appmark = $applicationRejectMark
+    #else if $target == 'DROP'
+      #set appmark = $applicationDropMark
+    #else if $deferred
+      #set appmark = $applicationDeferredMark
+    #end if
+-j CONNMARK --set-mark $appmark/$applicationMask #slurp
+  #else
+-j $target #slurp
+  #end if
+#end def
+#if $useApplication
+$rule(isAppMark=True, invertDirection=True)
+$rule(isAppMark=True, invertDirection=True, proxy=True)
+  #if $log and not $deferred
+$rule(islog=$log, invertDirection=True)
+$rule(islog=$log, invertDirection=True, proxy=True)
+  #end if
+$rule(invertDirection=True)
+$rule(invertDirection=True, proxy=True)
+$rule(isAppMark=True, invertDirection=False)
+$rule(isAppMark=True, invertDirection=False, proxy=True)
+#end if
+#if $log and not $deferred
+$rule(islog=$log)
+$rule(islog=$log, proxy=True)
+#end if
+$rule()
+#if $app !='' or $useApplication
+$rule(proxy=True)
+#end if
+#try
+#include "/var/efw/outgoing/rules.custom.tmpl"
+#except
+#pass
+#end try

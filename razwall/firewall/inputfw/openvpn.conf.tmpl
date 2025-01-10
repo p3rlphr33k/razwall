@@ -1,0 +1,7 @@
+#if $ENABLED
+  #for server in $SERVERS
+    #if $SERVERS[$server].enabled
+$SERVERS[$server].openvpn_protocol,,$SERVERS[$server].openvpn_port,on,,ANY,off,OPENVPN,ACCEPT,,
+    #end if
+  #end for
+#end if

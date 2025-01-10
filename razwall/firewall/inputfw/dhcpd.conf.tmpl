@@ -1,0 +1,6 @@
+#if $ENABLED
+tcp&udp,,67,on,,GREEN&BLUE&ORANGE&VPN:ANY,off,DHCP,ACCEPT,,
+#end if
+#if $HA_ENABLED == 'on'
+tcp,,519,on,,$HA_MANAGEMENT_PORT,off,DHCP FAILOVER PROTOCOL,ACCEPT,,
+#end if

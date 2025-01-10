@@ -1,0 +1,51 @@
+#def accessRule(islog=False)
+iptables -t filter -A INCOMINGFW #slurp
+  #if $src_range or $dst_range
+-m iprange #slurp
+  #end if
+  #if $src_ip != ''
+    #if $src_range
+--src-range $src_ip #slurp
+    #else
+-s $src_ip #slurp
+    #end if
+  #end if
+-i $src_dev #slurp
+  #if $dst_ip != ''
+    #if $dst_range
+--dst-range $dst_ip #slurp
+    #else
+-d $dst_ip #slurp
+    #end if
+  #end if
+  #if $dst_dev != ''
+-o $dst_dev #slurp
+  #end if
+  #if $proto != ''
+-p $proto #slurp
+    #if $proto == 'icmp'
+-m hashlimit --hashlimit 3/second --hashlimit-mode srcip,dstip --hashlimit-name xticmp #slurp
+      #if $dst_port != '':
+--icmp-type $dst_port #slurp
+      #end if
+    #else if $proto == 'tcp' or $proto == 'udp'
+      #if $dst_port != '':
+--dport $dst_port #slurp
+      #end if
+    #end if
+  #end if
+  #if $islog
+-j NFLOG --nflog-prefix 'INCOMINGFW:$target:$i' #slurp
+  #else
+-j $target #slurp
+  #end if
+#end def
+  #if $log
+$accessRule($log)
+  #end if
+$accessRule()
+#try
+#include "/var/efw/incoming/rules.custom.tmpl"
+#except
+#pass
+#end try

@@ -1,0 +1,65 @@
+#def rule()
+iptables -t filter -A QUEUEFW #slurp
+  #if $src_range or $dst_range
+-m iprange #slurp
+  #end if
+  #if $src_ip != ''
+    #if $src_range
+--src-range $src_ip #slurp
+    #else
+-s $src_ip #slurp
+    #end if
+  #end if
+  #if $physdev_in
+-m physdev #slurp
+  #end if
+  #if $src_dev != ''
+    #if $physdev_in
+--physdev-in $src_dev #slurp
+    #else
+-i $src_dev #slurp
+    #end if
+  #end if
+  #if $dst_ip != ''
+    #if $dst_range
+--dst-range $dst_ip #slurp
+    #else
+-d $dst_ip #slurp
+    #end if
+  #end if
+  #if $dst_dev != ''
+-o $dst_dev #slurp
+  #end if
+  #if $proto != ''
+-p $proto #slurp
+    #if $proto == 'icmp'
+-m hashlimit --hashlimit 3/second --hashlimit-mode srcip,dstip --hashlimit-name outicmp #slurp
+      #if $dst_port != '':
+--icmp-type $dst_port #slurp
+      #end if
+    #else if $proto == 'tcp' or $proto == 'udp'
+      #if $dst_port != '':
+--dport $dst_port #slurp
+      #end if
+    #end if
+  #end if
+  #if $mac:
+-m mac --mac-source $mac #slurp
+  #end if
+#end def
+#if $target in ['NFQUEUE', 'QUEUE']
+  #set queuemark=0x4
+  #if $target == 'NFQUEUE'
+      #set queuemark=int($queue_num) * 4
+  #end if
+$rule() -j CONNMARK --set-mark $queuemark/0x4
+#end if
+$rule() -j $target #slurp
+#if $target == 'NFQUEUE'
+--queue-num $queue_num #slurp
+#end if
+#try
+#include "/var/efw/queuefw/rules.custom.tmpl"
+#except
+#pass
+#end try

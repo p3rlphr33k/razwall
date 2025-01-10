@@ -1,0 +1,14 @@
+#if $PROXY_ENABLED == 'on'
+#for $zone in $ZONES.keys()
+#if $getVar($zone.upper() + '_ENABLED') == 'inactive'
+    #continue
+#end if
+tcp,,$PROXY_PORT,on,,#if $zone.upper() == "GREEN" then "GREEN&VPN:ANY" else $zone.upper()#,off,HTTP,ACCEPT,,
+#end for
+    #for $rule in $TRANSPARENT_RULES
+tcp,,18080,on,,$rule.upper(),off,HTTP transparent,ACCEPT,,
+        #if $HTTPS_MODE != 'disabled'
+tcp,,18081,on,,$rule.upper(),off,HTTPS transparent,ACCEPT,,
+        #end if
+    #end for
+#end if

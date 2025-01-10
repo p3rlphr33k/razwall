@@ -30,13 +30,17 @@ eval {
     $l2tp = 1;
 };
 
+# Configuration paths setdnat.cgi
+#$reload_flag = "/razwall/config/dnat/needreload"; # Path to the reload flag
+#$config_file = '/razwall/config/dnat/config';
+#$output_file = '/razwall/firewall/dnat/iptablesdnat';
+
 my $configfile = "${swroot}/dnat/config";
-my $configfile_default = "/usr/lib/efw/dnat/config.default";
-my $provisioningfile = "/var/emc/dnat/config";
+my $configfile_default = "/razwall/settings/dnat/config.default";
 my $ethernet_settings = "${swroot}/ethernet/settings";
-my $setdnat = "/usr/local/bin/setdnat";
+my $setdnat = "/razwall/web/cgi-bin/setdnat.cgi";
 my $openvpn_passwd   = '/usr/bin/openvpn-sudo-user';
-my $confdir = '/etc/firewall/dnat/';
+my $confdir = '/razwall/firewall/dnat/';
 my $needreload = "${swroot}/dnat/needreload";
 
 my $ALLOW_PNG = '/images/firewall_accept.png';
@@ -62,7 +66,7 @@ my $reload = 0;
 
 my $devices, $deviceshash = 0;
 
-my $services_file = '/usr/lib/efw/dnat/services';
+my $services_file = '/razwall/settings/dnat/services';
 my $services_custom_file = '/razwall/config/dnat/services.custom';
 
 &readhash($ethernet_settings, \%ether);
@@ -686,9 +690,6 @@ sub getConfigFiles($) {
     my @arr = ();
     foreach my $f (glob("${dir}/*.conf")) {
     push(@arr, $f);
-    }
-    if (-e $provisioningfile) { 
-    push(@arr, $provisioningfile);
     }
     return \@arr;
 }

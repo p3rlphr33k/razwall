@@ -1,0 +1,8 @@
+#if $CLIENTS
+    #for $client in $CLIENTS
+        #if $client.ENABLED == 'on' and $client.BLOCKDHCP == 'on'
+on,udp,,,67&68,REJECT,,Block DHCP tunnel $client.NAME,,,VPN:$client.NAME
+on,udp,,,67&68,REJECT,,Block DHCP tunnel $client.NAME,,VPN:$client.NAME,
+        #end if
+    #end for
+#end if

@@ -1,0 +1,25 @@
+iptables -t nat -F PROXIES
+iptables -t nat -A PROXIES -s 0/0 -d 75.125.225.163/32 -p tcp --dport 443 -i br2  -j DNAT --to-destination 192.168.15.1:30443
+iptables -t nat -A PROXIES -s 0/0 -d 75.125.225.163/32 -p udp -i br2  -j DNAT --to-destination 192.168.15.1:30080
+iptables -t nat -A PROXIES -s 0/0 -d 75.125.225.163/32 -p tcp -i br2  -j DNAT --to-destination 192.168.15.1:30080
+iptables -t nat -A PROXIES -s 0/0 -d 75.125.225.163/32 -p tcp --dport 443 -m physdev --physdev-in eth0.600  -j DNAT --to-destination 192.168.15.1:30443
+iptables -t nat -A PROXIES -s 0/0 -d 75.125.225.163/32 -p udp -m physdev --physdev-in eth0.600  -j DNAT --to-destination 192.168.15.1:30080
+iptables -t nat -A PROXIES -s 0/0 -d 75.125.225.163/32 -p tcp -m physdev --physdev-in eth0.600  -j DNAT --to-destination 192.168.15.1:30080
+iptables -t nat -A PROXIES -s 0/0 -d 75.125.225.163/32 -p tcp --dport 443 -i br1  -j DNAT --to-destination 192.168.40.1:30443
+iptables -t nat -A PROXIES -s 0/0 -d 75.125.225.163/32 -p udp -i br1  -j DNAT --to-destination 192.168.40.1:30080
+iptables -t nat -A PROXIES -s 0/0 -d 75.125.225.163/32 -p tcp -i br1  -j DNAT --to-destination 192.168.40.1:30080
+iptables -t nat -A PROXIES -s 0/0 -d 75.125.225.163/32 -p tcp --dport 443 -m physdev --physdev-in eth1.500  -j DNAT --to-destination 192.168.40.1:30443
+iptables -t nat -A PROXIES -s 0/0 -d 75.125.225.163/32 -p tcp --dport 443 -m physdev --physdev-in eth1.200  -j DNAT --to-destination 192.168.40.1:30443
+iptables -t nat -A PROXIES -s 0/0 -d 75.125.225.163/32 -p udp -m physdev --physdev-in eth1.500  -j DNAT --to-destination 192.168.40.1:30080
+iptables -t nat -A PROXIES -s 0/0 -d 75.125.225.163/32 -p tcp -m physdev --physdev-in eth1.500  -j DNAT --to-destination 192.168.40.1:30080
+iptables -t nat -A PROXIES -s 0/0 -d 75.125.225.163/32 -p udp -m physdev --physdev-in eth1.200  -j DNAT --to-destination 192.168.40.1:30080
+iptables -t nat -A PROXIES -s 0/0 -d 75.125.225.163/32 -p tcp -m physdev --physdev-in eth1.200  -j DNAT --to-destination 192.168.40.1:30080
+iptables -t nat -A PROXIES -s 0/0 -d 75.125.225.163/32 -p tcp --dport 443 -i br0  -j DNAT --to-destination 192.168.19.1:30443
+iptables -t nat -A PROXIES -s 0/0 -d 75.125.225.163/32 -p udp -i br0  -j DNAT --to-destination 192.168.19.1:30080
+iptables -t nat -A PROXIES -s 0/0 -d 75.125.225.163/32 -p tcp -i br0  -j DNAT --to-destination 192.168.19.1:30080
+iptables -t nat -A PROXIES -s 0/0 -d 75.125.225.163/32 -p tcp --dport 443 -m physdev --physdev-in eth0.700  -j DNAT --to-destination 192.168.19.1:30443
+iptables -t nat -A PROXIES -s 0/0 -d 75.125.225.163/32 -p tcp --dport 443 -m physdev --physdev-in eth0.1  -j DNAT --to-destination 192.168.19.1:30443
+iptables -t nat -A PROXIES -s 0/0 -d 75.125.225.163/32 -p udp -m physdev --physdev-in eth0.700  -j DNAT --to-destination 192.168.19.1:30080
+iptables -t nat -A PROXIES -s 0/0 -d 75.125.225.163/32 -p tcp -m physdev --physdev-in eth0.700  -j DNAT --to-destination 192.168.19.1:30080
+iptables -t nat -A PROXIES -s 0/0 -d 75.125.225.163/32 -p udp -m physdev --physdev-in eth0.1  -j DNAT --to-destination 192.168.19.1:30080
+iptables -t nat -A PROXIES -s 0/0 -d 75.125.225.163/32 -p tcp -m physdev --physdev-in eth0.1  -j DNAT --to-destination 192.168.19.1:30080

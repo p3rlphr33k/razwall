@@ -1,0 +1,28 @@
+#if $PROXY_ENABLED == 'on'
+  #for $rule in $TRANSPARENT_RULES
+    #if $rule != ""
+      #set target = $rule
+      #if $rule == "VPN:ANY"
+      #set target = "GREEN"
+      #end if
+on,tcp,80,,,,$rule,DNAT,$target,18080,redirection,$LOG_FIREWALL,HTTP-PROXY
+      #if $HTTPS_MODE != 'disabled'
+on,tcp,443,,,,$rule,DNAT,$target,18081,redirection,$LOG_FIREWALL,HTTP-PROXY
+      #end if
+      #if $rule != "VPN:ANY"
+on,tcp,80,,,,ZONEMEMBERS:$rule,DNAT,$rule,18080,redirection,$LOG_FIREWALL,HTTP-PROXY
+      #if $HTTPS_MODE != 'disabled'
+on,tcp,443,,,,ZONEMEMBERS:$rule,DNAT,$rule,18081,redirection,$LOG_FIREWALL,HTTP-PROXY
+      #end if
+      #end if
+    #end if
+  #end for
+  #if $TRANSPARENT_RULES != []
+    #for $bypass in $BYPASSRULES
+on,tcp,80,$bypass.SRC,$bypass.DST,$bypass.MAC,,RETURN,,,bypass,,
+    #if $HTTPS_MODE != 'disabled'
+on,tcp,443,$bypass.SRC,$bypass.DST,$bypass.MAC,,RETURN,,,bypass,,
+    #end if
+    #end for
+  #end if
+#end if

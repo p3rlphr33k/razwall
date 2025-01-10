@@ -1,0 +1,9 @@
+#if $SMTPSCAN_ENABLED == 'on'
+#if $DOMAIN_ROUTING != ''
+#for $val in $DOMAIN_ROUTING
+#if $val.smtp_bind_address != ''
+on,tcp,$val.smtp_bind_address,,$val.smarthost_port,$val.smtp_bind_uplink,RETURN,,,
+#end if
+#end for
+#end if
+#end if

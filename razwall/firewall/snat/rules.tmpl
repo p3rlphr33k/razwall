@@ -1,0 +1,84 @@
+#*
+
+
+# creates generic iptables string options
+
+*#
+#def iptables
+-t nat -A SOURCENAT #slurp
+  #if $src_ip == ''
+-s 0/0 #slurp
+  #else
+-s $src_ip #slurp
+  #end if
+  #if $dst_ip == ''
+-d 0/0 #slurp
+  #else
+-d $dst_ip #slurp
+  #end if
+#*
+
+
+*#
+  #if $proto != ''
+-p $proto #slurp
+    #if $proto == 'tcp' or $proto == 'udp'
+      #if $dst_port != ''
+--dport $dst_port #slurp
+      #end if
+    #end if
+  #end if
+  #if $ipsecout
+-m policy --dir out --pol ipsec #slurp
+  #end if
+  #if $physdev_out
+-m physdev #slurp
+  #end if
+  #if $dst_dev
+    #if $physdev_out
+--physdev-out $dst_dev #slurp
+    #else
+-o $dst_dev #slurp
+    #end if
+  #elif $target != 'NETMAP'
+    #if $snat_to != ''
+-o $getInterfaceByAddress($snat_to) #slurp
+    #else
+-o $getExitingInterface($dst_ip) #slurp
+    #end if
+  #end if
+#end def
+#*
+
+
+# RULE
+
+*#
+iptables $iptables #slurp
+#if $target == 'DYNAMIC'
+  #if $dst_dev != ''
+    #set target = $getTargetByDevice($dst_dev)
+  #end if
+#end if
+#if $target == 'SNAT'
+  #if $snat_to != ''
+-j SNAT --to-source $snat_to
+  #else
+    #if $dst_dev != ''
+-j SNAT --to-source $getAddressByInterface($dst_dev)
+    #else
+-j SNAT --to-source $getAddressOfExitingInterface($dst_ip)
+    #end if
+  #end if
+#else if $target == 'NETMAP'
+-j NETMAP --to $snat_to
+#else if $target == 'MASQUERADE'
+-j MASQUERADE
+#else
+-j RETURN
+#end if
+#try
+#include "/var/efw/snat/rules.custom.tmpl"
+#except
+#pass
+#end try

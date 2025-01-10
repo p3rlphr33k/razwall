@@ -1,0 +1,39 @@
+#if $OPENVPN_ENABLED == 'on'
+#for core in $CORES
+#if $core['bridged']
+  #if not $core['enabled']
+      #continue
+  #end if
+  #set bridged_to = $core['bridge_to']
+  #set vpnbridge = $ZONES[$bridged_to].settings.dev
+  #for zone in $ZONES
+    #if $zone.upper() == $bridged_to
+      #continue
+    #end if
+    #set device = $ZONES[$zone].settings.dev
+##
+## traffic coming from other zones than the zone to which openvpn is bridged
+## and going to the openvpn server
+##
+iptables -A VPNFWBRIDGE -j VPNFWDST -i $device -o $vpnbridge
+##
+##
+## zonetraffic which mark's packets in mangle table need to exclude
+## vpn firewall subnets
+##
+iptables -t mangle -A VPNFWBRIDGE -j VPNFWDST -i $device -o $vpnbridge
+  #end for
+##
+##
+##
+## zonetraffic which mark's packets in mangle table need to also explicitely exclude
+## *bridged* traffic to vpn firewall subnets. This is not necessary in filter table
+## since there is an explicit rule which directs bridged vpn traffic to VPNFW.
+## within mangle table there's nothing which stops vpn traffic from further rules
+## processing, so traffic from vpn bridge to tap+ would be classified as zone traffic
+## without this rule.
+##
+iptables -t mangle -I VPNFWBRIDGE -i $vpnbridge -o $vpnbridge -j VPNFWDST
+#end if
+#end for
+#end if

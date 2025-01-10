@@ -1,0 +1,172 @@
+#def formatHex(value)
+$str($hex($long($value))).rstrip("L")#slurp
+#end def
+## local variable calculation
+#if $physdev_out
+#set mark = $getNextMark($iptables)
+#set checkmark = $formatHex($mark)
+#set setmark = $formatHex($mark | $PHYSDEV_ENABLE_BIT)
+#end if
+#*
+
+
+
+# creates generic iptables string options
+
+*#
+#def iptables
+-A ZONEFW #slurp
+  #if $src_ip == '0.0.0.0' or $src_ip == ''
+-s 0/0 #slurp
+  #else
+-s $src_ip #slurp
+  #end if
+  #if $dst_ip == '0.0.0.0' or $dst_ip == ''
+-d 0/0 #slurp
+  #else
+-d $dst_ip #slurp
+  #end if
+#*
+
+
+*#
+  #if $proto != ''
+-p $proto #slurp
+    #if $proto == 'icmp'
+-m hashlimit --hashlimit 3/second --hashlimit-mode srcip,dstip --hashlimit-name zonefwicmp #slurp
+      #if $dst_port != '':
+--icmp-type $dst_port #slurp
+      #end if
+    #else if $proto == 'tcp' or $proto == 'udp'
+      #if $dst_port != ''
+--dport $dst_port #slurp
+      #end if
+    #end if
+  #end if
+  #if $mac:
+-m mac --mac-source $mac #slurp
+  #end if
+  #if $physdev_in
+-m physdev #slurp
+  #end if
+  #if $src_dev
+    #if $physdev_in
+--physdev-in $src_dev #slurp
+    #else
+-i $src_dev #slurp
+    #end if
+  #end if
+#end def
+#*
+
+
+# calculates outgoing device
+
+*#
+#def outdev
+  #if $dst_dev and not $physdev_out
+-o $dst_dev #slurp
+  #end if
+#end def
+#*
+
+
+# ebtables rules, when physdev-out
+
+*#
+#if $proto != 'ether'
+  #if $physdev_out
+    #if $log
+ebtables -t nat -A ZONEFW --out-if $dst_dev --mark ${checkmark}/$formatHex($PHYSDEV_MARK) --nflog-prefix 'ZONEFW:${logtarget}:${i}:l2'
+    #end if
+ebtables -t nat -A ZONEFW -j $target --out-if $dst_dev --mark ${checkmark}/$formatHex($PHYSDEV_MARK)
+  #end if
+#*
+
+
+# LOG
+
+*#
+  #if $log and not $physdev_out
+iptables $iptables $outdev -j NFLOG --nflog-prefix 'ZONEFW:${logtarget}:${i}:l3'
+  #end if
+#*
+
+
+# RULE
+
+*#
+  #if $physdev_out
+iptables -t mangle $iptables -o $getBridgeByInterface($dst_dev) -m mark --mark 0/$formatHex($PHYSDEV_MARK) -j MARK --or-mark ${setmark}
+iptables $iptables -o $getBridgeByInterface($dst_dev) -j ACCEPT
+  #else
+#*
+
+
+        #
+        # The following lines prevent a subtile firewall block, which
+        # otherwise would exist, when we have the following situation:
+        #
+        # Following case:
+        # Rule A, defines an ACCEPT out to a bridge device br0.
+        # Rule B, defines a DROP out to a physdev eth0 joined to br0.
+        #
+        # Rule A: Due to no physdev-out, Rule A is a simple rule,
+        # which allows the traffic. The Rule will be active in FORWARD
+        # chain in filter table. (AFTER mangle, BEFORE ebtables)
+        #
+        # Rule B: Due to physdev-out, Rule B explodes into a
+        # mark rule for br0 and an ebtables rule for the mark and
+        # eth0.
+        #
+        # The problem:
+        # o Rule B in mangle table matches before Rule A
+        #   in filter table, thus that connection will be marked to
+        #   be filtered in ebtables.
+        # o Rule A will be passed in filter table, which ACCEPTS
+        #   the connection
+        # o BUT Rule B in ebtables DROPS the connection due to
+        #   the mark and due to the fact that Rule A in filter will not
+        #   hinder Rule B in ebtables.
+
+
+*#
+iptables -t mangle $iptables -j ACCEPT #slurp
+    #if $dst_dev != ''
+ -o $dst_dev
+    #else
+
+    #end if
+iptables $iptables $outdev -j $target
+  #end if
+#else
+#*
+
+  This blocks ethernet traffic through the bridge
+
+*#
+ebtables -A ZONEFW #slurp
+  #if $mac:
+-s $mac #slurp
+  #end if
+  #if $src_dev
+    #if $physdev_in
+-i $src_dev #slurp
+    #else
+--logical-in $src_dev #slurp
+    #end if
+  #end if
+  #if $dst_dev
+    #if $physdev_out
+-o $dst_dev #slurp
+    #else
+--logical-out $dst_dev #slurp
+    #end if
+  #end if
+-j $target
+#end if
+#try
+#include "/var/efw/zonefw/rules.custom.tmpl"
+#except
+#pass
+#end try

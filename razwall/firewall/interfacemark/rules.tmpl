@@ -1,0 +1,37 @@
+#def formatHex(value)
+$str($hex($long($value))).rstrip("L")#slurp
+#end def
+#*
+
+
+
+# creates generic iptables string options
+
+*#
+#def iptables
+! -i $src_dev #slurp
+-m connmark --mark $src_dev_mark #slurp
+#end def
+#*
+
+
+# Set interface mark on requesting packets
+
+*#
+iptables -t mangle -A MARKIIF -i $src_dev -j CONNMARK --set-mark $src_dev_mark
+#*
+
+
+# Erase policy routing marks when it is a response
+
+*#
+iptables -t mangle -A CHECKIIF $iptables -j MARK --and-mark $formatHex($ERASE_MARK)
+#*
+
+
+# Set routing mark for the correct outgoing interface if this is a response
+
+*#
+#if $dst_dev_mark != "0"
+iptables -t mangle -A CHECKIIF $iptables -j MARK --or-mark $formatHex($dst_dev_mark)
+#end if

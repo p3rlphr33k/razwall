@@ -1,0 +1,17 @@
+#if $SMTPSCAN_ENABLED == "on"
+  #set transparent = False
+  #if $TRANSPARENT_ZONES != ''
+  #for $zone in $TRANSPARENT_ZONES
+    #set transparent = True
+on,tcp,25&587,,,,$zone#if $zone == "GREEN" then "&VPN:ANY" else ""#,DNAT,$zone,25,redirection,$LOG_FIREWALL,SMTP-PROXY
+on,tcp,25&587,,,,ZONEMEMBERS:$zone,DNAT,$zone,25,redirection,$LOG_FIREWALL,SMTP-PROXY
+  #end for
+  #end if
+  #if $transparent
+    #if $BYPASSRULES != ''
+    #for $bypass in $BYPASSRULES
+on,tcp,25&587,$bypass.SRC,$bypass.DST,$bypass.MAC,,RETURN,,,bypass,,
+    #end for
+    #end if
+  #end if
+#end if

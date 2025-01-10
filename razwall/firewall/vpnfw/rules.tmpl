@@ -1,0 +1,136 @@
+#*
+
+
+
+# creates generic iptables string options
+
+*#
+#def iptables
+-A VPNFW #slurp
+  #if $src_set
+-m set --match-set $src_set src #slurp
+  #elif $src_ip == '0.0.0.0' or $src_ip == ''
+-s 0/0 #slurp
+  #else
+-s $src_ip #slurp
+  #end if
+  #if $dst_set
+-m set --match-set $dst_set dst #slurp
+  #elif $dst_ip == '0.0.0.0' or $dst_ip == ''
+-d 0/0 #slurp
+  #else
+-d $dst_ip #slurp
+  #end if
+#*
+
+
+*#
+  #if $proto != ''
+-p $proto #slurp
+    #if $proto == 'icmp'
+-m hashlimit --hashlimit 3/second --hashlimit-mode srcip,dstip --hashlimit-name zonefwicmp #slurp
+      #if $dst_port != '':
+--icmp-type $dst_port #slurp
+      #end if
+    #else if $proto == 'tcp' or $proto == 'udp'
+      #if $dst_port != ''
+--dport $dst_port #slurp
+      #end if
+    #end if
+  #end if
+  #if $mac:
+-m mac --mac-source $mac #slurp
+  #end if
+  #if $physdev_in or $physdev_out
+-m physdev #slurp
+  #end if
+  #if $src_dev
+    #if $physdev_in
+--physdev-in $src_dev #slurp
+    #else
+-i $src_dev #slurp
+    #end if
+  #end if
+  #if $dst_dev
+    #if $physdev_out
+--physdev-is-bridged --physdev-out $dst_dev #slurp
+    #else
+-o $dst_dev #slurp
+    #end if
+  #end if
+  #if $ipsecin
+-m policy --dir in --pol ipsec #slurp
+  #end if
+  #if $ipsecout
+-m policy --dir out --pol ipsec #slurp
+  #end if
+#end def
+#*
+
+
+ebtables def
+
+*#
+#def ebtables
+-A VPNFW #slurp
+  #if $mac:
+-s $mac #slurp
+  #end if
+  #if $src_dev
+    #if $physdev_in
+-i $src_dev #slurp
+    #else
+--logical-in $src_dev #slurp
+    #end if
+  #end if
+  #if $dst_dev
+    #if $physdev_out
+-o $dst_dev #slurp
+    #else
+--logical-out $dst_dev #slurp
+    #end if
+  #end if
+  #if $proto != '' and $proto != 'ether'
+-p ipv4 --ip-protocol $proto #slurp
+    #if $src_ip and $src_ip != '0/0'
+--ip-source $src_ip #slurp
+    #end if
+    #if $dst_ip and $dst_ip != '0/0'
+--ip-destination $dst_ip #slurp
+    #end if
+    #if $proto == 'tcp' or $proto == 'udp'
+      #if $dst_port
+--ip-destination-port $dst_port #slurp
+      #end if
+    #end if
+  #end if
+#end def
+#*
+
+
+# RULE
+
+*#
+#if $proto != 'ether' and not $bridge
+  #if not ($ipsecin and $ipsecout)
+    #if $log
+iptables $iptables -j NFLOG --nflog-prefix 'VPNFW:${logtarget}:${i}:l3'
+    #end if
+iptables $iptables -j $target
+  #end if
+#else
+#*
+
+  This blocks ethernet traffic through the bridge
+
+*#
+  #if $log
+ebtables $ebtables --nflog-prefix 'VPNFW:${logtarget}:${i}:l2'
+  #end if
+ebtables $ebtables -j $target
+#end if
+#try
+#include "/var/efw/vpnfw/rules.custom.tmpl"
+#except
+#pass
+#end try
