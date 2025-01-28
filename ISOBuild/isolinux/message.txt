@@ -1,0 +1,15 @@
+
+Welcome to RazWall Firewall!
+
+Built on Slaclware 15
+
+Linux kernel 5.15.19
+
+If you need to pass extra parameters to the kernel, enter them at the prompt
+below after the name of the kernel to boot.
+
+Example:	huge.s root=/dev/sda1 initrd= ro 
+
+Press ENTER to boot the default kernel or press [F2] for a listing of 
+more kernel choices. Default kernel will boot in 2 minutes.
+

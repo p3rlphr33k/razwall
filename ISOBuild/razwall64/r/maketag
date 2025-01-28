@@ -1,0 +1,183 @@
+#!/bin/sh
+#item   ####description                                      ###on off ###
+TMP=/var/log/setup/tmp
+if [ ! -d $TMP ]; then
+  mkdir -p $TMP
+fi
+cat /dev/null > $TMP/SeTnewtag
+dialog --title "SELECTING PACKAGES FROM SERIES D (PROGRAM DEVELOPMENT)" \
+       --checklist "Please confirm the packages you wish to install \
+from series D. Use the UP/DOWN keys to scroll through the list, and \
+the SPACE key to deselect any items you don't want to install. \
+Press ENTER when you are \
+done." 22 72 12 \
+"aaa_base" "Basic filesystem, shell, and utils - REQUIRED" "on" \
+"aaa_glibc-solibs" "Runtime glibc support libraries - REQUIRED" "on" \
+"aaa_libraries" "Various shared libraries -- REQUIRED" "on" \
+"aaa_terminfo" "A subset of the terminfo database from ncurses" "on" \
+"acl" "POSIX Access Control List tools -- REQUIRED" "on" \
+"attr" "Tools for fs extended attributes -- REQUIRED" "on" \
+"bash" "GNU bash shell - REQUIRED" "on" \
+"bin" "Various system utilities - REQUIRED" "on" \
+"bzip2" "bzip2 compression utility" "on" \
+"coreutils" "The core GNU command-line utilities - REQUIRED" "on" \
+"cpio" "The GNU cpio backup/archiving utility" "on" \
+"cracklib" "Password checking library - REQUIRED" "on" \
+"dbus" "D-Bus message bus system" "on" \
+"dcron" "Cron daemon - REQUIRED" "on" \
+"devs" "Device files found in /dev - REQUIRED" "on" \
+"dialog" "The program that generates these menus :-)" "on" \
+"e2fsprogs" "Utilities for ext2/3/4 filesystems - REQUIRED" "on" \
+"elogind" "logind extracted from systemd" "on" \
+"etc" "System config files & utilities - REQUIRED" "on" \
+"eudev" "Manages /dev and modules - REQUIRED" "on" \
+"file" "Determines what file format data is in" "on" \
+"findutils" "GNU file finding utilities" "on" \
+"gawk" "GNU awk pattern scanning language" "on" \
+"glibc-zoneinfo" "Configures your time zone" "on" \
+"grep" "GNU grep searching tool - REQUIRED" "on" \
+"gzip" "GNU zip compression utility - REQUIRED" "on" \
+"hostname" "Linux hostname utility - REQUIRED" "on" \
+"kernel-generic" "Generic 5.15.19 kernel (needs an initrd)" "on" \
+"kernel-huge" "Loaded 5.15.19 Linux kernel" "on" \
+"kernel-modules" "Linux 5.15.19 kernel modules -- REQUIRED" "on" \
+"kmod" "Kernel module utilities -- REQUIRED" "on" \
+"less" "A text pager utility - REQUIRED" "on" \
+"libgudev" "udev GObject bindings library - REQUIRED" "on" \
+"libpwquality" "Password quality checking library - REQUIRED" "on" \
+"lilo" "Boot loader for Linux, DOS, OS/2, etc." "on" \
+"logrotate" "System log rotation utility" "on" \
+"mkinitrd" "Tool for building an initial ramdisk" "on" \
+"nvi" "nvi text editor (ex/vi clone)" "on" \
+"openssl-solibs" "OpenSSL shared libraries -- REQUIRED" "on" \
+"os-prober" "A tool for finding bootable OS partitions" "on" \
+"pam" "Pluggable Authentication Modules -- REQUIRED" "on" \
+"pkgtools" "Slackware package management tools - REQUIRED" "on" \
+"procps-ng" "Displays process info - REQUIRED" "on" \
+"sed" "GNU stream editor -- REQUIRED" "on" \
+"shadow" "Shadow password suite -- REQUIRED" "on" \
+"sharutils" "GNU shell archive utilities - REQUIRED" "on" \
+"sysklogd" "Logs system and kernel messages" "on" \
+"syslinux" "Loader for making Linux boot floppies" "on" \
+"sysvinit" "System V-like INIT programs - REQUIRED" "on" \
+"sysvinit-functions" "Init functions used by some third-party apps" "on" \
+"sysvinit-scripts" "The startup scripts for Slackware - REQUIRED" "on" \
+"tar" "GNU tar archive utility -- REQUIRED" "on" \
+"tree" "Display a directory in tree form" "on" \
+"util-linux" "Util-linux utilities - REQUIRED" "on" \
+"which" "Locate an executable in your \$PATH" "on" \
+"xz" "xz (LZMA) compression utility - REQUIRED" "on" \
+"mariadb" "An enhanced, drop-in replacement for MySQL" "on" \
+"nano" "A simple editor with the look and feel of Pico" "on" \
+"screen" "ANSI/vt100 virtual terminal emulator" "on" \
+"slackpkg" "Slackware package updating tool" "on" \
+"sqlite" "A small SQL database server and library" "on" \
+"autoconf" "GNU source autoconfig system" "on" \
+"autoconf-archive" "macros for GNU Autoconf" "on" \
+"automake" "GNU makefile generator" "on" \
+"binutils" "GNU C compiler utilities" "on" \
+"cmake" "Cross platform make utility" "on" \
+"gcc" "GNU C compiler" "on" \
+"git" "A directory content manager" "on" \
+"perl" "Larry Wall's systems language" "on" \
+"subversion" "Subversion version control system" "on" \
+"apr" "Apache Portable Runtime library" "on" \
+"apr-util" "Extra APR library interfaces" "on" \
+"glib" "Support library used by GTK+" "on" \
+"glib-networking" "network-related giomodules for glib" "on" \
+"glib2" "GLib version 2" "on" \
+"glibc" "The GNU C library" "on" \
+"glibc-i18n" "Internationalization support for glibc" "on" \
+"glibc-profile" "Profiling support for glibc" "on" \
+"icu4c" "International Components for Unicode" "on" \
+"libnl" "Netlink socket library" "on" \
+"libnl3" "Netlink socket library version 3" "on" \
+"libproxy" "proxy configuration library" "on" \
+"libsigc++" "Typesafe callback system for C++" "on" \
+"libsigc++3" "Typesafe callback system for C++ v3" "on" \
+"libpcap" "Packet Capture library" "on" \
+"libssh" "SSH C library" "on" \
+"libssh2" "SSH2 library" "on" \
+"libunistring" "GNU Unicode string library" "on" \
+"libuv" "Asynchronous I/O library" "on" \
+"libxml2" "XML parser library v2" "on" \
+"libxslt" "XML transformation library" "on" \
+"libyaml" "YAML parser library" "on" \
+"lmdb" "Lightning Memory-mapped key-value database" "on" \
+"mhash" "Thread-safe hash library" "on" \
+"ncurses" "CRT screen handling package" "on" \
+"bind" "Berkeley Internet Name Domain server" "on" \
+"bootp" "Internet Bootstrap Protocol server" "on" \
+"bridge-utils" "Tools for setting up Ethernet bridges" "on" \
+"bsd-finger" "BSD finger daemon and client" "on" \
+"ca-certificates" "PEM certificates to verify SSL connections" "on" \
+"curl" "Command-line URL transfer utility" "on" \
+"cyrus-sasl" "SASL email authentication library" "on" \
+"dhcp" "DHCP server (and client) utilities" "on" \
+"dhcpcd" "DHCP client daemon" "on" \
+"ebtables" "Bridge filtering utility" "on" \
+"ethtool" "A tool for configuring Ethernet devices" "on" \
+"htdig" "Indexing and search engine" "on" \
+"httpd" "Apache WWW (HTTP) server" "on" \
+"icmpinfo" "Dump or log ICMP packets" "on" \
+"iftop" "Display bandwidth usage on an interface" "on" \
+"inetd" "Internet super server daemon" "on" \
+"iproute2" "Kernel routing and traffic control" "on" \
+"iptables" "Firewall configuration utility" "on" \
+"iptraf-ng" "Network monitoring program" "on" \
+"iputils" "Some common network tools" "on" \
+"krb5" "Network authentication protocol" "on" \
+"libmnl" "Netlink user-space library" "on" \
+"libnetfilter_acct" "Netfilter accounting library" "on" \
+"libnetfilter_conntrack" "Netfilter conntrack library" "on" \
+"libnetfilter_cthelper" "Netfilter conntrack helpers library" "on" \
+"libnetfilter_cttimeout" "Netfilter connection tracking timeout library" "on" \
+"libnetfilter_log" "Netfilter packet logging library" "on" \
+"libnetfilter_queue" "Netfilter packet queueing library" "on" \
+"libnfnetlink" "Netfilter kernel/userspace comm library" "on" \
+"libnftnl" "interface to the kernel nf_tables subsystem" "on" \
+"net-tools" "Utilities required for networking on Linux" "on" \
+"network-scripts" "Scripts required for networking on Slackware" "on" \
+"nftables" "Packet filtering and classification" "on" \
+"nghttp2" "HTTP/2 library" "on" \
+"ntp" "Network Time Protocol" "on" \
+"openssh" "OpenSSH Secure Shell" "on" \
+"openssl" "OpenSSL Secure Sockets Layer toolkit" "on" \
+"openvpn" "Secure IP VPN tunnel daemon" "on" \
+"ppp" "Point-to-point protocol" "on" \
+"rp-pppoe" "Connect to ADSL ISPs that use PPPoE" "on" \
+"traceroute" "Packet tracing utility" "on" \
+"ulogd" "Logging daemon for netfilter/iptables" "on" \
+"vlan" "Virtual LAN configuration tool" "on" \
+"wget" "WWW/FTP retrieval tool" "on" \
+"wget2" "WWW/FTP retrieval tool v2" "on" \
+"whois" "Enhanced whois client" "on" \
+2> $TMP/SeTpkgs
+if [ $? = 1 -o $? = 255 ]; then
+ rm -f $TMP/SeTpkgs
+ > $TMP/SeTnewtag
+ for pkg in \
+aaa_base aaa_glibc-solibs aaa_libraries aaa_terminfo acl attr bash bin bzip2 coreutils cpio cracklib dbus dcron devs dialog e2fsprogs elogind etc eudev file findutils gawk glibc-zoneinfo grep gzip hostname kernel-generic kernel-huge kernel-modules kmod less libgudev libpwquality lilo logrotate mkinitrd nvi openssl-solibs os-prober pam pkgtools procps-ng sed shadow sharutils sysklogd syslinux sysvinit sysvinit-functions sysvinit-scripts tar tree util-linux which xz mariadb nano screen slackpkg sqlite autoconf autoconf-archive automake binutils cmake gcc git perl subversion apr apr-util glib glib-networking glib2 glibc glibc-i18n glibc-profile libnl libnl3 libproxy libsigc++ libsigc++3 libpcap libssh libssh2 libunistring libuv libxml2 libxslt libyaml lmdb mhash ncurses bind bootp bridge-utils bsd-finger ca-certificates curl cyrus-sasl dhcp dhcpcd ebtables ethtool htdig httpd icmpinfo iftop inetd iproute2 iptables iptraf-ng iputils krb5 libmnl libnetfilter_acct libnetfilter_conntrack libnetfilter_cthelper libnetfilter_cttimeout libnetfilter_log libnetfilter_queue libnfnetlink libnftnl net-tools network-scripts nftables nghttp2 ntp openssh openssl openvpn ppp rp-pppoe traceroute ulogd vlan wget wget2 whois \
+  ; do
+  echo "$pkg: SKP" >> $TMP/SeTnewtag
+ done
+ exit
+fi
+cat /dev/null > $TMP/SeTnewtag
+for PACKAGE in \
+aaa_base aaa_glibc-solibs aaa_libraries aaa_terminfo acl attr bash bin bzip2 coreutils cpio cracklib dbus dcron devs dialog e2fsprogs elogind etc eudev file findutils gawk glibc-zoneinfo grep gzip hostname kernel-generic kernel-huge kernel-modules kmod less libgudev libpwquality lilo logrotate mkinitrd nvi openssl-solibs os-prober pam pkgtools procps-ng sed shadow sharutils sysklogd syslinux sysvinit sysvinit-functions sysvinit-scripts tar tree util-linux which xz mariadb nano screen slackpkg sqlite autoconf autoconf-archive automake binutils cmake gcc git perl subversion apr apr-util glib glib-networking glib2 glibc glibc-i18n glibc-profile libnl libnl3 libproxy libsigc++ libsigc++3 libpcap libssh libssh2 libunistring libuv libxml2 libxslt libyaml lmdb mhash ncurses bind bootp bridge-utils bsd-finger ca-certificates curl cyrus-sasl dhcp dhcpcd ebtables ethtool htdig httpd icmpinfo iftop inetd iproute2 iptables iptraf-ng iputils krb5 libmnl libnetfilter_acct libnetfilter_conntrack libnetfilter_cthelper libnetfilter_cttimeout libnetfilter_log libnetfilter_queue libnfnetlink libnftnl net-tools network-scripts nftables nghttp2 ntp openssh openssl openvpn ppp rp-pppoe traceroute ulogd vlan wget wget2 whois \
+ ; do
+ if grep "\(^\| \)$PACKAGE\( \|$\)" $TMP/SeTpkgs 1> /dev/null 2> /dev/null ; then
+  echo "$PACKAGE: ADD" >> $TMP/SeTnewtag
+ else
+  echo "$PACKAGE: SKP" >> $TMP/SeTnewtag
+ fi
+done
+rm -f $TMP/SeTpkgs
+
+#"razwall" "RazWall CLI and core services" "on"\
+#"razwall-ui" "RazWall Web UI" "on" \
+#"razwall-iptables" "RazWall IPTables FW" "on" \
+#"razwall-nft" "RazWall NetFilter FW" "on" \
+
+#razwall razwall-ui razwall-iptables razwall-nft \

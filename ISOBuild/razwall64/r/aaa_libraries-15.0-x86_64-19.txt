@@ -1,0 +1,11 @@
+aaa_libraries: aaa_libraries (shared libraries needed by many programs)
+aaa_libraries:
+aaa_libraries: This is a collection of shared libraries needed to run Linux programs.
+aaa_libraries: These libraries are gathered from other Slackware packages and are
+aaa_libraries: intended to give a minimal initial set of libraries.
+aaa_libraries:
+aaa_libraries:
+aaa_libraries:
+aaa_libraries:
+aaa_libraries:
+aaa_libraries:

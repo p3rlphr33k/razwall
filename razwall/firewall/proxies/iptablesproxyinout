@@ -1,0 +1,124 @@
+iptables -F PROXYOUT
+iptables -F PROXYIN
+    iptables -A PROXYIN -j PROXYOUTGOINGFW -p tcp --dport 8080 -i br0
+
+    iptables -A PROXYIN -j PROXYOUTGOINGFW -p tcp --dport 18080 -i br0
+
+    iptables -A PROXYIN -j PROXYOUTGOINGFW -p tcp --dport 18081 -i br0
+
+    iptables -A PROXYIN -j PROXYOUTGOINGFW -p tcp --dport 8080 -i br1
+
+    iptables -A PROXYIN -j PROXYOUTGOINGFW -p tcp --dport 18080 -i br1
+
+    iptables -A PROXYIN -j PROXYOUTGOINGFW -p tcp --dport 18081 -i br1
+
+    iptables -A PROXYIN -j PROXYOUTGOINGFW -p tcp --dport 8080 -i br2
+
+    iptables -A PROXYIN -j PROXYOUTGOINGFW -p tcp --dport 18080 -i br2
+
+    iptables -A PROXYIN -j PROXYOUTGOINGFW -p tcp --dport 18081 -i br2
+
+    iptables -A PROXYIN -j PROXYOUTGOINGFW -p tcp --dport 8080 -i ipsec+
+
+    iptables -A PROXYIN -j PROXYOUTGOINGFW -p tcp --dport 18080 -i ipsec+
+
+    iptables -A PROXYIN -j PROXYOUTGOINGFW -p tcp --dport 18081 -i ipsec+
+
+    iptables -A PROXYIN -j PROXYOUTGOINGFW -p tcp --dport 8080 -i tap+
+
+    iptables -A PROXYIN -j PROXYOUTGOINGFW -p tcp --dport 18080 -i tap+
+
+    iptables -A PROXYIN -j PROXYOUTGOINGFW -p tcp --dport 18081 -i tap+
+
+    iptables -A PROXYIN -j PROXYOUTGOINGFW -p tcp --dport 8080 -i tun+
+
+    iptables -A PROXYIN -j PROXYOUTGOINGFW -p tcp --dport 18080 -i tun+
+
+    iptables -A PROXYIN -j PROXYOUTGOINGFW -p tcp --dport 18081 -i tun+
+
+    iptables -A PROXYIN -j PROXYOUTGOINGFW -p tcp --dport 8080 -i openvpntun+
+
+    iptables -A PROXYIN -j PROXYOUTGOINGFW -p tcp --dport 18080 -i openvpntun+
+
+    iptables -A PROXYIN -j PROXYOUTGOINGFW -p tcp --dport 18081 -i openvpntun+
+
+    iptables -A PROXYIN -j PROXYOUTGOINGFW -p tcp --dport 8080 -i l2tp+
+
+    iptables -A PROXYIN -j PROXYOUTGOINGFW -p tcp --dport 18080 -i l2tp+
+
+    iptables -A PROXYIN -j PROXYOUTGOINGFW -p tcp --dport 18081 -i l2tp+
+
+      iptables -A PROXYIN -j PROXYOUTGOINGFW -p tcp --dport 8080 -m physdev --physdev-in tap+
+
+      iptables -A PROXYIN -j PROXYOUTGOINGFW -p tcp --dport 18080 -m physdev --physdev-in tap+
+
+      iptables -A PROXYIN -j PROXYOUTGOINGFW -p tcp --dport 18081 -m physdev --physdev-in tap+
+
+    iptables -A PROXYIN -j PROXYOUTGOINGFW -p tcp --dport 8080 -m policy --pol ipsec --dir in
+
+    iptables -A PROXYIN -j PROXYOUTGOINGFW -p tcp --dport 18080 -m policy --pol ipsec --dir in
+
+    iptables -A PROXYIN -j PROXYOUTGOINGFW -p tcp --dport 18081 -m policy --pol ipsec --dir in
+
+    iptables -A PROXYOUT -j PROXYOUTGOINGFW -p tcp --dport 8080 -o br0
+
+    iptables -A PROXYOUT -j PROXYOUTGOINGFW -p tcp --dport 18080 -o br0
+
+    iptables -A PROXYOUT -j PROXYOUTGOINGFW -p tcp --dport 18081 -o br0
+
+    iptables -A PROXYOUT -j PROXYOUTGOINGFW -p tcp --dport 8080 -o br1
+
+    iptables -A PROXYOUT -j PROXYOUTGOINGFW -p tcp --dport 18080 -o br1
+
+    iptables -A PROXYOUT -j PROXYOUTGOINGFW -p tcp --dport 18081 -o br1
+
+    iptables -A PROXYOUT -j PROXYOUTGOINGFW -p tcp --dport 8080 -o br2
+
+    iptables -A PROXYOUT -j PROXYOUTGOINGFW -p tcp --dport 18080 -o br2
+
+    iptables -A PROXYOUT -j PROXYOUTGOINGFW -p tcp --dport 18081 -o br2
+
+    iptables -A PROXYOUT -j PROXYOUTGOINGFW -p tcp --dport 8080 -o ipsec+
+
+    iptables -A PROXYOUT -j PROXYOUTGOINGFW -p tcp --dport 18080 -o ipsec+
+
+    iptables -A PROXYOUT -j PROXYOUTGOINGFW -p tcp --dport 18081 -o ipsec+
+
+    iptables -A PROXYOUT -j PROXYOUTGOINGFW -p tcp --dport 8080 -o tap+
+
+    iptables -A PROXYOUT -j PROXYOUTGOINGFW -p tcp --dport 18080 -o tap+
+
+    iptables -A PROXYOUT -j PROXYOUTGOINGFW -p tcp --dport 18081 -o tap+
+
+    iptables -A PROXYOUT -j PROXYOUTGOINGFW -p tcp --dport 8080 -o tun+
+
+    iptables -A PROXYOUT -j PROXYOUTGOINGFW -p tcp --dport 18080 -o tun+
+
+    iptables -A PROXYOUT -j PROXYOUTGOINGFW -p tcp --dport 18081 -o tun+
+
+    iptables -A PROXYOUT -j PROXYOUTGOINGFW -p tcp --dport 8080 -o openvpntun+
+
+    iptables -A PROXYOUT -j PROXYOUTGOINGFW -p tcp --dport 18080 -o openvpntun+
+
+    iptables -A PROXYOUT -j PROXYOUTGOINGFW -p tcp --dport 18081 -o openvpntun+
+
+    iptables -A PROXYOUT -j PROXYOUTGOINGFW -p tcp --dport 8080 -o l2tp+
+
+    iptables -A PROXYOUT -j PROXYOUTGOINGFW -p tcp --dport 18080 -o l2tp+
+
+    iptables -A PROXYOUT -j PROXYOUTGOINGFW -p tcp --dport 18081 -o l2tp+
+
+      iptables -A PROXYOUT -j PROXYOUTGOINGFW -p tcp --dport 8080 -m physdev --physdev-in tap+
+
+      iptables -A PROXYOUT -j PROXYOUTGOINGFW -p tcp --dport 18080 -m physdev --physdev-in tap+
+
+      iptables -A PROXYOUT -j PROXYOUTGOINGFW -p tcp --dport 18081 -m physdev --physdev-in tap+
+
+    iptables -A PROXYOUT -j PROXYOUTGOINGFW -p tcp --dport 8080 -m policy --pol ipsec --dir out
+
+    iptables -A PROXYOUT -j PROXYOUTGOINGFW -p tcp --dport 18080 -m policy --pol ipsec --dir out
+
+    iptables -A PROXYOUT -j PROXYOUTGOINGFW -p tcp --dport 18081 -m policy --pol ipsec --dir out
+
+iptables -A PROXYOUT -m connmark --mark 0x20000000/0x20000000 -j PROXYOUTGOINGFW
+iptables -A PROXYIN -m connmark --mark 0x20000000/0x20000000 -j PROXYOUTGOINGFW

@@ -1,0 +1,3 @@
+iptables -F QUEUEFW
+iptables -t filter -A QUEUEFW -s 0/0 -i lo -d 0/0  -j RETURN
+iptables -t filter -A QUEUEFW -s 0/0 -i br0 -d 0/0 -p tcp --dport 22  -j RETURN

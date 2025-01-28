@@ -1,0 +1,91 @@
+iptables -F INPUTFW
+ebtables -F INPUTFW
+iptables -A INPUTFW -s 0/0 -d 0/0 -p tcp --dport 22 -m physdev --physdev-in eth0.1  -j ALLOW
+ebtables -A INPUTFW --logical-in br0 -p ipv4 --ip-protocol tcp --ip-destination-port 67  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p tcp --dport 67 -i br0  -j ACCEPT
+ebtables -A INPUTFW --logical-in br0 -p ipv4 --ip-protocol udp --ip-destination-port 67  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p udp --dport 67 -i br0  -j ACCEPT
+ebtables -A INPUTFW --logical-in br2 -p ipv4 --ip-protocol tcp --ip-destination-port 67  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p tcp --dport 67 -i br2  -j ACCEPT
+ebtables -A INPUTFW --logical-in br2 -p ipv4 --ip-protocol udp --ip-destination-port 67  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p udp --dport 67 -i br2  -j ACCEPT
+ebtables -A INPUTFW --logical-in br1 -p ipv4 --ip-protocol tcp --ip-destination-port 67  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p tcp --dport 67 -i br1  -j ACCEPT
+ebtables -A INPUTFW --logical-in br1 -p ipv4 --ip-protocol udp --ip-destination-port 67  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p udp --dport 67 -i br1  -j ACCEPT
+ebtables -A INPUTFW --logical-in openvpntun3 -p ipv4 --ip-protocol tcp --ip-destination-port 67  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p tcp --dport 67 -i openvpntun3  -j ACCEPT
+ebtables -A INPUTFW --logical-in openvpntun3 -p ipv4 --ip-protocol udp --ip-destination-port 67  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p udp --dport 67 -i openvpntun3  -j ACCEPT
+ebtables -A INPUTFW -p ipv4 --ip-protocol tcp --ip-destination-port 67  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p tcp --dport 67 -m policy --dir in --pol ipsec  -j ACCEPT
+ebtables -A INPUTFW -p ipv4 --ip-protocol udp --ip-destination-port 67  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p udp --dport 67 -m policy --dir in --pol ipsec  -j ACCEPT
+ebtables -A INPUTFW --logical-in l2tp+ -p ipv4 --ip-protocol tcp --ip-destination-port 67  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p tcp --dport 67 -i l2tp+  -j ACCEPT
+ebtables -A INPUTFW --logical-in l2tp+ -p ipv4 --ip-protocol udp --ip-destination-port 67  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p udp --dport 67 -i l2tp+  -j ACCEPT
+ebtables -A INPUTFW --logical-in tun0 -p ipv4 --ip-protocol tcp --ip-destination-port 67  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p tcp --dport 67 -i tun0  -j ACCEPT
+ebtables -A INPUTFW --logical-in tun0 -p ipv4 --ip-protocol udp --ip-destination-port 67  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p udp --dport 67 -i tun0  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p tcp --dport 53 -i br0  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p udp --dport 53 -i br0  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p tcp --dport 53 -i br2  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p udp --dport 53 -i br2  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p tcp --dport 53 -i br1  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p udp --dport 53 -i br1  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p tcp --dport 53 -i openvpntun3  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p udp --dport 53 -i openvpntun3  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p tcp --dport 53 -m policy --dir in --pol ipsec  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p udp --dport 53 -m policy --dir in --pol ipsec  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p tcp --dport 53 -i l2tp+  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p udp --dport 53 -i l2tp+  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p tcp --dport 53 -i tun0  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p udp --dport 53 -i tun0  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p tcp --dport 30443 -i br2  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p tcp --dport 30080 -i br2  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p udp --dport 30080 -i br2  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p tcp --dport 30443 -i br1  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p tcp --dport 30080 -i br1  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p udp --dport 30080 -i br1  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p tcp --dport 30443 -i br0  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p tcp --dport 30080 -i br0  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p udp --dport 30080 -i br0  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p icmp -m hashlimit --hashlimit 3/second --hashlimit-mode srcip,dstip --hashlimit-name xticmp --icmp-type 8 -i br0  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p icmp -m hashlimit --hashlimit 3/second --hashlimit-mode srcip,dstip --hashlimit-name xticmp --icmp-type 30 -i br0  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p icmp -m hashlimit --hashlimit 3/second --hashlimit-mode srcip,dstip --hashlimit-name xticmp --icmp-type 8 -i br2  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p icmp -m hashlimit --hashlimit 3/second --hashlimit-mode srcip,dstip --hashlimit-name xticmp --icmp-type 30 -i br2  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p icmp -m hashlimit --hashlimit 3/second --hashlimit-mode srcip,dstip --hashlimit-name xticmp --icmp-type 8 -i br1  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p icmp -m hashlimit --hashlimit 3/second --hashlimit-mode srcip,dstip --hashlimit-name xticmp --icmp-type 30 -i br1  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p icmp -m hashlimit --hashlimit 3/second --hashlimit-mode srcip,dstip --hashlimit-name xticmp --icmp-type 8 -i openvpntun3  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p icmp -m hashlimit --hashlimit 3/second --hashlimit-mode srcip,dstip --hashlimit-name xticmp --icmp-type 30 -i openvpntun3  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p icmp -m hashlimit --hashlimit 3/second --hashlimit-mode srcip,dstip --hashlimit-name xticmp --icmp-type 8 -m policy --dir in --pol ipsec  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p icmp -m hashlimit --hashlimit 3/second --hashlimit-mode srcip,dstip --hashlimit-name xticmp --icmp-type 30 -m policy --dir in --pol ipsec  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p icmp -m hashlimit --hashlimit 3/second --hashlimit-mode srcip,dstip --hashlimit-name xticmp --icmp-type 8 -i l2tp+  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p icmp -m hashlimit --hashlimit 3/second --hashlimit-mode srcip,dstip --hashlimit-name xticmp --icmp-type 30 -i l2tp+  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p icmp -m hashlimit --hashlimit 3/second --hashlimit-mode srcip,dstip --hashlimit-name xticmp --icmp-type 8 -i tun0  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p icmp -m hashlimit --hashlimit 3/second --hashlimit-mode srcip,dstip --hashlimit-name xticmp --icmp-type 30 -i tun0  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p tcp --dport 80 -i br0  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p tcp --dport 80 -i br2  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p tcp --dport 80 -i br1  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p tcp --dport 10443 -i br0  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p tcp --dport 3000 -i br0  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p tcp --dport 3000 -i br2  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p tcp --dport 3000 -i br1  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p udp --dport 123 -i br0  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p tcp --dport 123 -i br0  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p udp --dport 123 -i br2  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p tcp --dport 123 -i br2  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p udp --dport 123 -i br1  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p tcp --dport 123 -i br1  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p udp --dport 123 -i openvpntun3  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p tcp --dport 123 -i openvpntun3  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p udp --dport 123 -m policy --dir in --pol ipsec  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p tcp --dport 123 -m policy --dir in --pol ipsec  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p udp --dport 123 -i l2tp+  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p tcp --dport 123 -i l2tp+  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p udp --dport 123 -i tun0  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p tcp --dport 123 -i tun0  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p udp --dport 1194  -j ACCEPT
+iptables -A INPUTFW -s 0/0 -d 0/0 -p tcp --dport 22 -i br0  -j ACCEPT

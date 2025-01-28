@@ -1,0 +1,5 @@
+iptables -t nat -F SOURCENAT
+iptables -t nat -A SOURCENAT -s 192.168.19.14 -d 0/0 -o eth3  -j SNAT --to-source 24.111.67.51
+iptables -t nat -A SOURCENAT -s 192.168.14.0/24 -d 0/0 -o eth3  -j SNAT --to-source 24.111.67.53
+iptables -t nat -A SOURCENAT -s 0/0 -d 0/0 -o eth3  -j SNAT --to-source 24.111.67.50
+iptables -t nat -A SOURCENAT -s 0/0 -d 0/0 -o eth2  -j MASQUERADE

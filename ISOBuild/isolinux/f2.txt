@@ -1,0 +1,14 @@
+
+                 -+  RazWall Kernel Selection +-
+
+
+The default kernel is huge.s, which includes Speakup support as well.
+
+Kernel options:
+
+	huge.s  "For default kernel."
+	kms.s   "Boot with graphics."
+	memtest	"Memory diagnostic."
+
+
+

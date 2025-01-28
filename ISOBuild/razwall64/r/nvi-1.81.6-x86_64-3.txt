@@ -1,0 +1,11 @@
+nvi: nvi (ex/vi text editor)
+nvi:
+nvi: Nvi is an implementation of the ex/vi text editor. Nvi supports all
+nvi: the historic ex/vi features except for open mode and the lisp edit
+nvi: option (it has a fully implemented underlying ex mode). Some
+nvi: additional features are: extended regular expressions, infinite undo,
+nvi: UTF8 support, and multiple edit buffers. Nvi has a very small memory
+nvi: footprint.
+nvi:
+nvi: Homepage: http://www.bostic.com/vi/
+nvi:

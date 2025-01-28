@@ -1,0 +1,11 @@
+glib-networking: glib-networking (network-related giomodules for glib)
+glib-networking:
+glib-networking: This package contains network-related giomodules for glib.
+glib-networking:
+glib-networking:
+glib-networking:
+glib-networking:
+glib-networking:
+glib-networking:
+glib-networking:
+glib-networking:

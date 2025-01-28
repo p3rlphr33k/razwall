@@ -1,0 +1,26 @@
+#!/bin/sh
+TMP=/var/log/setup/tmp
+if [ ! -d $TMP ]; then
+  mkdir -p $TMP
+fi
+
+dialog --backtitle "Select RazWall installation source." \
+--title "SOURCE MEDIA SELECTION" --menu \
+"Please select the media from which to install RazWall Firewall:" \
+14 70 7 \
+"1" "Install from a RazWall CD/DVD" \
+"2" "Install from a RazWall USB stick" \
+2> $TMP/media
+if [ ! $? = 0 ]; then
+ rm $TMP/media
+ exit
+fi
+
+SOURCE_MEDIA="`cat $TMP/media`"
+rm -f $TMP/media
+if [ "$SOURCE_MEDIA" = "1" ]; then
+ INSCD
+elif [ "$SOURCE_MEDIA" = "2" ]; then
+ INSUSB
+fi
+

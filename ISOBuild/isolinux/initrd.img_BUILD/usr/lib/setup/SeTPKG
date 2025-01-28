@@ -1,0 +1,52 @@
+#!/bin/sh
+TMP=/var/log/setup/tmp
+T_PX="`cat $TMP/SeTT_PX`"
+if [ ! -d $TMP ]; then
+  mkdir -p $TMP
+fi
+# If the distribution source is already known, we can avoid listing
+# stuff that isn't there.
+if [ ! -r $TMP/SeTT_PX -o ! -r $TMP/SeTDS ]; then
+  unset T_PX
+  unset DS
+else
+  T_PX="`cat $TMP/SeTT_PX`"
+  DS="`cat $TMP/SeTDS`"
+fi
+# In /usr/lib/setup/slackinstall, $TMP/series is a directory.
+# Depending on how you use the 'setup' script, you can end up going
+# round in circles due to this script using 'series' as a text file but
+# not being able delete it due to an rm -f. Now we use rm -rf.
+# It's a toss up between accidentally wiping the series selection
+# (it only takes a few seconds to re-select the stuff) and getting
+# confused.
+rm -rf $TMP/SeTSERIES $TMP/tmpscript $TMP/series 
+
+cat << EOF > $TMP/tmpscript
+dialog --backtitle "Selecting software to install." \\
+--title "PACKAGE SERIES SELECTION" --item-help --output-separator "#" --checklist \\
+"Now it's time to select which general categories of software \\
+to install on your system. \\
+Use the spacebar to select or unselect the software you wish to \\
+install. \\
+You can use the up and down arrows to see all the possible choices. \\
+Recommended choices have been preselected. \\
+Press the ENTER key when you are finished." \\
+20 75 9 \\
+"R" "RazWall" on "The R series contains all RazWall installation packages including the base linux OS." \\
+EOF
+
+cat << EOF >> $TMP/tmpscript
+  2> $TMP/series
+EOF
+. $TMP/tmpscript
+if [ ! $? = 0 ]; then
+  rm -rf $TMP/series $TMP/tmpscript
+  exit
+fi
+INSTSETS="`cat $TMP/series | tr -d " "`"
+INSTSETS="`echo $INSTSETS | tr "\042" "#" `"
+INSTSETS="`echo $INSTSETS | tr "," "#" `"
+INSTSETS="`echo $INSTSETS | tr -s "#" `"
+rm -rf $TMP/series $TMP/tmpscript
+echo "$INSTSETS" > $TMP/SeTSERIES
