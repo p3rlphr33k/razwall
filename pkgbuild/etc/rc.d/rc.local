@@ -1,0 +1,18 @@
+#!/bin/bash
+#
+# /etc/rc.d/rc.local:  Local system initialization script.
+#
+# Put any local startup commands in here.  Also, if you have
+# anything that needs to be run at shutdown time you can
+# make an /etc/rc.d/rc.local_shutdown script and put those
+# commands in there.
+
+if [ -x /etc/rc.d/rc.dhcpd ]; then
+  # Start the DHCP server:
+  /etc/rc.d/rc.dhcpd start
+fi
+
+if [ -x /etc/rc.d/rc.websocket ]; then
+  # Start the websocket server:
+  /etc/rc.d/rc.websocket start
+fi
