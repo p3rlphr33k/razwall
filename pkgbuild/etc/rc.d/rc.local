@@ -7,9 +7,6 @@
 # make an /etc/rc.d/rc.local_shutdown script and put those
 # commands in there.
 
-SSL_KEY="/razwall/web/certs/server.key"
-SSL_CRT="/razwall/web/certs/server.crt"
-
 if [ -x /etc/rc.d/rc.dhcpd ]; then
   # Start the DHCP server:
   /etc/rc.d/rc.dhcpd start
@@ -18,16 +15,6 @@ fi
 if [ -x /etc/rc.d/rc.websocket ]; then
   # Start the websocket server:
   /etc/rc.d/rc.websocket start
-fi
-
-# Check if SSL certificate files exist
-if [ ! -f "$SSL_KEY" ] || [! -f "$SSL_CRT" ]; then
-
-  [ -d "$(dirname "$SSL_KEY")" ] || mkdir -p "$(dirname "$SSL_KEY")" 
-  [ -d "$(dirname "$SSL_CRT")" ] || mkdir -p "$(dirname "$SSL_CRT")"
-  openssl req -x509 -nodes -days 365  -newkey rsa:4096 -keyout /razwall/web/certs/server.key -out /razwall/web/certs/server.crt -subj '/C=US/ST=ND/L=IT/O=razwall/CN=localhost'
-  chmod 600 "$SSL_KEY"
-  chmod 644 "$SSL_CRT"
 fi
 
 if -x /etc/rc.d/rc.httpd ]; then

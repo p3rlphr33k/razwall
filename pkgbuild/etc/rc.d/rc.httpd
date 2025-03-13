@@ -1,0 +1,116 @@
+#! /bin/bash
+#
+# httpd
+#
+
+# Source function library.
+. /etc/init.d/functions
+
+RETVAL=0
+
+# See how we were called.
+
+prog="httpd"
+progdir="/usr/sbin"
+pidfile="/var/run/$prog.pid"
+option="-f /etc/httpd/httpd.conf"
+
+# fifo exists ?
+if [ ! -p /var/log/fifo/httpd_access ];then
+    mkdir -p /var/log/fifo 2> /dev/null
+    mkfifo /var/log/fifo/httpd_access
+fi
+chown nobody /var/log/fifo/httpd_access
+
+# ENDIAN: hack
+mkdir -p /var/log/httpd
+
+prepare_cert() {
+    if ( test -s /razwall/web/certs/server.key && test -s /razwall/web/certs/server.csr && test -s /razwall/web/certs/server.crt ); then
+        return
+    fi
+    local HOSTNAME=$(hostname -f)
+    # set temporary random file
+    export RANDFILE=/root/.rnd
+    echo "Generating https server key."
+    openssl genrsa -out /razwall/web/certs/server.key 1024 #>/dev/null 2>&1
+    echo "Generating CSR"
+    cat /razwall/certparams | sed "s/HOSTNAME/${HOSTNAME}/" | openssl req -new -key /razwall/web/certs/server.key -out /razwall/web/certs/server.csr #>/dev/null 2>&1
+    echo "Signing certificate"
+    openssl x509 -req -days 999999 -in /razwall/web/certs/server.csr -signkey /razwall/web/certs/server.key -out /razwall/web/certs/server.crt #>/dev/null 2>&1
+    # unset and remove random file
+    export -n RANDFILE
+    rm -f /root/.rnd
+}
+
+start() {
+        echo -n $"Starting $prog: "
+        daemon $progdir/$prog $option
+        RETVAL=$?
+        echo
+        [ $RETVAL -eq 0 ] && touch /var/lock/subsys/$prog
+        return $RETVAL
+}
+
+stop() {
+        echo -n $"Stopping $prog: "
+        # Would be better to send QUIT first, then killproc if that fails
+        killproc $prog
+        RETVAL=$?
+        ipcs -s | grep nobody | awk '{ print $2 }' | xargs -i ipcrm -s {} 2>/dev/null
+        ipcs -m | grep nobody | awk '{ print $2 }' | xargs -i ipcrm -m {} 2>/dev/null
+        echo
+        [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/$prog
+        return $RETVAL
+}
+
+rhstatus() {
+        status $prog
+}
+
+restart() {
+        stop
+        start
+}
+
+reload() {
+        echo -n $"Reloading $prog daemon configuration: "
+        killproc $prog -SIGUSR1
+        retval=$?
+        echo
+        return $RETVAL
+}
+
+
+case "$1" in
+  start)
+  prepare_cert
+        start
+        ;;
+  stop)
+        stop
+        ;;
+  restart)
+  prepare_cert
+        restart
+        ;;
+  reload)
+        reload
+        ;;
+  status)
+        rhstatus
+        ;;
+  condrestart)
+        status $prog && restart || :
+        ;;
+  condstop)
+        status $prog && stop || :
+        ;;
+  condstart)
+  status $prog 2>&1 >/dev/null|| start
+        ;;
+  *)
+        echo $"Usage: $0 {start|stop|status|reload|restart|condstart|condrestart|condstop}"
+        exit 1
+esac
+
