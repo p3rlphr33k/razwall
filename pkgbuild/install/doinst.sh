@@ -13,6 +13,10 @@ chmod +x /etc/rc.d/rc.dhcpd
 
 echo "Generating HTTP SSL Certificate.."
 
-openssl req -x509 -nodes -days 356 -newkey rsa:4096 -keyout /razwall/web/certs/razwall.key -out /razwall/web/certs/razwall.crt -subj '/C=US/ST=North Dakota/L=Reynolds/O=Supervene LLC/CN=localhost'
+openssl req -x509 -nodes -days 356 -newkey rsa:4096 -keyout /razwall/web/certs/server.key -out /razwall/web/certs/server.crt -subj '/C=US/ST=ND/L=IT/O=razwall/CN=localhost'
+
+echo "update Lilo boot manager.."
+
+lilo
 
 echo "RazWall package has been installed."
