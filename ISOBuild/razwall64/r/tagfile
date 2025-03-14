@@ -54,7 +54,6 @@ util-linux:REC
 which:REC
 xz:REC
 bzip2:REC
-mariadb:REC
 nano:REC
 screen:REC
 slackpkg:REC
