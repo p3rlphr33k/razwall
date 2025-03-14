@@ -22,6 +22,7 @@ findutils:REC
 gawk:REC
 glibc-zoneinfo:REC
 grep:REC
+guile:REC
 gzip:REC
 hostname:REC
 kernel-generic:REC
@@ -138,3 +139,4 @@ vlan:REC
 wget:REC
 wget2:REC
 whois:REC
+razwall:REC
