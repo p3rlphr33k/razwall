@@ -1,4 +1,5 @@
 #!/bin/sh
+
 #
 # /etc/rc.d/rc.dhcpd
 #      This shell script takes care of starting and stopping
