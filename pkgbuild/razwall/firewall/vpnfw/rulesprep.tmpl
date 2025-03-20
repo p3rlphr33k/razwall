@@ -1,9 +1,0 @@
-#if $dst_iprange_start != ''
-iptables -A VPNFWDST -m iprange --dst-range ${dst_iprange_start}-${dst_iprange_end} -j VPNFW
-iptables -A VPNFWDST -m iprange --dst-range ${dst_iprange_start}-${dst_iprange_end} -j VPNFW_LOGDROP
-iptables -t mangle -A VPNFWDST -m iprange --dst-range ${dst_iprange_start}-${dst_iprange_end} -j ACCEPT
-#else
-iptables -A VPNFWDST -d $dst_ip -j VPNFW
-iptables -A VPNFWDST -d $dst_ip -j VPNFW_LOGDROP
-iptables -t mangle -A VPNFWDST -d $dst_ip -j ACCEPT
-#end if

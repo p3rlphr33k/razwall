@@ -1,7 +1,0 @@
-ebtables -t nat -F ZONEFW
-ebtables -F ZONEFW
-ebtables -t nat -A ZONEFW -j DROP --out-if eth0.700 --mark 0x800/0x1ff80000
-ebtables -t nat -A ZONEFW -j DROP --out-if eth0.1 --mark 0xc00/0x1ff80000
-ebtables -t nat -A ZONEFW -j ACCEPT --out-if eth0.1 --mark 0x800/0x1ff80000
-ebtables -t nat -A ZONEFW -j ACCEPT --out-if eth1.200 --mark 0x1000/0x1ff80000
-ebtables -t nat -A ZONEFW -j ACCEPT --out-if eth1.200 --mark 0x800/0x1ff80000

@@ -1,7 +1,0 @@
-#if $SMTPSCAN_ENABLED == "on"
-  #if $ENABLED_ZONES != ''
-  #for $zone in $ENABLED_ZONES
-tcp,,25,on,,$zone#if $zone == "GREEN" then "&VPN:ANY" else ""#,off,SMTPD,ACCEPT,,
-  #end for
-  #end if
-#end if

@@ -20,6 +20,7 @@ eudev:REC
 file:REC
 findutils:REC
 gawk:REC
+gc:REC
 glibc-zoneinfo:REC
 grep:REC
 guile:REC
@@ -28,12 +29,14 @@ hostname:REC
 kernel-generic:REC
 kernel-huge:REC
 kernel-modules:REC
+kernel-source:REC
 kmod:REC
 less:REC
 libgudev:REC
 libpwquality:REC
 lilo:REC
 logrotate:REC
+make:REC
 mkinitrd:REC
 nvi:REC
 openssl-solibs:REC

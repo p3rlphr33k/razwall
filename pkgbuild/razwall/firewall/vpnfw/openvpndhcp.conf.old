@@ -1,2 +1,0 @@
-on,udp,,,67&68,REJECT,,,,VPN:SERVER,
-on,udp,,,67&68,REJECT,,,,,VPN:SERVER

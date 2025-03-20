@@ -1,7 +1,0 @@
-BACKUP_SCHEDULE=weekly
-BACKUP_RCPTTO=bryan.donarski@gflibrary.com
-BACKUP_SMARTHOST=192.168.19.19
-BACKUP_ENABLED=on
-BACKUP_LOGARCHIVES=off
-BACKUP_MAIL=on
-BACKUP_MAILFROM=administrator@gflibrary.com

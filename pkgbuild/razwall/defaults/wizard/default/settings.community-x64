@@ -1,3 +1,0 @@
-WIZARD_NEXT_NETWIZARD=register
-WIZARD_URI_REGISTER=/cgi-bin/setup/step3/efw-register.cgi
-WIZARD_NEXT_REGISTER=done

@@ -1,2 +1,0 @@
-on,,,UPLINK:main,Failover for LAN to WAN,,,,,,BLUE&ORANGE&PHYSDEV:eth0.1&PHYSDEV:eth0.600&PHYSDEV:eth0.700,on
-off,,192.168.19.8&192.168.19.26,192.168.16.1,allow dhcp vlan to lan,,udp,67&68,,,ORANGE,

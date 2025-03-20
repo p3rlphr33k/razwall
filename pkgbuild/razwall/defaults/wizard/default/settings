@@ -1,7 +1,0 @@
-WIZARD_ENABLED=on
-WIZARD_STATE=init
-WIZARD_URI_INIT=/cgi-bin/setup/step1/chdefaultpw.cgi
-WIZARD_NEXT_INIT=netwizard
-WIZARD_URI_NETWIZARD=/cgi-bin/setup/step2/wizard.cgi
-WIZARD_NEXT_NETWIZARD=done
-WIZARD_MANDATORY_ZONES=

@@ -1,9 +1,0 @@
-UPDATEFREQUENCE=monthly
-BLACKLIST_URL=http://dsi.ut-capitole.fr/blacklists/download/blacklists.tar.gz
-BLACKLIST_ETAG=
-BLACKLIST_TAR_PREFIX=blacklists
-BLACKLIST_SYSTEM_PATH=/var/signatures/urlfilter/blacklists/
-CREDENTIALS=off
-LOOKUP_IN_FILES=off
-SIGNATURES_VERSION=0.2.3
-INSTALLED=on

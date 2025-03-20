@@ -1,7 +1,0 @@
-tcp&udp,,53,on,,GREEN&BLUE&ORANGE&VPN:ANY,off,DNS,ACCEPT,,
-#if $DNSMASQ_ANTISPYWARE
-  #for $zone in $ZONES
-tcp,,30443,on,,$zone,off,Blackhole web page,ACCEPT,,
-tcp&udp,,30080,on,,$zone,off,Blackhole web page,ACCEPT,,
-  #end for
-#end if

@@ -1,7 +1,0 @@
-iptables -F VPNFWDST
-iptables -t mangle -F VPNFWDST
-iptables -F VPNFWBRIDGE
-iptables -t mangle -F VPNFWBRIDGE
-iptables -A VPNFWDST -d 192.168.20.0/24 -j VPNFW
-iptables -A VPNFWDST -d 192.168.20.0/24 -j VPNFW_LOGDROP
-iptables -t mangle -A VPNFWDST -d 192.168.20.0/24 -j ACCEPT
