@@ -1,0 +1,11 @@
+inih: inih (INI Not Invented Here)
+inih:
+inih: inih (INI Not Invented Here)** is a simple .INI file parser written in
+inih: C. It's only a couple of pages of code, and it was designed to be
+inih: small and simple, so it's good for embedded systems. It's also more or
+inih: less compatible with Python's ConfigParser style of .INI files,
+inih: including RFC 822-style multi-line syntax and `name: value` entries.
+inih:
+inih: Homepage: https://github.com/benhoyt/inih
+inih:
+inih:

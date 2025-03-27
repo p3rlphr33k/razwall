@@ -1,0 +1,7 @@
+/usr/local/lib64/perl5/JSON/Syck.pm
+/usr/local/lib64/perl5/YAML/Dumper/Syck.pm
+/usr/local/lib64/perl5/YAML/Loader/Syck.pm
+/usr/local/lib64/perl5/YAML/Syck.pm
+/usr/local/lib64/perl5/auto/YAML/Syck/Syck.so
+/usr/local/share/man/man3/JSON::Syck.3
+/usr/local/share/man/man3/YAML::Syck.3

@@ -1,0 +1,11 @@
+openal-soft: openal-soft (OpenAL 3D audio API)
+openal-soft:
+openal-soft: OpenAL Soft is an LGPL-licensed, cross-platform, implementation of the
+openal-soft: OpenAL 3D audio API. OpenAL Soft provides capabilities for playing
+openal-soft: audio in a virtual 3D environment. It also facilitates streaming
+openal-soft: audio, multi-channel buffers, and audio capture.
+openal-soft:
+openal-soft: Homepage: https://openal-soft.org
+openal-soft:
+openal-soft:
+openal-soft:

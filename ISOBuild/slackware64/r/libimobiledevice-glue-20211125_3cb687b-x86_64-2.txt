@@ -1,0 +1,11 @@
+libimobiledevice-glue: libimobiledevice-glue (glue library for libimobiledevice) 
+libimobiledevice-glue:
+libimobiledevice-glue: Library with common code used by the libraries and tools from the
+libimobiledevice-glue: libimobiledevice project. The main functionality provided by this
+libimobiledevice-glue: library are socket helper functions and a platform independent
+libimobiledevice-glue: thread/mutex implementation. It also provides a number of string,
+libimobiledevice-glue: file, and plist helper functions, as well as some other commonly used
+libimobiledevice-glue: code that was originally duplicated in the dedicated projects.
+libimobiledevice-glue:
+libimobiledevice-glue: The libimobiledevice homepage: http://www.libimobiledevice.org/
+libimobiledevice-glue:

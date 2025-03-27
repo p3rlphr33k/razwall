@@ -1,0 +1,11 @@
+liburing: liburing (io_uring instance library)
+liburing:
+liburing: This is the io_uring library, liburing. liburing provides helpers to
+liburing: setup and teardown io_uring instances, and also a simplified interface
+liburing: for applications that don't need (or want) to deal with the full
+liburing: kernel side implementation.
+liburing:
+liburing: Homepage: https://git.kernel.dk/cgit/liburing/
+liburing:
+liburing:
+liburing:

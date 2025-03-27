@@ -1,0 +1,11 @@
+lmdb: lmdb (Lightning Memory-mapped key-value database)
+lmdb:
+lmdb: LMDB is an ultra-fast, ultra-compact key-value embedded data store
+lmdb: developed by Symas for the OpenLDAP Project. By using memory-mapped
+lmdb: files, it provides the read performance of a pure in-memory database
+lmdb: while still offering the persistence of standard disk-based databases,
+lmdb: and is only limited to the size of the virtual address space.
+lmdb:
+lmdb: Homepage: http://symas.com/mdb/
+lmdb:
+lmdb:

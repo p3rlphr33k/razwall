@@ -1,0 +1,11 @@
+utf8proc: utf8proc (Unicode processing library)
+utf8proc:
+utf8proc: utf8proc is a small, clean C library that provides Unicode
+utf8proc: normalization, case-folding, and other operations for data in the
+utf8proc: UTF-8 encoding. It was initially developed by Jan Behrens and the
+utf8proc: rest of the Public Software Group, who deserve nearly all of the
+utf8proc: credit for this package. With the blessing of the Public Software
+utf8proc: Group, the Julia developers have taken over development of utf8proc.
+utf8proc:
+utf8proc: Homepage: https://github.com/JuliaStrings/utf8proc
+utf8proc:

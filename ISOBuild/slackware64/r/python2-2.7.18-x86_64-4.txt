@@ -1,0 +1,11 @@
+python2: python2 (object-oriented interpreted programming language, v2)
+python2:
+python2: Python is an interpreted, interactive, object-oriented programming
+python2: language that combines remarkable power with very clear syntax. 
+python2: Python's basic power can be extended with your own modules written in
+python2: C or C++. Python is also adaptable as an extension language for
+python2: existing applications. 
+python2:
+python2: Homepage: http://www.python.org
+python2:
+python2:

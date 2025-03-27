@@ -1,0 +1,11 @@
+libical: libical (iCAL protocol implementation)
+libical:
+libical: libical is an Open Source (MPL/LGPL) implementation of the IETF's
+libical: iCalendar Calendaring and Scheduling protocols. (RFC 2445, 2446, and
+libical: 2447). It parses iCal components and provides C/C++/Python/Java APIs
+libical: for manipulating the component properties, parameters, and
+libical: subcomponents.
+libical:
+libical: Homepage: https://github.com/libical/libical
+libical:
+libical:

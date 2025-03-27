@@ -1,0 +1,11 @@
+parallel: parallel (tool for executing jobs in parallel)
+parallel:
+parallel: GNU Parallel is a shell tool for executing jobs in parallel using one
+parallel: or more computers. A job can be a single command or a small script
+parallel: that has to be run for each of the lines in the input.
+parallel:
+parallel: Homepage: https://www.gnu.org/software/parallel/
+parallel:
+parallel:
+parallel:
+parallel:

@@ -49,16 +49,20 @@ push(@network, $netsettings{'LAN_NETADDRESS'});
 push(@masklen, $netsettings{'LAN_NETMASK'} );
 push(@colour, $colourgreen );
 
+#print STDERR "LAN_DEV: $netsettings{'LAN_DEV'} \n";
 # Add Green Routes to Array
 my @routes = `/sbin/route -n | /bin/grep $netsettings{'LAN_DEV'}`;
 foreach my $route (@routes) {
     chomp($route);
     my @temp = split(/[\t ]+/, $route);
+	#print STDERR "TEMP0: $temp[0] \n";
+	#print STDERR "TEMP2: $temp[2] \n";
+	#print STDERR "color: $colourgreen \n";
     push(@network, $temp[0]);
     push(@masklen, $temp[2]);
     push(@colour, $colourgreen );
 }
-
+#print STDERR "COLORS: @colour \n";
 # Add Firewall Localhost 127.0.0.1
 push(@network, '127.0.0.1');
 push(@masklen, '255.255.255.255' );
@@ -70,6 +74,7 @@ push(@colour, $colourfw );
 
 # Add Orange Network
 if (dmz_used()) {
+	print STDERR "DMZ is used!\n";
     push(@network, $netsettings{'DMZ_NETADDRESS'});
     push(@masklen, $netsettings{'DMZ_NETMASK'} );
     push(@colour, $colourorange );
@@ -86,6 +91,7 @@ if (dmz_used()) {
 
 # Add Blue Network
 if (lan2_used()) {
+	print STDERR "LAN2 is used!\n";
     push(@network, $netsettings{'LAN2_NETADDRESS'});
     push(@masklen, $netsettings{'LAN2_NETMASK'} );
     push(@colour, $colourblue );
@@ -208,7 +214,7 @@ _('Expires')
 
 ;
 
-my @active = `sudo iptstate -s -R -bt`;
+my @active = `iptstate -s -R -bt`;
 
 #open (ACTIVE, "/proc/net/ipsec_eroute");
 #my @vpn = <ACTIVE>;

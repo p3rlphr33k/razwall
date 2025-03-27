@@ -1,0 +1,11 @@
+freecell-solver: freecell-solver (solve layouts of freecell games)
+freecell-solver:
+freecell-solver: Freecell Solver is a program that automatically solves layouts of
+freecell-solver: Freecell and similar variants of Card Solitaire such as Eight Off,
+freecell-solver: Forecell, and Seahaven Towers, as well as Simple Simon boards. 
+freecell-solver:
+freecell-solver: Homepage: https://fc-solve.shlomifish.org/
+freecell-solver:
+freecell-solver:
+freecell-solver:
+freecell-solver:

@@ -1,0 +1,11 @@
+fuse3: fuse3 (Filesystem in Userspace v3)
+fuse3:
+fuse3: FUSE is a simple interface for userspace programs to export a virtual
+fuse3: filesystem to the Linux kernel. FUSE also aims to provide a secure
+fuse3: method for non privileged users to create and mount their own
+fuse3: filesystem implementations.
+fuse3:
+fuse3: Homepage: https://github.com/libfuse/libfuse
+fuse3:
+fuse3:
+fuse3:

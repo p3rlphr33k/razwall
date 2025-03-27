@@ -1,0 +1,11 @@
+libbytesize: libbytesize (library for working with big sizes in bytes)
+libbytesize:
+libbytesize: libbytesize is a library providing a C class for working with
+libbytesize: arbitrary sizes in bytes.
+libbytesize:
+libbytesize: Homepage: https://github.com/rhinstaller/libbytesize
+libbytesize:
+libbytesize:
+libbytesize:
+libbytesize:
+libbytesize:

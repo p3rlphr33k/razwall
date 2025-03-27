@@ -1,0 +1,11 @@
+efivar: efivar (library and utilities to handle UEFI variables)
+efivar:
+efivar: The efivar package contains a library and utilities for manipulating
+efivar: UEFI (Unified Extensible Firmware Interface) variables.
+efivar:
+efivar: Homepage: https://github.com/rhboot/efivar
+efivar:
+efivar:
+efivar:
+efivar:
+efivar:

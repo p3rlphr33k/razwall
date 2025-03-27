@@ -1,0 +1,11 @@
+razwall: RazWall Firewall - Simple is Safe
+razwall:
+razwall: RazWall Firewall is a small linux firewall package built
+razwall: on Slackware 15. This release uses iptables, OpenVPN, bind9
+razwall: isc-dhcp-server, and Apache.
+razwall:
+razwall: Homepage:  https://razwall.com
+razwall: Support:   https://razwall.com/forum
+razwall: Download:  https://sourceforge.com/projects/razwall
+razwall: Source:    https://github.com/p3rlphr33k/razwall
+razwall:

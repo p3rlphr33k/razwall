@@ -1,0 +1,11 @@
+keybinder3: keybinder3 (keyboard shortcut library for GTK+ v3)
+keybinder3:
+keybinder3: keybinder is a library for registering global keyboard shortcuts. 
+keybinder3: Keybinder works with GTK-based applications using the X Window System.
+keybinder3:
+keybinder3: Homepage: https://github.com/engla/keybinder
+keybinder3:
+keybinder3:
+keybinder3:
+keybinder3:
+keybinder3:

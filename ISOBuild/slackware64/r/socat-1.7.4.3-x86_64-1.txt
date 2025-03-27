@@ -1,0 +1,11 @@
+socat: socat (Multipurpose relay - SOcket CAT)
+socat:
+socat: Socat is a command line based utility that establishes two
+socat: bidirectional byte streams and transfers data between them. Because
+socat: the streams can be constructed from a large set of different types of
+socat: data sinks and sources, and because lots of address options may be
+socat: applied to the streams, socat can be used for many different purposes.
+socat:
+socat: Homepage: http://www.dest-unreach.org/socat
+socat:
+socat:

@@ -1,0 +1,11 @@
+python-pycparser: python-pycparser (C parser written in Python)
+python-pycparser:
+python-pycparser: pycparser is a parser for the C language, written in pure Python. It
+python-pycparser: is a module designed to be easily integrated into applications that
+python-pycparser: need to parse C source code.
+python-pycparser:
+python-pycparser: Homepage: https://github.com/eliben/pycparser
+python-pycparser:
+python-pycparser:
+python-pycparser:
+python-pycparser:

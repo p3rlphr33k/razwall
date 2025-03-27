@@ -1,0 +1,11 @@
+libnsl: libnsl (NIS/YP and NIS+ library)
+libnsl:
+libnsl: This package contains the libnsl library. This library contains the
+libnsl: public client interface for NIS(YP) and NIS+. This code was formerly
+libnsl: part of glibc, but is now standalone to be able to link against TI-RPC
+libnsl: for IPv6 support.
+libnsl:
+libnsl: Homepage: https://github.com/thkukuk/libnsl
+libnsl:
+libnsl:
+libnsl:

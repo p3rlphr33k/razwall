@@ -1,0 +1,11 @@
+vala: vala (GNOME programming language)
+vala:
+vala: Vala is a programming language that aims to bring modern programming
+vala: language features to GNOME developers without imposing any additional
+vala: runtime requirements and without using a different ABI compared to
+vala: applications and libraries written in C.
+vala:
+vala: Homepage: https://wiki.gnome.org/Projects/Vala
+vala:
+vala:
+vala:

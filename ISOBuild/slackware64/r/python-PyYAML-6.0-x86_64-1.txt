@@ -1,0 +1,11 @@
+python-PyYAML: python-PyYAML (YAML parser and emitter for Python)
+python-PyYAML:
+python-PyYAML: YAML is a data serialization format designed for human readability and
+python-PyYAML: interaction with scripting languages. PyYAML is a YAML parser and
+python-PyYAML: emitter for Python. PyYAML supports standard YAML tags and provides
+python-PyYAML: Python-specific tags that represent an arbitrary Python object. PyYAML
+python-PyYAML: is applicable for a broad range of tasks from complex configuration
+python-PyYAML: files to object serialization and persistence.
+python-PyYAML:
+python-PyYAML: Homepage: https://pyyaml.org/
+python-PyYAML:

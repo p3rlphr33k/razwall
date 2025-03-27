@@ -1,0 +1,7 @@
+/usr/local/bin/json_xs
+/usr/local/lib64/perl5/JSON/XS.pm
+/usr/local/lib64/perl5/JSON/XS/Boolean.pm
+/usr/local/lib64/perl5/auto/JSON/XS/XS.so
+/usr/local/share/man/man1/json_xs.1
+/usr/local/share/man/man3/JSON::XS.3
+/usr/local/share/man/man3/JSON::XS::Boolean.3

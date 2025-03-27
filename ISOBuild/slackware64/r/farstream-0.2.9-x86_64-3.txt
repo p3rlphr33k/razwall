@@ -1,0 +1,11 @@
+farstream: farstream (GStreamer videoconferencing support)
+farstream:
+farstream: Farstream is a collection of GStreamer modules and libraries for
+farstream: videoconferencing.
+farstream:
+farstream: Homepage: https://www.freedesktop.org/wiki/Software/Farstream
+farstream:
+farstream:
+farstream:
+farstream:
+farstream:

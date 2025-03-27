@@ -1,0 +1,13 @@
+/usr/local/share/man/man3/Term::Table.3
+/usr/local/share/man/man3/Term::Table::Cell.3
+/usr/local/share/man/man3/Term::Table::CellStack.3
+/usr/local/share/man/man3/Term::Table::HashBase.3
+/usr/local/share/man/man3/Term::Table::LineBreak.3
+/usr/local/share/man/man3/Term::Table::Util.3
+/usr/local/share/perl5/Term/Table.pm
+/usr/local/share/perl5/Term/Table/Cell.pm
+/usr/local/share/perl5/Term/Table/CellStack.pm
+/usr/local/share/perl5/Term/Table/HashBase.pm
+/usr/local/share/perl5/Term/Table/LineBreak.pm
+/usr/local/share/perl5/Term/Table/Spacer.pm
+/usr/local/share/perl5/Term/Table/Util.pm

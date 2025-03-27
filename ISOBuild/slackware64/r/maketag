@@ -1,0 +1,846 @@
+#!/bin/sh
+#item   ####description                                      ###on off ###
+TMP=/var/log/setup/tmp
+if [ ! -d $TMP ]; then
+  mkdir -p $TMP
+fi
+cat /dev/null > $TMP/SeTnewtag
+dialog --title "SELECTING PACKAGES FROM SERIES R (RAZWALL SYSTEM)" \
+       --checklist "Please confirm the packages you wish to install \
+from series R. Use the UP/DOWN keys to scroll through the list, and \
+the SPACE key to deselect any packages don't want installed. You are \
+cautioned against unselecting REQUIRED packages. However, it's your \
+system. :^) Press ENTER when you are done."  21 76 10 \
+"aaa_base" "Basic filesystem, shell, and utils - REQUIRED" "on" \
+"aaa_glibc-solibs" "Runtime glibc support libraries - REQUIRED" "on" \
+"aaa_libraries" "Various shared libraries -- REQUIRED" "on" \
+"aaa_terminfo" "A subset of the terminfo database from ncurses" "on" \
+"acl" "POSIX Access Control List tools -- REQUIRED" "on" \
+"acpid" "ACPI Power Management daemon" "on" \
+"attr" "Tools for fs extended attributes -- REQUIRED" "on" \
+"bash" "GNU bash shell - REQUIRED" "on" \
+"bin" "Various system utilities - REQUIRED" "on" \
+"btrfs-progs" "Utilities for btrfs filesystems" "on" \
+"bzip2" "bzip2 compression utility" "on" \
+"coreutils" "The core GNU command-line utilities - REQUIRED" "on" \
+"cpio" "The GNU cpio backup/archiving utility" "on" \
+"cpufrequtils" "Kernel CPUfreq utilities" "on" \
+"cracklib" "Password checking library - REQUIRED" "on" \
+"cryptsetup" "Utilities for encrypting partitions" "on" \
+"dbus" "D-Bus message bus system" "on" \
+"dcron" "Cron daemon - REQUIRED" "on" \
+"devs" "Device files found in /dev - REQUIRED" "on" \
+"dialog" "The program that generates these menus :-)" "on" \
+"dosfstools" "Tools for working with FAT filesystems" "on" \
+"e2fsprogs" "Utilities for ext2/3/4 filesystems - REQUIRED" "on" \
+"ed" "A clone of the old, original UN*X line editor" "on" \
+"efibootmgr" "Tool to modify UEFI boot entries" "on" \
+"efivar" "Library and tools to handle UEFI variables" "on" \
+"elilo" "Linux Loader for EFI-based platforms" "on" \
+"elogind" "logind extracted from systemd" "on" \
+"elvis" "elvis text editor (ex/vi clone)" "on" \
+"etc" "System config files & utilities - REQUIRED" "on" \
+"eudev" "Manages /dev and modules - REQUIRED" "on" \
+"exfatprogs" "exFAT filesystem utilities" "on" \
+"f2fs-tools" "Flash-Friendly File System" "on" \
+"file" "Determines what file format data is in" "on" \
+"findutils" "GNU file finding utilities" "on" \
+"floppy" "Utilities for using DOS floppies" "on" \
+"gawk" "GNU awk pattern scanning language" "on" \
+"genpower" "UPS monitoring daemon" "on" \
+"gettext" "Programs used to internationalize scripts" "on" \
+"glibc-zoneinfo" "Configures your time zone" "on" \
+"gpm" "Cut and paste text with your mouse" "on" \
+"gptfdisk" "GPT fdisk utilities" "on" \
+"grep" "GNU grep searching tool - REQUIRED" "on" \
+"grub" "GNU GRUB, the GRand Unified Bootloader" "on" \
+"gzip" "GNU zip compression utility - REQUIRED" "on" \
+"haveged" "A simple entropy daemon" "on" \
+"hdparm" "Get/Set IDE hard drive parameters" "on" \
+"hostname" "Linux hostname utility - REQUIRED" "on" \
+"hwdata" "Hardware identification and config data" "on" \
+"infozip" "zip/unzip archive utilities" "on" \
+"inih" "INI Not Invented Here" "on" \
+"inotify-tools" "Command-line tools for using inotify." "on" \
+"jfsutils" "Utilities for IBM's Journaled Filesystem" "on" \
+"kbd" "Change keyboard and console mappings" "on" \
+"kernel-firmware" "Linux kernel firmware -- REQUIRED" "on" \
+"kernel-generic" "Generic 5.15.19 kernel (needs an initrd)" "on" \
+"kernel-huge" "Loaded 5.15.19 Linux kernel" "on" \
+"kernel-modules" "Linux 5.15.19 kernel modules -- REQUIRED" "on" \
+"kmod" "Kernel module utilities -- REQUIRED" "on" \
+"lbzip2" "Parallel bzip2 compressor" "on" \
+"less" "A text pager utility - REQUIRED" "on" \
+"lhasa" "Free LZH archive tool" "on" \
+"libblockdev" "library for manipulating block devices" "on" \
+"libbytesize" "library for working with big sizes in bytes" "on" \
+"libcgroup" "Tools for using kernel control groups" "on" \
+"libgudev" "udev GObject bindings library - REQUIRED" "on" \
+"libpwquality" "Password quality checking library - REQUIRED" "on" \
+"lilo" "Boot loader for Linux, DOS, OS/2, etc." "on" \
+"logrotate" "System log rotation utility" "on" \
+"lrzip" "Long Range ZIP" "on" \
+"lvm2" "Tools for creating logical volumes" "on" \
+"lzip" "A lossless data compressor" "on" \
+"lzlib" "lzip compression library" "on" \
+"mcelog" "Machine Check Event logger" "on" \
+"mdadm" "Utilities for managing MD (RAID) devices" "on" \
+"minicom" "Serial transfer and modem comm package" "on" \
+"mkinitrd" "Tool for building an initial ramdisk" "on" \
+"mlocate" "Locates files on the system" "on" \
+"mt-st" "mt ported from BSD - controls tape drive" "on" \
+"mtx" "Controls tape autochangers" "on" \
+"ncompress" "The historic compress utility" "on" \
+"ndctl" "non-volatile memory device library" "on" \
+"ntfs-3g" "FUSE-based NTFS read-write mount program" "on" \
+"nvi" "nvi text editor (ex/vi clone)" "on" \
+"openssl-solibs" "OpenSSL shared libraries -- REQUIRED" "on" \
+"os-prober" "A tool for finding bootable OS partitions" "on" \
+"pam" "Pluggable Authentication Modules -- REQUIRED" "on" \
+"patch" "Applies a diff file to an original file" "on" \
+"pciutils" "Linux PCI utilities" "on" \
+"pcmciautils" "PCMCIA card services for the Linux kernel" "on" \
+"pkgtools" "Slackware package management tools - REQUIRED" "on" \
+"plzip" "Parallel lzip compressor" "on" \
+"procps-ng" "Displays process info - REQUIRED" "on" \
+"quota" "User disk quota utilities" "on" \
+"reiserfsprogs" "Tools for the ReiserFS journaling filesystem" "on" \
+"rpm2tgz" "A simple script to convert an RPM to a tgz" "on" \
+"sdparm" "Get/Set SCSI hard drive parameters" "on" \
+"sed" "GNU stream editor -- REQUIRED" "on" \
+"shadow" "Shadow password suite -- REQUIRED" "on" \
+"sharutils" "GNU shell archive utilities - REQUIRED" "on" \
+"smartmontools" "Hard drive monitoring utilities" "on" \
+"splitvt" "Split a screen into sections (use screen ;-)" "on" \
+"sysfsutils" "Utilities for the sysfs filesystem" "on" \
+"sysklogd" "Logs system and kernel messages" "on" \
+"syslinux" "Loader for making Linux boot floppies" "on" \
+"sysvinit" "System V-like INIT programs - REQUIRED" "on" \
+"sysvinit-functions" "Init functions used by some third-party apps" "on" \
+"sysvinit-scripts" "The startup scripts for Slackware - REQUIRED" "on" \
+"tar" "GNU tar archive utility -- REQUIRED" "on" \
+"tcsh" "Extended C shell /bin/tcsh" "on" \
+"time" "Times how long a process takes to run" "on" \
+"tree" "Display a directory in tree form" "on" \
+"udisks" "storage device daemon" "on" \
+"udisks2" "storage device daemon v2" "on" \
+"unarj" "Extract ARJ archives" "on" \
+"upower" "power management abstraction daemon" "on" \
+"usb_modeswitch" "Switching tool for multiple mode USB devices" "on" \
+"usbutils" "Linux USB utilities" "on" \
+"utempter" "Library used for writing to utmp/wtmp" "on" \
+"util-linux" "Util-linux utilities - REQUIRED" "on" \
+"volume_key" "manipulate storage keys" "on" \
+"which" "Locate an executable in your \$PATH" "on" \
+"xfsprogs" "Utilities for SGI's XFS filesystem" "on" \
+"xz" "xz (LZMA) compression utility - REQUIRED" "on" \
+"zerofree" "Zero free blocks from ext* filesystems" "on" \
+"zoo" "Zoo archive utility" "on" \
+"a2ps" "Any to .ps filter (required by APSfilter)" "on" \
+"acct" "Process accounting utilities" "on" \
+"alsa-utils" "ALSA sound utilities" "on" \
+"amp" "A command-line MP3 player" "on" \
+"at" "Schedule commands to execute at a later time" "on" \
+"bc" "GNU bc - arbitrary precision math language" "on" \
+"bpe" "Binary Patch (file) Editor" "on" \
+"cdparanoia" "Cdparanoia CD audio ripper" "on" \
+"cdrdao" "Tool for burning audio CDRs" "on" \
+"cdrtools" "CD-R/RW mastering/burning tools" "on" \
+"cups" "CUPS - printer spooling system" "on" \
+"cups-filters" "Backends and filters for CUPS" "on" \
+"dash" "A fast and small POSIX-compliant /bin/sh" "on" \
+"dc3dd" "Enhanced dd for computer forensics" "on" \
+"ddrescue" "Data recovery utility" "on" \
+"diffstat" "Generate diff statistics" "on" \
+"diffutils" "GNU diffutils - find file differences" "on" \
+"dmapi" "Data Management API library for xfsdump" "on" \
+"dmidecode" "DMI table decoder (displays hardware info)" "on" \
+"dvd+rw-tools" "DVD+/-R/RW mastering/burning tools" "on" \
+"enscript" "A text to PostScript utility" "on" \
+"flac" "Free Lossless Audio Codec" "on" \
+"ghostscript" "Ghostscript PS/PDF interpreter" "on" \
+"ghostscript-fonts-std" "Ghostscript Type1 fonts" "on" \
+"gphoto2" "A command-line camera client for libgphoto2" "on" \
+"groff" "GNU groff document formatting system" "on" \
+"gutenprint" "Additional printer drivers for gs and CUPS" "on" \
+"hplip" "HP printing and scanning software" "on" \
+"htop" "An ncurses-based process viewer" "on" \
+"inxi" "system information tool" "on" \
+"ispell" "The International version of ispell" "on" \
+"itstool" "Translate XML documents with PO files" "on" \
+"jed" "JED programmer's editor" "on" \
+"joe" "joe text editor" "on" \
+"jove" "Jonathan's Own Version of Emacs text editor" "on" \
+"ksh93" "KornShell language and interactive shell" "on" \
+"libx86" "Real-mode x86 code execution library" "on" \
+"linuxdoc-tools" "Utilities for DocBook/SGML documents" "on" \
+"lm_sensors" "Hardware monitoring package" "on" \
+"lsof" "A tool to list open files" "on" \
+"lsscsi" "Display infomation about SCSI devices" "on" \
+"lxc" "Linux Containers tools" "on" \
+"madplay" "MPEG audio player" "on" \
+"man-db" "Primary tool for reading online documentation" "on" \
+"man-pages" "Online documentation (requires groff)" "on" \
+"mariadb" "An enhanced, drop-in replacement for MySQL" "on" \
+"mc" "The Midnight Commander file manager" "on" \
+"moc" "A music player for the console" "on" \
+"most" "A pager, like 'more' or 'less'" "on" \
+"mpg123" "A command-line MP3 player" "on" \
+"nano" "A simple editor with the look and feel of Pico" "on" \
+"neofetch" "system information tool" "on" \
+"normalize" "Normalize audio file volume" "on" \
+"nvme-cli" "NVMe storage command line utility" "on" \
+"opus-tools" "Tools for the Opus audio codec" "on" \
+"pamixer" "PulseAudio command line mixer" "on" \
+"powertop" "PowerTOP system energy usage utility" "on" \
+"qpdf" "Command-line tools and library for PDF files" "on" \
+"radeontool" "Utility for laptops with a Radeon chipset" "on" \
+"rpm" "RPM package tool (unsupported)" "on" \
+"rzip" "A large file compression utility" "on" \
+"sc" "The 'sc' spreadsheet" "on" \
+"sc-im" "The SC-IM spreadsheet program" "on" \
+"screen" "ANSI/vt100 virtual terminal emulator" "on" \
+"seejpeg" "An SVGAlib image viewer" "on" \
+"slackpkg" "Slackware package updating tool" "on" \
+"soma" "A dialog-based Internet radio player" "on" \
+"sox" "Sound utilities" "on" \
+"sqlite" "A small SQL database server and library" "on" \
+"squashfs-tools" "Squashed read-only filesystem for Linux" "on" \
+"sudo" "Allow special users limited root access" "on" \
+"sysstat" "System performance monitoring tools" "on" \
+"terminus-font" "a clean fixed width font" "on" \
+"texinfo" "GNU texinfo documentation system" "on" \
+"tmux" "terminal multiplexer" "on" \
+"undervolt" "undervolt Intel CPUs" "on" \
+"usbmuxd" "iOS USB connection daemon" "on" \
+"vbetool" "Video BIOS execution tool" "on" \
+"vim" "Improved ex/vi clone" "on" \
+"vorbis-tools" "Ogg Vorbis encoder, player, and utilities" "on" \
+"xfsdump" "Backup/restore tools for the XFS filesystem" "on" \
+"xorriso" "ISO-9660 and Rock Ridge manipulation tool" "on" \
+"zsh" "Zsh - a custom *nix shell" "on" \
+"Cython" "C bindings for Python" "on" \
+"autoconf" "GNU source autoconfig system" "on" \
+"autoconf-archive" "macros for GNU Autoconf" "on" \
+"automake" "GNU makefile generator" "on" \
+"binutils" "GNU C compiler utilities" "on" \
+"bison" "GNU bison parser generator" "on" \
+"ccache" "Fast Compiler Cache" "on" \
+"check" "unit test framework" "on" \
+"clisp" "CLISP Common Lisp" "on" \
+"cmake" "Cross platform make utility" "on" \
+"cscope" "Source code browser" "on" \
+"cvs" "Concurrent Versions System" "on" \
+"dev86" "8086 assembler/loader" "on" \
+"distcc" "gcc frontend to use networked machines" "on" \
+"doxygen" "Source code documentation generator" "on" \
+"flex" "Fast lexical analyzer generator" "on" \
+"gcc" "GNU C compiler" "on" \
+"gcc-brig" "GNU BRIG (HSA IL) front-end for gcc" "on" \
+"gcc-g++" "GNU C++ compiler for gcc" "on" \
+"gcc-gdc" "GNU D compiler for gcc" "on" \
+"gcc-gfortran" "GNU Fortran 95/2003/2008 compiler for gcc" "on" \
+"gcc-gnat" "GNU Ada83/95/2005/2012 compiler for gcc" "on" \
+"gcc-go" "GNU Go compiler for gcc" "on" \
+"gcc-objc" "GNU Objective-C/C++ compiler for gcc" "on" \
+"gdb" "The GNU debugger" "on" \
+"gettext-tools" "GNU internationalization devel package" "on" \
+"git" "A directory content manager" "on" \
+"gnucobol" "open source COBOL compiler" "on" \
+"gperf" "Generates hash functions" "on" \
+"guile" "GNU extension language library" "on" \
+"gyp" "Generate Your Projects" "on" \
+"help2man" "Automatic man page generator" "on" \
+"icecream" "distributed C/C++ compiler daemon/scheduler" "on" \
+"indent" "Change the indenting style of a C program" "on" \
+"intltool" "Internationalization utilities" "on" \
+"kernel-headers" "Linux kernel include files" "on" \
+"libtool" "GNU libtool library support script" "on" \
+"llvm" "LLVM compiler toolkit" "on" \
+"m4" "GNU m4 macro processor" "on" \
+"make" "GNU make" "on" \
+"mercurial" "Distributed source management system" "on" \
+"meson" "A high performance build system" "on" \
+"nasm" "NASM assembler" "on" \
+"ninja" "build system with a focus on speed" "on" \
+"opencl-headers" "OpenCL (Open Computing Language) header files" "on" \
+"oprofile" "System profiling tool" "on" \
+"p2c" "A Pascal to C translator" "on" \
+"parallel" "Tool for executing jobs in parallel" "on" \
+"patchelf" "tool to modify ELF binaries/libraries" "on" \
+"perl" "Larry Wall's systems language" "on" \
+"pkg-config" "A tool for managing library information" "on" \
+"pmake" "Parallel make from BSD" "on" \
+"poke" "GNU binary data editor" "on" \
+"python-pip" "tool for installing Python packages" "on" \
+"python-setuptools" "Enhancements to Python distutils" "on" \
+"python2" "An interpreted object-oriented language, v2" "on" \
+"python3" "An interpreted object-oriented language, v3" "on" \
+"rcs" "GNU revision control system" "on" \
+"re2c" "regular expressions to C/C++ conversion tool" "on" \
+"rinutils" "set of C headers" "on" \
+"ruby" "Interpreted object-oriented script language" "on" \
+"rust" "a safe, concurrent, practical language" "on" \
+"sassc" "Sass CSS preprocessor" "on" \
+"scons" "A software construction tool" "on" \
+"slacktrack" "Tracks a source installation to make a package" "on" \
+"strace" "Traces program execution" "on" \
+"subversion" "Subversion version control system" "on" \
+"swig" "Simplified Wrapper and Interface Generator" "on" \
+"vala" "GNOME programming language" "on" \
+"yasm" "The Yasm Modular Assembler" "on" \
+"GConf" "GNOME configuration library" "on" \
+"LibRaw" "Library for decoding RAW digital photos" "on" \
+"M2Crypto" "Cryptography toolkit for Python" "on" \
+"Mako" "Template library written in Python" "on" \
+"PyQt5" "Python bindings for Qt5" "on" \
+"QScintilla" "Qt port of the Scintilla C++ editor control" "on" \
+"QtAV" "multimedia playback framework" "on" \
+"SDL2" "Simple DirectMedia Layer Version 2" "on" \
+"SDL2_gfx" "SDL2 graphics primitives / surface functions" "on" \
+"SDL2_image" "SDL2 image loading library" "on" \
+"SDL2_mixer" "SDL2 multi-channel audio mixer library" "on" \
+"SDL2_net" "SDL2 network library" "on" \
+"SDL2_ttf" "SDL2 TrueType font library" "on" \
+"a52dec" "ATSC A/52 stream decoder library" "on" \
+"aalib" "ASCII Art library" "on" \
+"accountsservice" "D-Bus interface for user account query" "on" \
+"adwaita-icon-theme" "GTK+ default icon theme" "on" \
+"alsa-lib" "ALSA sound library" "on" \
+"alsa-oss" "OSS compatibility wrapper for ALSA" "on" \
+"alsa-plugins" "ALSA plugins, including PulseAudio" "on" \
+"apr" "Apache Portable Runtime library" "on" \
+"apr-util" "Extra APR library interfaces" "on" \
+"argon2" "Argon2 password-hashing function" "on" \
+"aspell" "Spell checking library" "on" \
+"aspell-en" "English word list for Aspell" "on" \
+"at-spi2-atk" "AT-SPI2 bridge to ATK" "on" \
+"at-spi2-core" "Assistive Technology Interface core" "on" \
+"atk" "Accessability library" "on" \
+"atkmm" "Accessability library for GTKmm" "on" \
+"audiofile" "SGI's Audio File sound library" "on" \
+"babl" "A pixel format translation library" "on" \
+"boost" "Boost C++ Libraries" "on" \
+"brotli" "Brotli compression format" "on" \
+"cairo" "Vector graphics library used by GTK+" "on" \
+"cairomm" "Vector graphics library used by GTKmm" "on" \
+"cfitsio" "FITS file subroutine library" "on" \
+"chmlib" "Library for accessing CHM files" "on" \
+"clucene" "Text-Search Engine" "on" \
+"cryfs" "cryptographic filesystem" "on" \
+"cryptopp" "library of cryptographic schemes" "on" \
+"db48" "Berkeley DB library, version 4.8" "on" \
+"dbus-glib" "glib bindings for the dbus IPC library" "on" \
+"dbus-python" "Python bindings for the D-Bus library" "on" \
+"dconf" "low-level configuration system" "on" \
+"dconf-editor" "graphical editor for dconf" "on" \
+"desktop-file-utils" "Tools for .desktop files" "on" \
+"djvulibre" "Web-centric document and image format" "on" \
+"dotconf" "configuration file parser" "on" \
+"dvdauthor" "tools to author a DVD" "on" \
+"ebook-tools" "Tools for ebook file formats" "on" \
+"editorconfig-core-c" "EditorConfig core C library" "on" \
+"eigen3" "C++ math library" "on" \
+"elfutils" "ELF object file access library and utilities" "on" \
+"enchant" "A wrapper for spellcheck libraries" "on" \
+"esound" "Enlightened Sound Daemon" "on" \
+"espeak-ng" "text-to-speech synthesizer" "on" \
+"exiv2" "Exif and IPTC Metadata Library and Tools" "on" \
+"expat" "XML parser library" "on" \
+"farstream" "GStreamer videoconferencing support" "on" \
+"ffmpeg" "FFmpeg multimedia libraries and utilities" "on" \
+"fftw" "Fast Fourier Transform library" "on" \
+"fluidsynth" "Real-time software synthesizer" "on" \
+"freecell-solver" "solve layouts of freecell games" "on" \
+"freetype" "Font rendering library" "on" \
+"frei0r-plugins" "API for video effects" "on" \
+"fribidi" "Unicode BiDirectional library" "on" \
+"fuse" "Tools for using filesystems in userspace" "on" \
+"fuse3" "Tools for using filesystems in userspace v3" "on" \
+"gamin" "a minimalist FAM replacement" "on" \
+"gc" "Boehm-Demers-Weiser garbage collector library" "on" \
+"gcr" "crypto library and ui for gnome-keyring" "on" \
+"gd" "A graphics library" "on" \
+"gdbm" "The GNU gdbm database library" "on" \
+"gdk-pixbuf2" "Image library used by GTK+2" "on" \
+"gdk-pixbuf2-xlib" "GdkPixbuf/Xlib API" "on" \
+"gegl" "Generic Graphics Library" "on" \
+"gexiv2" "GObject-based Exiv2 wrapper" "on" \
+"giflib" "GIF image library" "on" \
+"gjs" "javascript bindings for GNOME" "on" \
+"glade" "Glade UI Designer" "on" \
+"glib" "Support library used by GTK+" "on" \
+"glib-networking" "network-related giomodules for glib" "on" \
+"glib2" "GLib version 2" "on" \
+"glibc" "The GNU C library" "on" \
+"glibc-i18n" "Internationalization support for glibc" "on" \
+"glibc-profile" "Profiling support for glibc" "on" \
+"glibmm" "Support library used by GTKmm" "on" \
+"gmime" "MIME parsing library" "on" \
+"gmm" "C++ generic matrix template library" "on" \
+"gmp" "A library for arithmetic" "on" \
+"gnome-keyring" "a tool to handle security credentials" "on" \
+"gnome-themes-extra" "Default icons used by many GTK+ applications" "on" \
+"gnu-efi" "EFI Development files for the GNU toolchain" "on" \
+"gobject-introspection" "GObject interface introspection library" "on" \
+"grantlee" "string template engine for Qt" "on" \
+"graphene" "a thin layer of types for graphic libraries" "on" \
+"graphite2" "rendering engine for graphite fonts" "on" \
+"gsettings-desktop-schemas" "GSettings schemas" "on" \
+"gsl" "GNU Scientific Library" "on" \
+"gst-plugins-bad-free" "A bad set of GStreamer plugins" "on" \
+"gst-plugins-base" "A base set of GStreamer plugins" "on" \
+"gst-plugins-good" "A good set of GStreamer plugins" "on" \
+"gst-plugins-libav" "GStreamer FFmpeg/Libav plugin" "on" \
+"gstreamer" "Streaming multimedia framework library" "on" \
+"gtk+" "A graphical toolkit library" "on" \
+"gtk+2" "GTK+ version 2" "on" \
+"gtk+3" "GTK+ version 3" "on" \
+"gtk4" "GTK version 4" "on" \
+"gtkmm2" "GTKmm version 2" "on" \
+"gtkmm3" "GTKmm version 3" "on" \
+"gtksourceview3" "a GTK+ framework for source code editing" "on" \
+"gtkspell" "GTK+ spell checker interface library" "on" \
+"gvfs" "glib virtual filesystems" "on" \
+"harfbuzz" "OpenType text shaping engine" "on" \
+"hicolor-icon-theme" "Standard icon theme tree" "on" \
+"hunspell" "Spell checker and morphological analyzer" "on" \
+"hyphen" "Hyphenation and justification library" "on" \
+"icon-naming-utils" "Icon naming utilities" "on" \
+"icu4c" "International Components for Unicode" "on" \
+"id3lib" "ID3 tag manipulation library" "on" \
+"imagemagick" "ImageMagick image utilities" "on" \
+"isl" "Integer Set Library" "on" \
+"iso-codes" "ISO standard lists" "on" \
+"jansson" "JSON data handling library" "on" \
+"jasper" "JPEG-2000 library" "on" \
+"jemalloc" "A memory allocator" "on" \
+"jmtpfs" "FUSE and libmtp based filesystem for MTP" "on" \
+"json-c" "JSON library in C" "on" \
+"json-glib" "GLib/GObject based JSON tools" "on" \
+"judy" "Sparse dynamic array library" "on" \
+"kdsoap" "Qt-based client/server SOAP component" "on" \
+"keybinder3" "keyboard shortcut library for GTK+ v3" "on" \
+"keyutils" "Kernel key management utilities" "on" \
+"lame" "LAME is an MP3 audio encoder" "on" \
+"lcms" "Little Color Management System" "on" \
+"lcms2" "little cms engine, version 2" "on" \
+"lensfun" "photographic lens info database" "on" \
+"libaio" "Asynchronous I/O library" "on" \
+"libao" "Audio Output library" "on" \
+"libappindicator" "Plasma 5 systray support for GTK apps" "on" \
+"libarchive" "Archive reading library" "on" \
+"libasyncns" "Asynchronous name query library" "on" \
+"libatasmart" "ATA S.M.A.R.T. library" "on" \
+"libbluray" "Blu-Ray Disc playback library" "on" \
+"libburn" "optical media writing library" "on" \
+"libcaca" "Colour AsCii Art library" "on" \
+"libcanberra" "XDG Sound Theme and Name Spec implementation" "on" \
+"libcap" "POSIX capabilities library" "on" \
+"libcap-ng" "Improved POSIX capabilities library" "on" \
+"libcddb" "online CD database lookup library" "on" \
+"libcdio" "GNU CD I/O library" "on" \
+"libcdio-paranoia" "CD paranoia libraries from libcdio" "on" \
+"libclc" "OpenCL 1.1 libraries" "on" \
+"libcue" "CUE sheet parser library" "on" \
+"libdbusmenu" "GTK DBusMenu protocol" "on" \
+"libdbusmenu-qt" "Qt implementation of the DBusMenu spec" "on" \
+"libdiscid" "Library to generate DiscIDs from audio CDs" "on" \
+"libdmtx" "Data Matrix barcode library" "on" \
+"libdvdnav" "DVD navigation library" "on" \
+"libdvdread" "Library for reading DVDs" "on" \
+"libedit" "BSD licensed input library with editing" "on" \
+"libevent" "event loop library" "on" \
+"libexif" "EXIF (image information) library" "on" \
+"libfakekey" "X virtual keyboard library" "on" \
+"libffi" "Foreign Function Interface library" "on" \
+"libglade" "An interface construction library" "on" \
+"libgnome-keyring" "gnome-keyring library" "on" \
+"libgnt" "The GLib Ncurses Toolkit" "on" \
+"libgphoto2" "A library for accessing digital cameras" "on" \
+"libgpod" "A library for a popular music device" "on" \
+"libgsf" "File I/O library" "on" \
+"libgtop" "a top-like library" "on" \
+"libical" "iCAL protocol implementation" "on" \
+"libid3tag" "ID3 tag manipulation library" "on" \
+"libidl" "Interface Definition Language library" "on" \
+"libidn" "GNU Internationalized Domain Name library" "on" \
+"libidn2" "GNU Internationalized Domain Name library v2" "on" \
+"libieee1284" "Library to identify parallel port devices" "on" \
+"libimobiledevice" "iOS device communication library" "on" \
+"libimobiledevice-glue" "glue library for libimobiledevice" "on" \
+"libindicator" "support functions for indicators" "on" \
+"libiodbc" "Independent Open DataBase Connectivity" "on" \
+"libjpeg-turbo" "High-speed version of libjpeg" "on" \
+"libkarma" "A library for accessing the Rio Karma player" "on" \
+"libmad" "high-quality MPEG audio library" "on" \
+"libmcrypt" "Mcrypt encryption library" "on" \
+"libmng" "Multiple-image Network Graphics library" "on" \
+"libmpc" "Multiple Precision Complex Library" "on" \
+"libmtp" "MTP media device support library" "on" \
+"libnice" "Interactive Connectivity Establishment library" "on" \
+"libnih" "lightweight library of C functions" "on" \
+"libnjb" "Creative Nomad and related device library" "on" \
+"libnl" "Netlink socket library" "on" \
+"libnl3" "Netlink socket library version 3" "on" \
+"libnotify" "A library for event notification" "on" \
+"libnsl" "NIS/YP and NIS+ library" "on" \
+"libnss_nis" "glibc NSS NIS plugin" "on" \
+"libodfgen" "Library for generating ODF documents" "on" \
+"libogg" "Ogg Bitstream library" "on" \
+"liboggz" "Ogg inspect/edit/validate library" "on" \
+"liboil" "CPU optimizations library" "on" \
+"libopusenc" "Library for encoding .opus files" "on" \
+"libpcap" "Packet Capture library" "on" \
+"libplist" "Apple Binary and XML Property Lists library" "on" \
+"libpng" "Portable Network Graphics library" "on" \
+"libproxy" "proxy configuration library" "on" \
+"libpsl" "C library to handle the Public Suffix List" "on" \
+"libqalculate" "multi-purpose calculator library" "on" \
+"libraw1394" "User space IEEE 1394 driver" "on" \
+"librevenge" "Library for REVerse ENGineered formats filters" "on" \
+"librsvg" "Scalable Vector Graphics library" "on" \
+"libsamplerate" "Digital audio resampling library" "on" \
+"libsass" "Sass library for C/C++" "on" \
+"libseccomp" "enhanced seccomp library" "on" \
+"libsecret" "library to access the Secret Service API" "on" \
+"libsigc++" "Typesafe callback system for C++" "on" \
+"libsigc++3" "Typesafe callback system for C++ v3" "on" \
+"libsigsegv" "User mode page fault handling library" "on" \
+"libsndfile" "A library for handling digital audio files" "on" \
+"libsodium" "Sodium crypto library" "on" \
+"libsoup" "an HTTP client/server library" "on" \
+"libspectre" "Ghostscript wrapper library" "on" \
+"libssh" "SSH C library" "on" \
+"libssh2" "SSH2 library" "on" \
+"libtasn1" "ASN.1 library" "on" \
+"libtheora" "Theora video codec library" "on" \
+"libtiff" "Tag Image File format library" "on" \
+"libunistring" "GNU Unicode string library" "on" \
+"libunwind" "API to determine the call-chain of a program" "on" \
+"liburing" "io_uring instance library" "on" \
+"libusb" "A library for accessing USB devices" "on" \
+"libusb-compat" "Compat library for the old libusb API/ABI" "on" \
+"libusbmuxd" "iOS USB connection library" "on" \
+"libuv" "Asynchronous I/O library" "on" \
+"libvisio" "Visio document format library" "on" \
+"libvisual" "Audio visualization library" "on" \
+"libvisual-plugins" "Plugins for the libvisual library" "on" \
+"libvncserver" "VNC Server Library" "on" \
+"libvorbis" "Ogg Vorbis library" "on" \
+"libvpx" "VP8/VP9 video codec" "on" \
+"libwebp" "WebP photo compression library" "on" \
+"libwmf" "WMF graphics format library" "on" \
+"libwnck" "Window Navigator Construction Kit library" "on" \
+"libwnck3" "Window Navigator Construction Kit library v3" "on" \
+"libwpd" "WordPerfect document handling library" "on" \
+"libwpg" "WPG image reading/converting library" "on" \
+"libxkbcommon" "keyboard description library" "on" \
+"libxklavier" "XKB library" "on" \
+"libxml2" "XML parser library v2" "on" \
+"libxslt" "XML transformation library" "on" \
+"libyaml" "YAML parser library" "on" \
+"libzip" "Zip archive library" "on" \
+"lmdb" "Lightning Memory-mapped key-value database" "on" \
+"loudmouth" "Jabber protocol library" "on" \
+"lz4" "fast lossless compression algorithm" "on" \
+"lzo" "fast data compression library" "on" \
+"media-player-info" "media player capability data" "on" \
+"mhash" "Thread-safe hash library" "on" \
+"mlt" "open source multimedia framework" "on" \
+"mm" "Shared Memory Allocation library" "on" \
+"mozilla-nss" "Mozilla NSS/NSPR libraries" "on" \
+"mozjs78" "SpiderMonkey - Mozilla's JavaScript Engine" "on" \
+"mpfr" "Another math lib based on GMP" "on" \
+"ncurses" "CRT screen handling package" "on" \
+"neon" "HTTP and WebDAV client library" "on" \
+"netpbm" "Graphics library and tools" "on" \
+"newt" "Not Erik's Windowing Toolkit" "on" \
+"ocl-icd" "OpenCL ICD bindings" "on" \
+"oniguruma" "Regular expressions library" "on" \
+"openal-soft" "OpenAL 3D audio API" "on" \
+"opencv" "Open Source Computer Vision" "on" \
+"openexr" "HDR image file format and library" "on" \
+"openjpeg" "JPEG2000 library" "on" \
+"opus" "Efficient, low-latency audio codec" "on" \
+"opusfile" "Opus file handling libraries" "on" \
+"orc" "The Oil Runtime Compiler" "on" \
+"pango" "Text rendering library" "on" \
+"pangomm" "Text rendering library for GTKmm" "on" \
+"parted" "GNU parted, a partition manipulation program" "on" \
+"pcaudiolib" "Portable C Audio Library" "on" \
+"pcre" "Perl-compatible regular expression library" "on" \
+"pcre2" "Perl compatible regular expression library v2" "on" \
+"phonon" "multimedia framework for KDE" "on" \
+"phonon-backend-gstreamer" "gstreamer backend for phonon" "on" \
+"pilot-link" "PalmOS communication library" "on" \
+"pipewire" "multimedia processing" "on" \
+"polkit" "authentication framework" "on" \
+"polkit-gnome" "GTK+/XDG polkit authenticator" "on" \
+"polkit-qt-1" "Qt polkit API wrapper" "on" \
+"poppler" "Portable Document Format (PDF) library" "on" \
+"poppler-data" "Data files that can be used by poppler" "on" \
+"popt" "Command line parsing library" "on" \
+"pulseaudio" "PulseAudio sound server" "on" \
+"pycairo" "Python bindings for cairo" "on" \
+"pycups" "Python bindings for the CUPS API" "on" \
+"pycurl" "Python interface to cURL library" "on" \
+"pygobject" "GObject bindings for Python" "on" \
+"pygobject3" "GObject bindings for Python, v3" "on" \
+"pygtk" "GTK+ bindings for Python" "on" \
+"pyparsing" "parsing module for python" "on" \
+"python-Jinja2" "A very fast and expressive template engine" "on" \
+"python-MarkupSafe" "Safely add untrusted strings to markup" "on" \
+"python-PyYAML" "YAML parser and emitter for Python" "on" \
+"python-appdirs" "Python module for platform-specific dirs" "on" \
+"python-certifi" "Python package for the Mozilla's CA Bundle" "on" \
+"python-cffi" "C Foreign Function Interface for Python" "on" \
+"python-chardet" "Universal encoding detector for Python" "on" \
+"python-charset-normalizer" "charset detection for python" "on" \
+"python-distro" "Python OS platform information API" "on" \
+"python-dnspython" "DNS toolkit for Python" "on" \
+"python-docutils" "Python Documentation Utilities" "on" \
+"python-doxypypy" "A Doxygen filter for Python" "on" \
+"python-doxyqml" "Doxygen input filter for QML files" "on" \
+"python-future" "Easy, clean, reliable Python 2/3 compatibility" "on" \
+"python-idna" "Internationalized Domain Names for Python" "on" \
+"python-markdown" "Python Markdown implementation" "on" \
+"python-notify2" "Python interface to DBus notifications" "on" \
+"python-packaging" "Core utilities for Python packages" "on" \
+"python-pbr" "Python Build Reasonableness" "on" \
+"python-pillow" "Python Imaging Library" "on" \
+"python-ply" "Python Lex and Yacc" "on" \
+"python-pycparser" "C parser written in Python" "on" \
+"python-pygments" "Python syntax highlighter" "on" \
+"python-pysol_cards" "deal PySol FC card games" "on" \
+"python-random2" "Python 3 port of Python 2 random module" "on" \
+"python-requests" "HTTP request library for python" "on" \
+"python-sane" "SANE interface for python" "on" \
+"python-setuptools_scm" "manages versions in SCM metadata" "on" \
+"python-six" "Python 2 and 3 compatibility library" "on" \
+"python-tomli" "A lil' TOML parser" "on" \
+"python-urllib3" "Powerful HTTP client for Python" "on" \
+"python2-module-collection" "modules for python2" "on" \
+"qca" "Qt Cryptographic Architecture" "on" \
+"qrencode" "QR Code encoding library" "on" \
+"qt5" "a C++ graphical user interface toolkit" "on" \
+"qt5-webkit" "Qt web browser engine" "on" \
+"qtkeychain" "Qt password storage API" "on" \
+"quazip" "C++ wrapper for Minizip" "on" \
+"readline" "Input library with editing" "on" \
+"rpcsvc-proto" "rpcsvc proto.x files" "on" \
+"rttr" "C++ Reflection library" "on" \
+"rubygem-asciidoctor" "text processor and publishing toolchain" "on" \
+"sbc" "Sub Band Codec for bluetooth audio output" "on" \
+"sdl" "Simple DirectMedia Layer library" "on" \
+"serf" "Asynchronous HTTP client library" "on" \
+"sg3_utils" "low-level SCSI utilities" "on" \
+"shared-desktop-ontologies" "Shared OSCAF desktop ontologies" "on" \
+"shared-mime-info" "MIME database" "on" \
+"sip" "Tool for generating Python bindings" "on" \
+"slang" "S-Lang interpreted language and library v2" "on" \
+"slang1" "S-Lang interpreted language and library v1" "on" \
+"sound-theme-freedesktop" "freedesktop.org sound theme" "on" \
+"speech-dispatcher" "device independent speech synthesizer" "on" \
+"speex" "Low-bitrate voice audio codec" "on" \
+"speexdsp" "Speex DSP codec and library" "on" \
+"spirv-llvm-translator" "LLVM/SPIR-V Bi-Directional Translator" "on" \
+"startup-notification" "Busy cursor library" "on" \
+"svgalib" "Super-VGA Graphics Library" "on" \
+"system-config-printer" "CUPS printer administration tool" "on" \
+"t1lib" "Library for handling Type 1 fonts" "on" \
+"taglib" "Audio meta-data library" "on" \
+"taglib-extras" "Taglib extra formats support" "on" \
+"talloc" "Memory pool system library" "on" \
+"tango-icon-theme" "Tango icon theme" "on" \
+"tango-icon-theme-extras" "Extra icons for the Tango icon theme" "on" \
+"tdb" "A trivial database library" "on" \
+"tevent" "Event system library" "on" \
+"tidy-html5" "tidy up HTML and XML documents" "on" \
+"utf8proc" "Unicode processing library" "on" \
+"v4l-utils" "Libraries and utilities for video4linux" "on" \
+"vid.stab" "video stabilization library" "on" \
+"vte" "A terminal emulator for GTK+" "on" \
+"wavpack" "WAV audio file compressor" "on" \
+"woff2" "WOFF File Format 2.0 library" "on" \
+"xapian-core" "Search Engine Library" "on" \
+"xxHash" "Extremely fast Hash algorithm" "on" \
+"zlib" "general purpose data compression library" "on" \
+"zstd" "real-time compression algorithm" "on" \
+"ModemManager" "mobile broadband modem D-bus API" "on" \
+"NetworkManager" "Networking configuration daemon" "on" \
+"alpine" "Alpine menu-driven mail program" "on" \
+"autofs" "Linux automounter" "on" \
+"biff+comsat" "Announces email delivery" "on" \
+"bind" "Berkeley Internet Name Domain server" "on" \
+"bluez" "Bluetooth userspace (libs/utils) support" "on" \
+"bluez-firmware" "Firmware for Bluetooth(TM) devices" "on" \
+"bootp" "Internet Bootstrap Protocol server" "on" \
+"bridge-utils" "Tools for setting up Ethernet bridges" "on" \
+"bsd-finger" "BSD finger daemon and client" "on" \
+"c-ares" "C library for DNS requests" "on" \
+"ca-certificates" "PEM certificates to verify SSL connections" "on" \
+"cifs-utils" "CIFS filesystem utilities" "on" \
+"conntrack-tools" "Connection Tracking System tools" "on" \
+"crda" "Central Regulatory Domain Agent" "on" \
+"curl" "Command-line URL transfer utility" "on" \
+"cyrus-sasl" "SASL email authentication library" "on" \
+"daemon" "turns other processes into daemons" "on" \
+"dehydrated" "Let's Encrypt / ACME setup script" "on" \
+"dhcp" "DHCP server (and client) utilities" "on" \
+"dhcpcd" "DHCP client daemon" "on" \
+"dnsmasq" "Small DNS/DHCP server for a LAN" "on" \
+"dovecot" "IMAP and POP3 server" "on" \
+"ebtables" "Bridge filtering utility" "on" \
+"elm" "Menu-driven user mail program" "on" \
+"epic5" "EPIC Internet Relay Chat (IRC) client" "on" \
+"ethtool" "A tool for configuring Ethernet devices" "on" \
+"fetchmail" "Fetch mail from POP/IMAP/ETRN servers" "on" \
+"getmail" "POP3 mail retrieval tool" "on" \
+"gnupg" "GNU Privacy Guard public key encryption" "on" \
+"gnupg2" "GNU Privacy Guard version 2.x" "on" \
+"gnutls" "GNU TLS/SSL (secure communications) library" "on" \
+"gpa" "GNU Privacy Assistant" "on" \
+"gpgme" "GnuPG Made Easy library" "on" \
+"htdig" "Indexing and search engine" "on" \
+"httpd" "Apache WWW (HTTP) server" "on" \
+"icmpinfo" "Dump or log ICMP packets" "on" \
+"iftop" "Display bandwidth usage on an interface" "on" \
+"inetd" "Internet super server daemon" "on" \
+"iproute2" "Kernel routing and traffic control" "on" \
+"ipset" "Kernel IP sets admin tool" "on" \
+"iptables" "Firewall configuration utility" "on" \
+"iptraf-ng" "Network monitoring program" "on" \
+"iputils" "Some common network tools" "on" \
+"ipw2100-fw" "Firmware for Intel ipw2100 wireless." "on" \
+"ipw2200-fw" "Firmware for Intel ipw2200 wireless." "on" \
+"irssi" "IRSSI Internet Relay Chat (IRC) client" "on" \
+"iw" "Utility for mac80211 based wireless devices" "on" \
+"krb5" "Network authentication protocol" "on" \
+"lftp" "Shell-like FTP and HTTP transfer program" "on" \
+"libassuan" "Interprocess Communication Library for GPG" "on" \
+"libgcrypt" "General purpose crypto library" "on" \
+"libgpg-error" "GnuPG Error Definitions Library" "on" \
+"libksba" "X.509 & CMS library for S/MIME and TLS" "on" \
+"libmbim" "Mobile Broadband Interface Model library" "on" \
+"libmilter" "The sendmail Mail Filter API" "on" \
+"libmnl" "Netlink user-space library" "on" \
+"libndp" "Library for Neighbor Discovery Protocol" "on" \
+"libnetfilter_acct" "Netfilter accounting library" "on" \
+"libnetfilter_conntrack" "Netfilter conntrack library" "on" \
+"libnetfilter_cthelper" "Netfilter conntrack helpers library" "on" \
+"libnetfilter_cttimeout" "Netfilter connection tracking timeout library" "on" \
+"libnetfilter_log" "Netfilter packet logging library" "on" \
+"libnetfilter_queue" "Netfilter packet queueing library" "on" \
+"libnfnetlink" "Netfilter kernel/userspace comm library" "on" \
+"libnftnl" "interface to the kernel nf_tables subsystem" "on" \
+"libqmi" "QMI library and utils" "on" \
+"libtirpc" "Transport-Independent RPC library" "on" \
+"links" "Text-based WWW browser (with frames)" "on" \
+"lynx" "Classic text-based WWW browser" "on" \
+"mcabber" "Jabber messaging client for the console" "on" \
+"metamail" "Metamail multimedia mail extensions" "on" \
+"mobile-broadband-provider-info" "mobile broadband provider settings" "on" \
+"mtr" "Network diagnosic tool" "on" \
+"mutt" "The Mutt E-Mail Client" "on" \
+"nc" "Netcat network utility" "on" \
+"ncftp" "NcFTP file transfer utilities" "on" \
+"net-snmp" "Simple Network Management Protocol tools" "on" \
+"net-tools" "Utilities required for networking on Linux" "on" \
+"netatalk" "Print/file server for Apple Macs" "on" \
+"netdate" "A simple network time utility" "on" \
+"netkit-bootparamd" "A diskless client server used with Suns" "on" \
+"netkit-ftp" "The BSD FTP client" "on" \
+"netkit-ntalk" "BSD talk daemon/client" "on" \
+"netkit-routed" "An (old) BSD dynamic routing daemon" "on" \
+"netkit-rsh" "BSD rsh suite.  Most people use ssh instead." "on" \
+"netkit-rusers" "BSD utility to see who is logged in on a net" "on" \
+"netkit-rwall" "Write to every user on a system" "on" \
+"netkit-rwho" "See information about users on the local net" "on" \
+"netkit-timed" "BSD time server daemon" "on" \
+"netpipes" "Network pipe utilities" "on" \
+"nettle" "Cryptographic library" "on" \
+"netwatch" "Another network monitoring program" "on" \
+"network-scripts" "Scripts required for networking on Slackware" "on" \
+"netwrite" "Write to users on a remote machine" "on" \
+"newspost" "Posts multipart binaries on USENET" "on" \
+"nfacct" "Tool to manage accounting objects" "on" \
+"nfs-utils" "Network File System daemons" "on" \
+"nftables" "Packet filtering and classification" "on" \
+"nghttp2" "HTTP/2 library" "on" \
+"nmap" "Network scanning utility" "on" \
+"nn" "The NN news reader" "on" \
+"npth" "New GNU Portable Threads" "on" \
+"nss-pam-ldapd" "LDAP NSS/PAM module" "on" \
+"ntp" "Network Time Protocol" "on" \
+"obexftp" "Object Exchange FTP client/server" "on" \
+"openldap" "Lightweight Directory Access Protocol" "on" \
+"openobex" "Object Exchange protocol library" "on" \
+"openresolv" "management framework for resolv.conf" "on" \
+"openssh" "OpenSSH Secure Shell" "on" \
+"openssl" "OpenSSL Secure Sockets Layer toolkit" "on" \
+"openvpn" "Secure IP VPN tunnel daemon" "on" \
+"p11-kit" "PKCS 11 public key toolkit" "on" \
+"pam-krb5" "PAM module for Kerberos v5" "on" \
+"php" "PHP scripting language for Apache" "on" \
+"pidentd" "TCP/IP IDENT protocol server" "on" \
+"pinentry" "PIN Entry dialogs" "on" \
+"popa3d" "Post Office Protocol v. 3 (POP3) server" "on" \
+"postfix" "The Postfix mail transport agent" "on" \
+"ppp" "Point-to-point protocol" "on" \
+"procmail" "Mail delivery/filtering utility" "on" \
+"proftpd" "The Professional FTP (file transfer) daemon" "on" \
+"pssh" "Parallel versions of the openssh tools" "on" \
+"rdist" "Remote file distribution utility" "on" \
+"rp-pppoe" "Connect to ADSL ISPs that use PPPoE" "on" \
+"rpcbind" "Manages NFS and other RPC connections" "on" \
+"rsync" "Enhanced replacement for rcp" "on" \
+"s-nail" "A simple user mail program" "on" \
+"samba" "SMB print/file server for Windows LANs" "on" \
+"slrn" "slrn (s-lang read news) news reader" "on" \
+"snownews" "Console RSS reader" "on" \
+"socat" "Multipurpose relay - SOcket CAT" "on" \
+"sshfs" "FUSE-based SSH filesystem client" "on" \
+"stunnel" "Universal SSL tunnel" "on" \
+"tcp_wrappers" "A daemon and wrapper to increase security" "on" \
+"tcpdump" "Tool for dumping network packets" "on" \
+"telnet" "The telnet client and telnetd daemon" "on" \
+"tftp-hpa" "A TFTP implementation" "on" \
+"tin" "The 'tin' news reader" "on" \
+"traceroute" "Packet tracing utility" "on" \
+"ulogd" "Logging daemon for netfilter/iptables" "on" \
+"uucp" "Taylor UUCP with HDB && Taylor configs" "on" \
+"vlan" "Virtual LAN configuration tool" "on" \
+"vsftpd" "The Very Secure FTP (file transfer) daemon" "on" \
+"wget" "WWW/FTP retrieval tool" "on" \
+"wget2" "WWW/FTP retrieval tool v2" "on" \
+"whois" "Enhanced whois client" "on" \
+"wireguard-tools" "Utilities for WireGuard tunnels" "on" \
+"wireless_tools" "Tools for wireless networking" "on" \
+"wpa_supplicant" "WPA/WPA2/IEEE 802.1X (wireless) Supplicant" "on" \
+"yptools" "NIS servers and clients" "on" \
+"ytalk" "Multi-user talk program" "on" \
+"zd1211-firmware" "Firmware for zd1211 USB wireless" "on" \
+"razwall" "RazWall Firewall" "on" \
+2> $TMP/SeTpkgs
+if [ $? = 1 -o $? = 255 ]; then
+ rm -f $TMP/SeTpkgs
+ > $TMP/SeTnewtag
+ for pkg in \
+aaa_base aaa_glibc-solibs aaa_libraries aaa_terminfo acl acpid attr bash bin btrfs-progs bzip2 coreutils cpio cpufrequtils cracklib cryptsetup dbus dcron devs dialog dosfstools e2fsprogs ed efibootmgr efivar elilo elogind elvis etc eudev exfatprogs f2fs-tools file findutils floppy gawk genpower gettext glibc-zoneinfo gpm gptfdisk grep grub gzip haveged hdparm hostname hwdata infozip inih inotify-tools jfsutils kbd kernel-firmware kernel-generic kernel-huge kernel-modules kmod lbzip2 less lhasa libblockdev libbytesize libcgroup libgudev libpwquality lilo logrotate lrzip lvm2 lzip lzlib mcelog mdadm minicom mkinitrd mlocate mt-st mtx ncompress ndctl ntfs-3g nvi openssl-solibs os-prober pam patch pciutils pcmciautils pkgtools plzip procps-ng quota reiserfsprogs rpm2tgz sdparm sed shadow sharutils smartmontools splitvt sysfsutils sysklogd syslinux sysvinit sysvinit-functions sysvinit-scripts tar tcsh time tree udisks udisks2 unarj upower usb_modeswitch usbutils utempter util-linux volume_key which xfsprogs xz zerofree zoo a2ps acct alsa-utils amp at bc bpe cdparanoia cdrdao cdrtools cups cups-filters dash dc3dd ddrescue diffstat diffutils dmapi dmidecode dvd+rw-tools enscript flac ghostscript ghostscript-fonts-std gphoto2 groff gutenprint hplip htop inxi ispell itstool jed joe jove ksh93 libx86 linuxdoc-tools lm_sensors lsof lsscsi lxc madplay man-db man-pages mariadb mc moc most mpg123 nano neofetch normalize nvme-cli opus-tools pamixer powertop qpdf radeontool rpm rzip sc sc-im screen seejpeg slackpkg soma sox sqlite squashfs-tools sudo sysstat terminus-font texinfo tmux undervolt usbmuxd vbetool vim vorbis-tools xfsdump xorriso zsh Cython autoconf autoconf-archive automake binutils bison ccache check clisp cmake cscope cvs dev86 distcc doxygen flex gcc gcc-brig gcc-g++ gcc-gdc gcc-gfortran gcc-gnat gcc-go gcc-objc gdb gettext-tools git gnucobol gperf guile gyp help2man icecream indent intltool kernel-headers libtool llvm m4 make mercurial meson nasm ninja opencl-headers oprofile p2c parallel patchelf perl pkg-config pmake poke python-pip python-setuptools python2 python3 rcs re2c rinutils ruby rust sassc scons slacktrack strace subversion swig vala yasm kernel-source GConf LibRaw M2Crypto Mako PyQt5 QScintilla QtAV SDL2 SDL2_gfx SDL2_image SDL2_mixer SDL2_net SDL2_ttf a52dec aalib accountsservice adwaita-icon-theme alsa-lib alsa-oss alsa-plugins apr apr-util argon2 aspell aspell-en at-spi2-atk at-spi2-core atk atkmm audiofile babl boost brotli cairo cairomm cfitsio chmlib clucene cryfs cryptopp db48 dbus-glib dbus-python dconf dconf-editor desktop-file-utils djvulibre dotconf dvdauthor ebook-tools editorconfig-core-c eigen3 elfutils enchant esound espeak-ng exiv2 expat farstream ffmpeg fftw fluidsynth freecell-solver freetype frei0r-plugins fribidi fuse fuse3 gamin gc gcr gd gdbm gdk-pixbuf2 gdk-pixbuf2-xlib gegl gexiv2 giflib gjs glade glib glib-networking glib2 glibc glibc-i18n glibc-profile glibmm gmime gmm gmp gnome-keyring gnome-themes-extra gnu-efi gobject-introspection grantlee graphene graphite2 gsettings-desktop-schemas gsl gst-plugins-bad-free gst-plugins-base gst-plugins-good gst-plugins-libav gstreamer gtk+ gtk+2 gtk+3 gtk4 gtkmm2 gtkmm3 gtksourceview3 gtkspell gvfs harfbuzz hicolor-icon-theme hunspell hyphen icon-naming-utils icu4c id3lib imagemagick isl iso-codes jansson jasper jemalloc jmtpfs json-c json-glib judy kdsoap keybinder3 keyutils lame lcms lcms2 lensfun libaio libao libappindicator libarchive libasyncns libatasmart libbluray libburn libcaca libcanberra libcap libcap-ng libcddb libcdio libcdio-paranoia libclc libcue libdbusmenu libdbusmenu-qt libdiscid libdmtx libdvdnav libdvdread libedit libevent libexif libfakekey libffi libglade libgnome-keyring libgnt libgphoto2 libgpod libgsf libgtop libical libid3tag libidl libidn libidn2 libieee1284 libimobiledevice libimobiledevice-glue libindicator libiodbc libjpeg-turbo libkarma libmad libmcrypt libmng libmpc libmtp libnice libnih libnjb libnl libnl3 libnotify libnsl libnss_nis libodfgen libogg liboggz liboil libopusenc libpcap libplist libpng libproxy libpsl libqalculate libraw1394 librevenge librsvg libsamplerate libsass libseccomp libsecret libsigc++ libsigc++3 libsigsegv libsndfile libsodium libsoup libspectre libssh libssh2 libtasn1 libtheora libtiff libunistring libunwind liburing libusb libusb-compat libusbmuxd libuv libvisio libvisual libvisual-plugins libvncserver libvorbis libvpx libwebp libwmf libwnck libwnck3 libwpd libwpg libxkbcommon libxklavier libxml2 libxslt libyaml libzip lmdb loudmouth lz4 lzo media-player-info mhash mlt mm mozilla-nss mozjs78 mpfr ncurses neon netpbm newt ocl-icd oniguruma openal-soft opencv openexr openjpeg opus opusfile orc pango pangomm parted pcaudiolib pcre pcre2 phonon phonon-backend-gstreamer pilot-link pipewire polkit polkit-gnome polkit-qt-1 poppler poppler-data popt pulseaudio pycairo pycups pycurl pygobject pygobject3 pygtk pyparsing python-Jinja2 python-MarkupSafe python-PyYAML python-appdirs python-certifi python-cffi python-chardet python-charset-normalizer python-distro python-dnspython python-docutils python-doxypypy python-doxyqml python-future python-idna python-markdown python-notify2 python-packaging python-pbr python-pillow python-ply python-pycparser python-pygments python-pysol_cards python-random2 python-requests python-sane python-setuptools_scm python-six python-tomli python-urllib3 python2-module-collection qca qrencode qt5 qt5-webkit qtkeychain quazip readline rpcsvc-proto rttr rubygem-asciidoctor sbc sdl serf sg3_utils shared-desktop-ontologies shared-mime-info sip slang slang1 sound-theme-freedesktop speech-dispatcher speex speexdsp spirv-llvm-translator startup-notification svgalib system-config-printer t1lib taglib taglib-extras talloc tango-icon-theme tango-icon-theme-extras tdb tevent tidy-html5 utf8proc v4l-utils vid.stab vte wavpack woff2 xapian-core xxHash zlib zstd ModemManager NetworkManager alpine autofs biff+comsat bind bluez bluez-firmware bootp bridge-utils bsd-finger c-ares ca-certificates cifs-utils conntrack-tools crda curl cyrus-sasl daemon dehydrated dhcp dhcpcd dnsmasq dovecot ebtables elm epic5 ethtool fetchmail getmail gnupg gnupg2 gnutls gpa gpgme htdig httpd icmpinfo iftop inetd iproute2 ipset iptables iptraf-ng iputils ipw2100-fw ipw2200-fw irssi iw krb5 lftp libassuan libgcrypt libgpg-error libksba libmbim libmilter libmnl libndp libnetfilter_acct libnetfilter_conntrack libnetfilter_cthelper libnetfilter_cttimeout libnetfilter_log libnetfilter_queue libnfnetlink libnftnl libqmi libtirpc links lynx mcabber metamail mobile-broadband-provider-info mtr mutt nc ncftp net-snmp net-tools netatalk netdate netkit-bootparamd netkit-ftp netkit-ntalk netkit-routed netkit-rsh netkit-rusers netkit-rwall netkit-rwho netkit-timed netpipes nettle netwatch network-scripts netwrite newspost nfacct nfs-utils nftables nghttp2 nmap nn npth nss-pam-ldapd ntp obexftp openldap openobex openresolv openssh openssl openvpn p11-kit pam-krb5 php pidentd pinentry popa3d postfix ppp procmail proftpd pssh rdist rp-pppoe rpcbind rsync s-nail samba slrn snownews socat sshfs stunnel tcp_wrappers tcpdump telnet tftp-hpa tin traceroute ulogd uucp vlan vsftpd wget wget2 whois wireguard-tools wireless_tools wpa_supplicant yptools ytalk zd1211-firmware razwall \
+  ; do
+  echo "$pkg: SKP" >> $TMP/SeTnewtag
+ done
+ exit
+fi
+cat /dev/null > $TMP/SeTnewtag
+for PACKAGE in \
+aaa_base aaa_glibc-solibs aaa_libraries aaa_terminfo acl acpid attr bash bin btrfs-progs bzip2 coreutils cpio cpufrequtils cracklib cryptsetup dbus dcron devs dialog dosfstools e2fsprogs ed efibootmgr efivar elilo elogind elvis etc eudev exfatprogs f2fs-tools file findutils floppy gawk genpower gettext glibc-zoneinfo gpm gptfdisk grep grub gzip haveged hdparm hostname hwdata infozip inih inotify-tools jfsutils kbd kernel-firmware kernel-generic kernel-huge kernel-modules kmod lbzip2 less lhasa libblockdev libbytesize libcgroup libgudev libpwquality lilo logrotate lrzip lvm2 lzip lzlib mcelog mdadm minicom mkinitrd mlocate mt-st mtx ncompress ndctl ntfs-3g nvi openssl-solibs os-prober pam patch pciutils pcmciautils pkgtools plzip procps-ng quota reiserfsprogs rpm2tgz sdparm sed shadow sharutils smartmontools splitvt sysfsutils sysklogd syslinux sysvinit sysvinit-functions sysvinit-scripts tar tcsh time tree udisks udisks2 unarj upower usb_modeswitch usbutils utempter util-linux volume_key which xfsprogs xz zerofree zoo a2ps acct alsa-utils amp at bc bpe cdparanoia cdrdao cdrtools cups cups-filters dash dc3dd ddrescue diffstat diffutils dmapi dmidecode dvd+rw-tools enscript flac ghostscript ghostscript-fonts-std gphoto2 groff gutenprint hplip htop inxi ispell itstool jed joe jove ksh93 libx86 linuxdoc-tools lm_sensors lsof lsscsi lxc madplay man-db man-pages mariadb mc moc most mpg123 nano neofetch normalize nvme-cli opus-tools pamixer powertop qpdf radeontool rpm rzip sc sc-im screen seejpeg slackpkg soma sox sqlite squashfs-tools sudo sysstat terminus-font texinfo tmux undervolt usbmuxd vbetool vim vorbis-tools xfsdump xorriso zsh Cython autoconf autoconf-archive automake binutils bison ccache check clisp cmake cscope cvs dev86 distcc doxygen flex gcc gcc-brig gcc-g++ gcc-gdc gcc-gfortran gcc-gnat gcc-go gcc-objc gdb gettext-tools git gnucobol gperf guile gyp help2man icecream indent intltool kernel-headers libtool llvm m4 make mercurial meson nasm ninja opencl-headers oprofile p2c parallel patchelf perl pkg-config pmake poke python-pip python-setuptools python2 python3 rcs re2c rinutils ruby rust sassc scons slacktrack strace subversion swig vala yasm kernel-source GConf LibRaw M2Crypto Mako PyQt5 QScintilla QtAV SDL2 SDL2_gfx SDL2_image SDL2_mixer SDL2_net SDL2_ttf a52dec aalib accountsservice adwaita-icon-theme alsa-lib alsa-oss alsa-plugins apr apr-util argon2 aspell aspell-en at-spi2-atk at-spi2-core atk atkmm audiofile babl boost brotli cairo cairomm cfitsio chmlib clucene cryfs cryptopp db48 dbus-glib dbus-python dconf dconf-editor desktop-file-utils djvulibre dotconf dvdauthor ebook-tools editorconfig-core-c eigen3 elfutils enchant esound espeak-ng exiv2 expat farstream ffmpeg fftw fluidsynth freecell-solver freetype frei0r-plugins fribidi fuse fuse3 gamin gc gcr gd gdbm gdk-pixbuf2 gdk-pixbuf2-xlib gegl gexiv2 giflib gjs glade glib glib-networking glib2 glibc glibc-i18n glibc-profile glibmm gmime gmm gmp gnome-keyring gnome-themes-extra gnu-efi gobject-introspection grantlee graphene graphite2 gsettings-desktop-schemas gsl gst-plugins-bad-free gst-plugins-base gst-plugins-good gst-plugins-libav gstreamer gtk+ gtk+2 gtk+3 gtk4 gtkmm2 gtkmm3 gtksourceview3 gtkspell gvfs harfbuzz hicolor-icon-theme hunspell hyphen icon-naming-utils icu4c id3lib imagemagick isl iso-codes jansson jasper jemalloc jmtpfs json-c json-glib judy kdsoap keybinder3 keyutils lame lcms lcms2 lensfun libaio libao libappindicator libarchive libasyncns libatasmart libbluray libburn libcaca libcanberra libcap libcap-ng libcddb libcdio libcdio-paranoia libclc libcue libdbusmenu libdbusmenu-qt libdiscid libdmtx libdvdnav libdvdread libedit libevent libexif libfakekey libffi libglade libgnome-keyring libgnt libgphoto2 libgpod libgsf libgtop libical libid3tag libidl libidn libidn2 libieee1284 libimobiledevice libimobiledevice-glue libindicator libiodbc libjpeg-turbo libkarma libmad libmcrypt libmng libmpc libmtp libnice libnih libnjb libnl libnl3 libnotify libnsl libnss_nis libodfgen libogg liboggz liboil libopusenc libpcap libplist libpng libproxy libpsl libqalculate libraw1394 librevenge librsvg libsamplerate libsass libseccomp libsecret libsigc++ libsigc++3 libsigsegv libsndfile libsodium libsoup libspectre libssh libssh2 libtasn1 libtheora libtiff libunistring libunwind liburing libusb libusb-compat libusbmuxd libuv libvisio libvisual libvisual-plugins libvncserver libvorbis libvpx libwebp libwmf libwnck libwnck3 libwpd libwpg libxkbcommon libxklavier libxml2 libxslt libyaml libzip lmdb loudmouth lz4 lzo media-player-info mhash mlt mm mozilla-nss mozjs78 mpfr ncurses neon netpbm newt ocl-icd oniguruma openal-soft opencv openexr openjpeg opus opusfile orc pango pangomm parted pcaudiolib pcre pcre2 phonon phonon-backend-gstreamer pilot-link pipewire polkit polkit-gnome polkit-qt-1 poppler poppler-data popt pulseaudio pycairo pycups pycurl pygobject pygobject3 pygtk pyparsing python-Jinja2 python-MarkupSafe python-PyYAML python-appdirs python-certifi python-cffi python-chardet python-charset-normalizer python-distro python-dnspython python-docutils python-doxypypy python-doxyqml python-future python-idna python-markdown python-notify2 python-packaging python-pbr python-pillow python-ply python-pycparser python-pygments python-pysol_cards python-random2 python-requests python-sane python-setuptools_scm python-six python-tomli python-urllib3 python2-module-collection qca qrencode qt5 qt5-webkit qtkeychain quazip readline rpcsvc-proto rttr rubygem-asciidoctor sbc sdl serf sg3_utils shared-desktop-ontologies shared-mime-info sip slang slang1 sound-theme-freedesktop speech-dispatcher speex speexdsp spirv-llvm-translator startup-notification svgalib system-config-printer t1lib taglib taglib-extras talloc tango-icon-theme tango-icon-theme-extras tdb tevent tidy-html5 utf8proc v4l-utils vid.stab vte wavpack woff2 xapian-core xxHash zlib zstd ModemManager NetworkManager alpine autofs biff+comsat bind bluez bluez-firmware bootp bridge-utils bsd-finger c-ares ca-certificates cifs-utils conntrack-tools crda curl cyrus-sasl daemon dehydrated dhcp dhcpcd dnsmasq dovecot ebtables elm epic5 ethtool fetchmail getmail gnupg gnupg2 gnutls gpa gpgme htdig httpd icmpinfo iftop inetd iproute2 ipset iptables iptraf-ng iputils ipw2100-fw ipw2200-fw irssi iw krb5 lftp libassuan libgcrypt libgpg-error libksba libmbim libmilter libmnl libndp libnetfilter_acct libnetfilter_conntrack libnetfilter_cthelper libnetfilter_cttimeout libnetfilter_log libnetfilter_queue libnfnetlink libnftnl libqmi libtirpc links lynx mcabber metamail mobile-broadband-provider-info mtr mutt nc ncftp net-snmp net-tools netatalk netdate netkit-bootparamd netkit-ftp netkit-ntalk netkit-routed netkit-rsh netkit-rusers netkit-rwall netkit-rwho netkit-timed netpipes nettle netwatch network-scripts netwrite newspost nfacct nfs-utils nftables nghttp2 nmap nn npth nss-pam-ldapd ntp obexftp openldap openobex openresolv openssh openssl openvpn p11-kit pam-krb5 php pidentd pinentry popa3d postfix ppp procmail proftpd pssh rdist rp-pppoe rpcbind rsync s-nail samba slrn snownews socat sshfs stunnel tcp_wrappers tcpdump telnet tftp-hpa tin traceroute ulogd uucp vlan vsftpd wget wget2 whois wireguard-tools wireless_tools wpa_supplicant yptools ytalk zd1211-firmware razwall \
+ ; do
+ if grep "\(^\| \)$PACKAGE\( \|$\)" $TMP/SeTpkgs 1> /dev/null 2> /dev/null ; then
+  echo "$PACKAGE: ADD" >> $TMP/SeTnewtag
+ else
+  echo "$PACKAGE: SKP" >> $TMP/SeTnewtag
+ fi
+done
+rm -f $TMP/SeTpkgs

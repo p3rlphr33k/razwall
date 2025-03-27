@@ -1,0 +1,11 @@
+c-ares: c-ares (C library for DNS requests)
+c-ares:
+c-ares: This is c-ares, an asynchronous resolver library. It is intended for
+c-ares: applications which need to perform DNS queries without blocking, or
+c-ares: need to perform multiple DNS queries in parallel. The primary examples
+c-ares: of such applications are servers which communicate with multiple
+c-ares: clients and programs with graphical user interfaces.
+c-ares:
+c-ares: Homepage: https://c-ares.haxx.se/
+c-ares:
+c-ares:

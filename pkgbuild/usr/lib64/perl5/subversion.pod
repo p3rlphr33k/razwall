@@ -1,0 +1,22 @@
+=head2 Sat Sep 25 19:30:30 2021: C<Module> L<SVN::_Core|SVN::_Core>
+
+=over 4
+
+=item *
+
+C<installed into: /usr/share/perl5/vendor_perl>
+
+=item *
+
+C<LINKTYPE: dynamic>
+
+=item *
+
+C<VERSION: >
+
+=item *
+
+C<EXE_FILES: >
+
+=back
+

@@ -1,0 +1,11 @@
+ipset: ipset (administration tool for kernel IP sets)
+ipset:
+ipset: IP sets are a Linux kernel framework administered by the ipset 
+ipset: utility. Depending on the type, currently an IP set may store IP 
+ipset: addresses, (TCP/UDP) port numbers, or IP addresses with MAC addresses 
+ipset: in a way which ensures lightning speed when matching an entry against 
+ipset: a set. 
+ipset:
+ipset: Homepage: http://ipset.netfilter.org/
+ipset:
+ipset:

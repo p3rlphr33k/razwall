@@ -1,0 +1,11 @@
+zerofree: zerofree (zero free blocks from ext* filesystems)
+zerofree:
+zerofree: Zerofree finds the unallocated, non-zeroed blocks in an ext2, ext3,
+zerofree: or ext4 filesystem and fills them with zeroes. This is useful if the
+zerofree: device on which this file-system resides is a disk image. In this
+zerofree: case, depending on the type of disk image, a secondary utility may be
+zerofree: able to reduce the size of the disk image after zerofree has been run.
+zerofree:
+zerofree: Homepage: https://frippery.org/uml/
+zerofree:
+zerofree:

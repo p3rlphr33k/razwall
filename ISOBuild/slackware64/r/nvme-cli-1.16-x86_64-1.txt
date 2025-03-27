@@ -1,0 +1,11 @@
+nvme-cli: nvme-cli (NVMe storage command line utility)
+nvme-cli:
+nvme-cli: The nvme program is a user space utility to provide standards
+nvme-cli: compliant tooling for NVM-Express drives. The utility has sub-commands
+nvme-cli: for all admin and io commands defined in the specification and for
+nvme-cli: displaying controller registers.
+nvme-cli:
+nvme-cli: Homepage: https://github.com/linux-nvme/nvme-cli
+nvme-cli:
+nvme-cli:
+nvme-cli:

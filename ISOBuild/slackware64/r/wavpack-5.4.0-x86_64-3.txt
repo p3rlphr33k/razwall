@@ -1,0 +1,11 @@
+wavpack: wavpack (WAV audio file compressor)
+wavpack:
+wavpack: WavPack is a completely open audio compression format providing
+wavpack: lossless, high-quality lossy, and a unique hybrid compression mode.
+wavpack: The hybrid mode creates both a relatively small, high-quality lossy
+wavpack: file that can be used all by itself, and a "correction" file that
+wavpack: (when combined with the lossy file) provides full lossless
+wavpack: restoration. 
+wavpack:
+wavpack: Homepage: http://www.wavpack.com
+wavpack:

@@ -1,0 +1,11 @@
+oniguruma: oniguruma (regular expressions library)
+oniguruma:
+oniguruma: Oniguruma is a modern and flexible regular expressions library. It
+oniguruma: encompasses features from different regular expression implementations
+oniguruma: that traditionally exist in different languages.
+oniguruma:
+oniguruma: Character encoding can be specified per regular expression object.
+oniguruma:
+oniguruma: Homepage: https://github.com/kkos/oniguruma
+oniguruma:
+oniguruma:

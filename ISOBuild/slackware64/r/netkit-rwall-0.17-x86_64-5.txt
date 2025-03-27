@@ -1,0 +1,11 @@
+netkit-rwall: netkit-rwall (send a message to all users)
+netkit-rwall:
+netkit-rwall: The rwall command sends a message to the users logged into the
+netkit-rwall: specified host. The message to be sent can be typed in and
+netkit-rwall: terminated with EOF or it can be in a file.
+netkit-rwall:
+netkit-rwall: Run the rpc.rwalld daemon with caution. It may be insecure.
+netkit-rwall:
+netkit-rwall: The rwall command appeared in SunOS.
+netkit-rwall:
+netkit-rwall:

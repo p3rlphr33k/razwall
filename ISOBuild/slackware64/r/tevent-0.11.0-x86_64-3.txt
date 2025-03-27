@@ -1,0 +1,11 @@
+tevent: tevent (event system library)
+tevent:
+tevent: Tevent is an event system based on the talloc memory management
+tevent: library. It is the core event system used in Samba.
+tevent:
+tevent: Homepage: https://tevent.samba.org
+tevent:
+tevent:
+tevent:
+tevent:
+tevent:

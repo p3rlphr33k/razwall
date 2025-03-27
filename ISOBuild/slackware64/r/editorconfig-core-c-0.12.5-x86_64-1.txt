@@ -1,0 +1,11 @@
+editorconfig-core-c: editorconfig-core-c (EditorConfig core C library)
+editorconfig-core-c:
+editorconfig-core-c: EditorConfig makes it easy to maintain the correct coding style when
+editorconfig-core-c: switching between different text editors and between different
+editorconfig-core-c: projects. The EditorConfig project maintains a file format and plugins
+editorconfig-core-c: for various text editors which allow this file format to be read and
+editorconfig-core-c: used by those editors. For information on the file format and
+editorconfig-core-c: supported text editors, see the EditorConfig website.
+editorconfig-core-c:
+editorconfig-core-c: Homepage: https://editorconfig.org
+editorconfig-core-c:

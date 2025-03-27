@@ -1,0 +1,11 @@
+glade: glade (Glade UI Designer)
+glade:
+glade: Glade is a RAD tool to enable quick and easy development of user
+glade: interfaces for the GTK+ toolkit and the GNOME desktop environment.
+glade: The user interfaces designed in Glade are saved as XML, and by using
+glade: the GtkBuilder GTK+ object these can be loaded by applications
+glade: dynamically as needed.
+glade:
+glade: Homepage: http://glade.gnome.org/
+glade:
+glade:

@@ -1,0 +1,11 @@
+soma: soma (a dialog/MPlayer internet radio player and recorder)
+soma:
+soma: Soma handles playing any internet audio stream supported by MPlayer.
+soma: It also supports playlists such as pls,m3u and ram.
+soma:
+soma: Homepage: http://tty1.uk/slackbuilds/noversion/soma
+soma:
+soma:
+soma:
+soma:
+soma:

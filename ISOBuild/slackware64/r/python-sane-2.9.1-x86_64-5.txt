@@ -1,0 +1,11 @@
+python-sane: python-sane (SANE interface for python)
+python-sane:
+python-sane: The SANE module provides an interface to the SANE scanner and frame
+python-sane: grabber interface for Linux.
+python-sane:
+python-sane: Homepage: https://github.com/python-pillow/Sane
+python-sane:
+python-sane:
+python-sane:
+python-sane:
+python-sane:

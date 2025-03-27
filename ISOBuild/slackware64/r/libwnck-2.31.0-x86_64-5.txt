@@ -1,0 +1,11 @@
+libwnck: libwnck (Window Navigator Construction Kit library)
+libwnck:
+libwnck: libwnck is the Window Navigator Construction Kit, a library for use
+libwnck: in writing pagers, tasklists, and more generally applications that
+libwnck: are dealing with window management. It tries hard to respect the
+libwnck: Extended Window Manager Hints specification (EWMH).
+libwnck:
+libwnck: libwnck is used by compiz to provide the gtk-window-decorator program.
+libwnck:
+libwnck:
+libwnck:

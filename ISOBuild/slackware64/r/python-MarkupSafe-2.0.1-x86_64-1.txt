@@ -1,0 +1,11 @@
+python-MarkupSafe: python-MarkupSafe (Safely add untrusted strings to HTML/XML markup)
+python-MarkupSafe:
+python-MarkupSafe: MarkupSafe implements a text object that escapes characters so it is
+python-MarkupSafe: safe to use in HTML and XML. Characters that have special meanings are
+python-MarkupSafe: replaced so that they display as the actual characters. This mitigates
+python-MarkupSafe: injection attacks, meaning untrusted user input can safely be
+python-MarkupSafe: displayed on a page.
+python-MarkupSafe:
+python-MarkupSafe: Homepage: https://palletsprojects.com/p/markupsafe/
+python-MarkupSafe:
+python-MarkupSafe:

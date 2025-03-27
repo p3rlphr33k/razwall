@@ -1,0 +1,11 @@
+libtirpc: libtirpc (Transport-Independent RPC library)
+libtirpc:
+libtirpc: Libtirpc is a port of Sun's Transport-Independent RPC library to
+libtirpc: Linux. It is being developed by Bull GNU/Linux NFSv4 project.
+libtirpc:
+libtirpc: Homepage: http://sourceforge.net/projects/libtirpc/
+libtirpc:
+libtirpc:
+libtirpc:
+libtirpc:
+libtirpc:

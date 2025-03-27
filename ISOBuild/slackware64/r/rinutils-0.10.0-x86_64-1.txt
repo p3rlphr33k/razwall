@@ -1,0 +1,11 @@
+rinutils: rinutils (set of C headers)
+rinutils:
+rinutils: This is a set of C headers containing macros and static functions that
+rinutils: are expected to work on Unix-like systems and Microsoft_Windows that
+rinutils: have been extracted from Shlomi Fish's projects. They are quite random
+rinutils: and task specific and may not work for you. This package is needed to
+rinutils: build freecell-solver.
+rinutils:
+rinutils: Homepage: https://github.com/shlomif/rinutils
+rinutils:
+rinutils:

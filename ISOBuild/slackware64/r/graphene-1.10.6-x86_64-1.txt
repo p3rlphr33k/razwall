@@ -1,0 +1,11 @@
+graphene: graphene (a thin layer of types for graphic libraries)
+graphene:
+graphene: A thin layer of types needed to write a canvas library dealing with
+graphene: points, rectangles, affine matrices, 2D transformations, 4x4 matrices,
+graphene: projections, transformations, vectors, and quaternions. It does not
+graphene: deal with windowing system surfaces, drawing, scene graphs, or input,
+graphene: keeping things small and essential.
+graphene:
+graphene: Homepage: https://ebassi.github.io/graphene/
+graphene:
+graphene:

@@ -1,0 +1,11 @@
+tidy-html5: tidy-html5 (tidy up HTML and XML documents)
+tidy-html5:
+tidy-html5: Tidy is a console application for Mac OS X, Linux, Windows, UNIX, and
+tidy-html5: more. It corrects and cleans up HTML and XML documents by fixing
+tidy-html5: markup errors and upgrading legacy code to modern standards.
+tidy-html5:
+tidy-html5: Homepage: https://www.html-tidy.org
+tidy-html5:
+tidy-html5:
+tidy-html5:
+tidy-html5:

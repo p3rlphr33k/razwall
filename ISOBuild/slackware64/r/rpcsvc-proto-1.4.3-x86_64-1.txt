@@ -1,0 +1,11 @@
+rpcsvc-proto: rpcsvc-proto (rpcsvc proto.x files)
+rpcsvc-proto:
+rpcsvc-proto: This package contains rpcsvc proto.x files from glibc, which are
+rpcsvc-proto: missing in libtirpc. Additionally it contains rpcgen, which is needed
+rpcsvc-proto: to create header files and sources from protocol files.
+rpcsvc-proto:
+rpcsvc-proto: Homepage: https://github.com/thkukuk/rpcsvc-proto
+rpcsvc-proto:
+rpcsvc-proto:
+rpcsvc-proto:
+rpcsvc-proto:

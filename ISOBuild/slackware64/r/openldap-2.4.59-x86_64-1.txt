@@ -1,0 +1,11 @@
+openldap: openldap (Lightweight Directory Access Protocol)
+openldap:
+openldap: OpenLDAP is an open source implementation of the Lightweight Directory
+openldap: Access Protocol. LDAP is a alternative to the X.500 Directory Access
+openldap: Protocol (DAP). It uses the TCP/IP stack versus the overly complex OSI
+openldap: stack.
+openldap:
+openldap: LDAP is often used to provide authentication (such as for email).
+openldap:
+openldap: Homepage: https://www.openldap.org/
+openldap:

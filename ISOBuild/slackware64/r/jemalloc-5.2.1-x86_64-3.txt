@@ -1,0 +1,11 @@
+jemalloc: jemalloc (A memory allocator)
+jemalloc:
+jemalloc: jemalloc is a general-purpose scalable concurrent malloc(3)
+jemalloc: implementation.
+jemalloc:
+jemalloc: Homepage: http://jemalloc.net
+jemalloc:
+jemalloc:
+jemalloc:
+jemalloc:
+jemalloc:

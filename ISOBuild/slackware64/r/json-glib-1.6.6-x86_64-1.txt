@@ -1,0 +1,11 @@
+json-glib: json-glib (GLib/GObject based JSON tools)
+json-glib:
+json-glib: JSON-GLib implements a full JSON (JavaScript Object Notation) parser
+json-glib: and generator using GLib and GObject, and integrates JSON with GLib
+json-glib: data types.
+json-glib:
+json-glib: Homepage: https://gitlab.gnome.org/GNOME/json-glib/
+json-glib:
+json-glib:
+json-glib:
+json-glib:

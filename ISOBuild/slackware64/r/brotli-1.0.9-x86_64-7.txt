@@ -1,0 +1,11 @@
+brotli: brotli (Brotli compression format)
+brotli:
+brotli: Brotli is a general purpose lossless compression algorithm that
+brotli: compresses data using a combination of a modern variant of the LZ77
+brotli: algorithm, Huffman coding, and second order context modeling, with a
+brotli: compression ratio comparable to the best currently available general
+brotli: purpose compression methods. It is similar in speed with deflate but
+brotli: offers more dense compression.
+brotli:
+brotli: Homepage: https://github.com/google/brotli/
+brotli:

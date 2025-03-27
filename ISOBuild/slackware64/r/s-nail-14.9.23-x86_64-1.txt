@@ -1,0 +1,11 @@
+s-nail: s-nail (mail sending and receiving utility)
+s-nail:
+s-nail: S-nail provides a simple and friendly environment for sending and
+s-nail: receiving mail. It is intended to provide the functionality of the
+s-nail: POSIX mailx command, but is MIME capable and optionally offers
+s-nail: extensions for line editing, S/MIME, SMTP and POP3, among others.
+s-nail:
+s-nail: Homepage: http://www.sdaoden.eu/code.html#s-nail
+s-nail:
+s-nail:
+s-nail:

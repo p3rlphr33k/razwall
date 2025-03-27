@@ -1,0 +1,11 @@
+wireguard-tools: wireguard-tools (Utilities for WireGuard tunnels)
+wireguard-tools:
+wireguard-tools: This supplies the main userspace tooling for using and configuring
+wireguard-tools: WireGuard tunnels, including the wg(8) and wg-quick(8) utilities.
+wireguard-tools:
+wireguard-tools: For more information about WireGuard, see: https://www.wireguard.com/
+wireguard-tools:
+wireguard-tools: Homepage: https://git.zx2c4.com/wireguard-tools
+wireguard-tools:
+wireguard-tools:
+wireguard-tools:

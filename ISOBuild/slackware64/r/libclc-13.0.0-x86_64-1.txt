@@ -1,0 +1,11 @@
+libclc: libclc (OpenCL 1.1 libraries)
+libclc:
+libclc: libclc is an open source, BSD/MIT dual licensed implementation of the
+libclc: library requirements of the OpenCL C programming language, as
+libclc: specified by the OpenCL 1.1 Specification.
+libclc:
+libclc: Homepage: http://libclc.llvm.org/
+libclc:
+libclc:
+libclc:
+libclc:

@@ -1,0 +1,11 @@
+libopusenc: libopusenc (library for encoding .opus files)
+libopusenc:
+libopusenc: The libopusenc libraries provide a high-level API for encoding .opus
+libopusenc: files. libopusenc depends only on libopus.
+libopusenc:
+libopusenc: Homepage: https://libopusenc-codec.org/
+libopusenc:
+libopusenc:
+libopusenc:
+libopusenc:
+libopusenc:

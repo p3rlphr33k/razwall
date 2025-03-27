@@ -1,0 +1,11 @@
+python-pbr: python-pbr (Python Build Reasonableness)
+python-pbr:
+python-pbr: PBR is a library that injects some useful and sensible default
+python-pbr: behaviors into your setuptools run.
+python-pbr:
+python-pbr: Homepage: https://docs.openstack.org/pbr/latest/
+python-pbr:
+python-pbr:
+python-pbr:
+python-pbr:
+python-pbr:

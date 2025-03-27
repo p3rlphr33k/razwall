@@ -1,0 +1,11 @@
+SDL2_gfx: SDL2_gfx (SDL2 graphics primitives and surface functions)
+SDL2_gfx:
+SDL2_gfx: The SDL2_gfx library provides the basic drawing functions such as
+SDL2_gfx: lines, circles or polygons.
+SDL2_gfx:
+SDL2_gfx: Homepage: http://www.ferzkopp.net/Software/SDL2_gfx/Docs/html/
+SDL2_gfx:
+SDL2_gfx:
+SDL2_gfx:
+SDL2_gfx:
+SDL2_gfx:

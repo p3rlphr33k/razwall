@@ -23,8 +23,7 @@
 #
 use strict;
 use warnings;
-use lib '/usr/local/lib/perl5/';
-use lib '/root/perl5/lib/perl5/';
+use lib './';
 use Net::WebSocket::Server;
  
 #my $origin = 'http://example.com';

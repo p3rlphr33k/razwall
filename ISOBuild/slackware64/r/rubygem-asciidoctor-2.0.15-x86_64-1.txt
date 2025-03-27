@@ -1,0 +1,11 @@
+rubygem-asciidoctor: rubygem-asciidoctor (text processor and publishing toolchain)
+rubygem-asciidoctor:
+rubygem-asciidoctor: Asciidoctor is a fast text processor and publishing toolchain for
+rubygem-asciidoctor: converting AsciiDoc content to HTML5, DocBook 5 (or 4.5) and other
+rubygem-asciidoctor: formats.
+rubygem-asciidoctor:
+rubygem-asciidoctor: Homepage: https://asciidoctor.org
+rubygem-asciidoctor:
+rubygem-asciidoctor:
+rubygem-asciidoctor:
+rubygem-asciidoctor:

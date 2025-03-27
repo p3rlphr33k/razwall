@@ -1,0 +1,11 @@
+argon2: argon2 (Argon2 password-hashing function)
+argon2:
+argon2: This is the reference C implementation of Argon2, the password-hashing
+argon2: function that won the Password Hashing Competition
+argon2: (see https://password-hashing.net).
+argon2:
+argon2: Argon2 is a password-hashing function that summarizes the state of the
+argon2: art in the design of memory-hard functions and can be used for
+argon2: credential storage, key derivation, or other applications.
+argon2:
+argon2: Homepage: https://github.com/P-H-C/phc-winner-argon2

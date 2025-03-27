@@ -1,0 +1,11 @@
+libusb: libusb (USB library)
+libusb:
+libusb: This is libusb, a library which allows userspace application access
+libusb: to USB devices. It is used to connect to USB devices like scanners
+libusb: and printers.
+libusb:
+libusb: Homepage: http://libusb.info
+libusb:
+libusb:
+libusb:
+libusb:

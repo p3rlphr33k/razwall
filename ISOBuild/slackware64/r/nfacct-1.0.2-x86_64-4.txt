@@ -1,0 +1,11 @@
+nfacct: nfacct (tool to create/retrieve/delete accounting objects)
+nfacct:
+nfacct: nfacct is the command line tool to create/retrieve/delete accounting
+nfacct: objects. 
+nfacct:
+nfacct: The main features of nfacct are:
+nfacct: - listing the objects of the nfacct table in plain text/XML
+nfacct: - atomically get and reset objects of the nfacct table
+nfacct: - adding new objects to the nfacct table
+nfacct: - deleting objects from the nfacct table
+nfacct:

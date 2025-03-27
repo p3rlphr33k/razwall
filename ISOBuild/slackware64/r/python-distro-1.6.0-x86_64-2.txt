@@ -1,0 +1,11 @@
+python-distro: python-distro (OS platform information API)
+python-distro:
+python-distro: distro provides information about the OS distribution it runs on, such
+python-distro: as a reliable machine-readable ID, or version information.
+python-distro:
+python-distro: Homepage: https://github.com/nir0s/distro
+python-distro:
+python-distro:
+python-distro:
+python-distro:
+python-distro:

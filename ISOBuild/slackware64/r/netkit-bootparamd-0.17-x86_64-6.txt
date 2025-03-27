@@ -1,0 +1,11 @@
+netkit-bootparamd: netkit-bootparamd (boot parameter server)
+netkit-bootparamd:
+netkit-bootparamd: This package provides rpc.bootparamd and callbootd, programs used to
+netkit-bootparamd: provide information to diskless clients so they can boot. It is
+netkit-bootparamd: used primarily to allow a Linux server to boot a Sun machine using
+netkit-bootparamd: SunOS bootparam.
+netkit-bootparamd:
+netkit-bootparamd: netkit-bootparamd was written by Klas Heggemann.
+netkit-bootparamd:
+netkit-bootparamd:
+netkit-bootparamd:

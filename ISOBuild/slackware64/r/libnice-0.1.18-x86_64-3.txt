@@ -1,0 +1,11 @@
+libnice: libnice (Interactive Connectivity Establishment library)
+libnice:
+libnice: libnice is an implementation of the IETF draft Interactive
+libnice: Connectivity Establishment standard (ICE). ICE is useful for
+libnice: applications that want to establish peer-to-peer UDP data streams.
+libnice: It automates the process of traversing NATs and provides security
+libnice: against some attacks. Existing standards that use ICE include the
+libnice: Session Initiation Protocol (SIP) and Jingle, XMPP extension for
+libnice: audio/video calls.
+libnice:
+libnice: Homepage: https://libnice.freedesktop.org

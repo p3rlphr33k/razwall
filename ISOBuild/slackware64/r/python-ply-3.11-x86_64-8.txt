@@ -1,0 +1,11 @@
+python-ply: python-ply (Python Lex and Yacc)
+python-ply:
+python-ply: PLY is a 100% Python implementation of the common parsing tools lex
+python-ply: and yacc.
+python-ply:
+python-ply: Homepage: http://www.dabeaz.com/ply/
+python-ply:
+python-ply:
+python-ply:
+python-ply:
+python-ply:

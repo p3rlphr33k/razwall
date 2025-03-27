@@ -1,0 +1,11 @@
+python-Jinja2: python-Jinja2 (A very fast and expressive template engine)
+python-Jinja2:
+python-Jinja2: Jinja is a fast, expressive, extensible templating engine. Special
+python-Jinja2: placeholders in the template allow writing code similar to Python
+python-Jinja2: syntax. Then the template is passed data to render the final document.
+python-Jinja2:
+python-Jinja2: Homepage: https://palletsprojects.com/p/jinja/
+python-Jinja2:
+python-Jinja2:
+python-Jinja2:
+python-Jinja2:

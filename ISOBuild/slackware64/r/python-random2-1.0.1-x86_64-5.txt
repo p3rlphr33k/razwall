@@ -1,0 +1,11 @@
+python-random2: python-random2 (Python 3 port of Python 2 random module)
+python-random2:
+python-random2: Python3-random2 is a Python 3 compatible port of the Python 2 random
+python-random2: module.
+python-random2:
+python-random2: Homepage: https://pypi.python.org/project/random2/
+python-random2:
+python-random2:
+python-random2:
+python-random2:
+python-random2:

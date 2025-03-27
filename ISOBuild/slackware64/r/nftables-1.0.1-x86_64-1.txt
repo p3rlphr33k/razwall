@@ -1,0 +1,11 @@
+nftables: nftables (packet filtering and classification)
+nftables:
+nftables: nftables provides a new packet filtering framework, a new userspace
+nftables: utility, and also a compatibility layer for {ip,ip6}tables. nftables
+nftables: is built upon the building blocks of the Netfilter infrastructure such
+nftables: as the existing hooks, the connection tracking system, the userspace
+nftables: queueing component, and the logging subsystem.
+nftables:
+nftables: Homepage: http://www.netfilter.org/projects/nftables/
+nftables:
+nftables:

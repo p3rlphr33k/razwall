@@ -1,0 +1,11 @@
+python-tomli: python-tomli (A lil' TOML parser)
+python-tomli:
+python-tomli: Tomli is a Python library for parsing TOML (a minimal configuration
+python-tomli: file format).
+python-tomli:
+python-tomli: Homepage: https://github.com/hukkin/tomli
+python-tomli:
+python-tomli:
+python-tomli:
+python-tomli:
+python-tomli:

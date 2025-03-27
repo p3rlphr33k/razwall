@@ -1,0 +1,11 @@
+libuv: libuv (asynchronous I/O library)
+libuv:
+libuv: libuv is a multi-platform support library with a focus on asynchronous
+libuv: I/O.
+libuv:
+libuv: Homepage: https://libuv.org
+libuv:
+libuv:
+libuv:
+libuv:
+libuv:

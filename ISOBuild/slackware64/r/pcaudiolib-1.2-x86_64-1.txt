@@ -1,0 +1,11 @@
+pcaudiolib: pcaudiolib (Portable C Audio Library)
+pcaudiolib:
+pcaudiolib: The Portable C Audio Library provides a C API to different audio
+pcaudiolib: systems, such as ALSA, PulseAudio, and OSS. It is primarily used by
+pcaudiolib: the eSpeak NG text-to-speech synthesizer.
+pcaudiolib:
+pcaudiolib: Homepage: https://github.com/espeak-ng/pcaudiolib
+pcaudiolib:
+pcaudiolib:
+pcaudiolib:
+pcaudiolib:

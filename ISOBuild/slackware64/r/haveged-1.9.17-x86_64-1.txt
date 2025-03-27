@@ -1,0 +1,11 @@
+haveged: haveged (A simple entropy daemon)
+haveged:
+haveged: The haveged project is an attempt to provide an easy-to-use,
+haveged: unpredictable random number generator based upon an adaptation of the
+haveged: HAVEGE algorithm. Haveged was created to remedy low-entropy conditions
+haveged: in the Linux random device that can occur under some workloads,
+haveged: especially on headless servers.
+haveged:
+haveged: Homepage: http://www.issihosts.com/haveged/index.html
+haveged:
+haveged:

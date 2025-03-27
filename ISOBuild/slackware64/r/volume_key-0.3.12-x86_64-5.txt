@@ -1,0 +1,11 @@
+volume_key: volume_key (manipulate storage keys)
+volume_key:
+volume_key: The volume_key package provides a libvolume_key, a library for
+volume_key: manipulating storage volume encryption keys and storing them
+volume_key: separately from volumes, and an associated command-line tool named
+volume_key: volume_key.
+volume_key:
+volume_key: Homepage: https://pagure.io/volume_key/
+volume_key:
+volume_key:
+volume_key:

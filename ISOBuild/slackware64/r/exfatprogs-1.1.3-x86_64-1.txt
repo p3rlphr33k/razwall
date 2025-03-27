@@ -1,0 +1,11 @@
+exfatprogs: exfatprogs (exFAT filesystem utilities)
+exfatprogs:
+exfatprogs: The exfatprogs package contains all of the standard utilities for
+exfatprogs: creating, fixing, and debugging exFAT filesystems. The goal of
+exfatprogs: exfatprogs is to provide high performance and quality at the level of
+exfatprogs: exFAT exfat utilities in windows.
+exfatprogs:
+exfatprogs: Homepage: https://github.com/exfatprogs/exfatprogs
+exfatprogs:
+exfatprogs:
+exfatprogs:

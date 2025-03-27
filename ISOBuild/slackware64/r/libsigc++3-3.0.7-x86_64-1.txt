@@ -1,0 +1,11 @@
+libsigc++3: libsigc++3 (callback system for standard C++ v3)
+libsigc++3:
+libsigc++3: libsigc++3 implements a typesafe callback system for standard C++.
+libsigc++3: It allows you to define signals and to connect those signals to any
+libsigc++3: callback function, either global or a member function, regardless
+libsigc++3: of whether it is static or virtual. It also contains adaptor classes
+libsigc++3: for connection of dissimilar callbacks.
+libsigc++3:
+libsigc++3: Homepage: https://github.com/libsigcplusplus/libsigcplusplus
+libsigc++3:
+libsigc++3:

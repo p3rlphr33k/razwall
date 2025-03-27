@@ -1,0 +1,11 @@
+lbzip2: lbzip2 (a pthreads-based parallel bzip2/bunzip2)
+lbzip2:
+lbzip2: Lbzip2 is a Pthreads-based parallel bzip2/bunzip2 filter passable to
+lbzip2: GNU tar with the --use-compress-program option. It isn't restricted
+lbzip2: to regular files on input, nor output.
+lbzip2:
+lbzip2: Homepage: http://lbzip2.org
+lbzip2:
+lbzip2:
+lbzip2:
+lbzip2:

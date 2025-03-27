@@ -1,0 +1,11 @@
+krb5: krb5 (Network authentication protocol)
+krb5:
+krb5: Kerberos is a network authentication protocol. It is designed to
+krb5: provide strong authentication for client/server applications by using
+krb5: secret-key cryptography.
+krb5:
+krb5: Homepage: http://web.mit.edu/kerberos/
+krb5:
+krb5:
+krb5:
+krb5:

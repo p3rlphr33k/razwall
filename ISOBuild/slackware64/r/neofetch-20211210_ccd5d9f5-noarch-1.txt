@@ -1,0 +1,11 @@
+neofetch: neofetch (system information tool) 
+neofetch:
+neofetch: Neofetch is a command-line system information tool written in bash
+neofetch: 3.2+. Neofetch displays information about your operating system,
+neofetch: software and hardware in an aesthetic and visually pleasing way. The
+neofetch: overall purpose of Neofetch is to be used in screenshots of your
+neofetch: system. Neofetch shows the information other people want to see. There
+neofetch: are other tools available for proper system statistic/diagnostics.
+neofetch:
+neofetch: Homepage: https://github.com/dylanaraps/neofetch/wiki
+neofetch:

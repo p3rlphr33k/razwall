@@ -1,0 +1,11 @@
+python-doxypypy: python-doxypypy (A Doxygen filter for Python)
+python-doxypypy:
+python-doxypypy: A more Pythonic version of doxypy, a Doxygen filter for Python.
+python-doxypypy: It is meant to support all the same command line options as doxypy,
+python-doxypypy: but handle additional Python syntax beyond docstrings.
+python-doxypypy:
+python-doxypypy: Homepage: https://github.com/Feneric/doxypypy
+python-doxypypy:
+python-doxypypy:
+python-doxypypy:
+python-doxypypy:

@@ -1,0 +1,8 @@
+/usr/bin/sgmlspl.pl
+/usr/man/man3/SGMLS.3pm
+/usr/man/man3/SGMLS::Output.3pm
+/usr/man/man3/SGMLS::Refs.3pm
+/usr/share/perl5/vendor_perl/SGMLS.pm
+/usr/share/perl5/vendor_perl/SGMLS/Output.pm
+/usr/share/perl5/vendor_perl/SGMLS/Refs.pm
+/usr/share/perl5/vendor_perl/sgmlspl-specs/skel.pl

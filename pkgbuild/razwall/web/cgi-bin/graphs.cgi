@@ -228,9 +228,9 @@ EOF
 	;
 } elsif ($cgigraphs[1] =~ /network/) {
 	push (@graphs, ('LAN'));
-	if (blue_used()) {
+	if (lan2_used()) {
 		push (@graphs, ('LAN2')); }
-	if (orange_used()) {
+	if (dmz_used()) {
 		push (@graphs, ('DMZ')); }
 
 	$uplinks = get_uplinks();

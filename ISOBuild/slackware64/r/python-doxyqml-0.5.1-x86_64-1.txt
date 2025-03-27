@@ -1,0 +1,11 @@
+python-doxyqml: python-doxyqml (Doxygen input filter for QML files)
+python-doxyqml:
+python-doxyqml: Doxyqml lets you use Doxygen to document your QML classes.
+python-doxyqml: It integrates as a Doxygen input filter to turn .qml files into
+python-doxyqml: pseudo-C++ which Doxygen can then use to generate documentation.
+python-doxyqml:
+python-doxyqml: Homepage: http://agateau.com/projects/doxyqml
+python-doxyqml:
+python-doxyqml:
+python-doxyqml:
+python-doxyqml:

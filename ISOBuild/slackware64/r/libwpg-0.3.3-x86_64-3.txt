@@ -1,0 +1,11 @@
+libwpg: libwpg (WPG-image reading/converting library)
+libwpg:
+libwpg: libwpg is a library for reading and converting WPG images
+libwpg:
+libwpg: Homepage: http://libwpg.sourceforge.net/
+libwpg:
+libwpg:
+libwpg:
+libwpg:
+libwpg:
+libwpg:

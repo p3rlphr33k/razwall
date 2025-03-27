@@ -1,0 +1,11 @@
+python-charset-normalizer: python-charset-normalizer (charset detection for python)
+python-charset-normalizer:
+python-charset-normalizer: This library helps read text from an unknown charset encoding,
+python-charset-normalizer: providing an alternative to the Universal Charset Encoding Detector,
+python-charset-normalizer: also known as Chardet.
+python-charset-normalizer:
+python-charset-normalizer:
+python-charset-normalizer:
+python-charset-normalizer:
+python-charset-normalizer:
+python-charset-normalizer:

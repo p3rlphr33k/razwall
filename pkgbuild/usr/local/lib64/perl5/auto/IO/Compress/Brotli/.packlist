@@ -1,0 +1,6 @@
+/usr/local/bin/bro-perl
+/usr/local/lib64/perl5/IO/Compress/Brotli.pm
+/usr/local/lib64/perl5/IO/Uncompress/Brotli.pm
+/usr/local/lib64/perl5/auto/IO/Compress/Brotli/Brotli.so
+/usr/local/share/man/man3/IO::Compress::Brotli.3
+/usr/local/share/man/man3/IO::Uncompress::Brotli.3

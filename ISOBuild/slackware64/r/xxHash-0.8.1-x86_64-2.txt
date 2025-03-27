@@ -1,0 +1,11 @@
+xxHash: xxHash (Extremely fast Hash algorithm)
+xxHash:
+xxHash: xxHash is an Extremely fast Hash algorithm, running at RAM speed
+xxHash: limits. It successfully completes the [SMHasher]
+xxHash: (https://code.google.com/p/smhasher/wiki/SMHasher) test suite which
+xxHash: evaluates collision, dispersion and randomness qualities of hash
+xxHash: functions. Code is highly portable, and hashes are identical on all
+xxHash: platforms (little / big endian).
+xxHash:
+xxHash: Homepage: https://github.com/Cyan4973/xxHash
+xxHash:

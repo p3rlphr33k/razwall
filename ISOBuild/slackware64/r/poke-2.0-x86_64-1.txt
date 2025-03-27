@@ -1,0 +1,11 @@
+poke: poke (GNU binary data editor)
+poke:
+poke: GNU poke is an interactive, extensible editor for binary data. Not
+poke: limited to editing basic entities such as bits and bytes, it provides
+poke: a full-fledged procedural, interactive programming language designed
+poke: to describe data structures and to operate on them.
+poke:
+poke: Homepage: https://www.gnu.org/software/poke
+poke:
+poke:
+poke:

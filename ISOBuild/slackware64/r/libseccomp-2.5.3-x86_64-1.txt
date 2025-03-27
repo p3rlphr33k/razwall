@@ -1,0 +1,11 @@
+libseccomp: libseccomp (enhanced seccomp library)
+libseccomp:
+libseccomp: The libseccomp library provides an easy to use, platform independent,
+libseccomp: interface to the Linux Kernel's syscall filtering mechanism. The
+libseccomp: libseccomp API is designed to abstract away the underlying BPF based
+libseccomp: syscall filter language and present a more conventional function-call
+libseccomp: based filtering interface that should be familiar to, and easily
+libseccomp: adopted by, application developers.
+libseccomp:
+libseccomp: Homepage: https://github.com/seccomp/libseccomp
+libseccomp:

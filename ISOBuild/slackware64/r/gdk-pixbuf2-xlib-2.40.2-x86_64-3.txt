@@ -1,0 +1,11 @@
+gdk-pixbuf2-xlib: gdk-pixbuf2-xlib (GdkPixbuf/Xlib API)
+gdk-pixbuf2-xlib:
+gdk-pixbuf2-xlib: GdkPixbuf-Xlib contains the deprecated API for integrating GdkPixbuf
+gdk-pixbuf2-xlib: with Xlib data types. This library was originally shipped as part of
+gdk-pixbuf2-xlib: the gdk-pixbuf2 package, and has since been moved out of the original
+gdk-pixbuf2-xlib: repository.
+gdk-pixbuf2-xlib:
+gdk-pixbuf2-xlib:
+gdk-pixbuf2-xlib:
+gdk-pixbuf2-xlib:
+gdk-pixbuf2-xlib:

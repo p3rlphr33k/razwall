@@ -1,0 +1,11 @@
+hyphen: hyphen (hyphenation and justification library)
+hyphen:
+hyphen: Hyphen is a library for high quality hyphenation and justification.
+hyphen:
+hyphen: Homepage: https://travis-ci.org/hunspell/hyphen
+hyphen:
+hyphen:
+hyphen:
+hyphen:
+hyphen:
+hyphen:

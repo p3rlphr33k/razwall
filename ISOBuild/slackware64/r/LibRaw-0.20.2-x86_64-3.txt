@@ -1,0 +1,11 @@
+LibRaw: LibRaw (library for decoding raw digital photos)
+LibRaw:
+LibRaw: LibRaw is a library for reading RAW files from digital photo cameras
+LibRaw: (CRW/CR2, NEF, RAF, DNG, MOS, KDC, DCR, etc, virtually all RAW formats
+LibRaw: are supported). It pays special attention to correct retrieval of data
+LibRaw: required for subsequent RAW conversion. The library is intended for
+LibRaw: embedding in RAW converters, data analyzers, and other programs using
+LibRaw: RAW files as the initial data.
+LibRaw:
+LibRaw: Homepage: https://www.libraw.org/
+LibRaw:

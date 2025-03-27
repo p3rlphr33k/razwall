@@ -1,0 +1,11 @@
+libnss_nis: libnss_nis (glibc NSS NIS plugin)
+libnss_nis:
+libnss_nis: This package contains the NSS NIS plugin for glibc. This code was
+libnss_nis: formerly part of glibc, but is now standalone to be able to link
+libnss_nis: against TI-RPC for IPv6 support.
+libnss_nis:
+libnss_nis: Homepage: https://github.com/thkukuk/libnss_nis
+libnss_nis:
+libnss_nis:
+libnss_nis:
+libnss_nis:

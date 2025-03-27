@@ -1,0 +1,11 @@
+lhasa: lhasa (Free LZH archive tool)
+lhasa:
+lhasa: Lhasa is a library for parsing LHA (.lzh) archives and a free
+lhasa: replacement for the Unix LHA tool.
+lhasa:
+lhasa: Currently it is only possible to read from (ie. decompress) archives;
+lhasa: generating (compressing) LHA archives may be an enhancement for future
+lhasa: versions.
+lhasa:
+lhasa: Homepage: http://fragglet.github.com/lhasa/
+lhasa:

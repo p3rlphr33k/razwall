@@ -1,0 +1,11 @@
+sc-im: sc-im (A curses based spreadsheet calculator)
+sc-im:
+sc-im: SC-IM is a spreadsheet program that is based on SC. SC original
+sc-im: authors are James Gosling and Mark Weiser, and mods were later added
+sc-im: by Chuck Martin. SC-IM is developed by Andrés Martinell.
+sc-im: SC-IM extends the feature set to include undo/redo, larger possible
+sc-im: speadsheets, better support for common file formats, vim-like key
+sc-im: mappings, Unicode support, and more.
+sc-im:
+sc-im: Homepage: https://github.com/andmarti1424/sc-im
+sc-im:

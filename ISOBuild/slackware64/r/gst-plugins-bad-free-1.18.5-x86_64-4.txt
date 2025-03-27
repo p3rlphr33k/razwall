@@ -1,0 +1,11 @@
+gst-plugins-bad-free: gst-plugins-bad-free (bad set of GStreamer plugins)
+gst-plugins-bad-free:
+gst-plugins-bad-free: GStreamer Bad Plug-ins is a set of plug-ins that aren't tested well
+gst-plugins-bad-free: enough, or the code is not of good enough quality. They might be close
+gst-plugins-bad-free: to being good quality, but they're missing something - be it a good
+gst-plugins-bad-free: code review, some documentation, a set of tests, a real live
+gst-plugins-bad-free: maintainer, or some actual wide use.
+gst-plugins-bad-free:
+gst-plugins-bad-free: gst-plugins-bad-free packages the bad plugins with licenses that are
+gst-plugins-bad-free: free enough to ship.
+gst-plugins-bad-free:

@@ -1,0 +1,11 @@
+python-pygments: python-pygments (Python syntax highlighter)
+python-pygments:
+python-pygments: Pygments is a generic syntax highlighter written in Python that
+python-pygments: supports over 300 languages and text formats, for use in code hosting,
+python-pygments: forums, wikis or other applications that need to prettify source code.
+python-pygments:
+python-pygments: Homepage: https://pypi.org/project/Pygments
+python-pygments:
+python-pygments:
+python-pygments:
+python-pygments:

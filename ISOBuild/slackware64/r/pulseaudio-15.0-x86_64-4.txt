@@ -1,0 +1,11 @@
+pulseaudio: pulseaudio (PulseAudio sound server)
+pulseaudio:
+pulseaudio: Pulseaudio is a networked low-latency sound server intended to be an
+pulseaudio: improved replacement for the Enlightened Sound Daemon (EsounD).
+pulseaudio:
+pulseaudio: Homepage: http://www.pulseaudio.org
+pulseaudio:
+pulseaudio:
+pulseaudio:
+pulseaudio:
+pulseaudio:

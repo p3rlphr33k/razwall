@@ -1,0 +1,11 @@
+openresolv: openresolv (management framework for resolv.conf)
+openresolv:
+openresolv: Allows multiple daemons to manage resolv.conf and configures local
+openresolv: resolvers such as dnsmasq and unbound.
+openresolv: This package may require some manual configuration.
+openresolv: Please read resolvconf(8) and resolvconf.conf(5) for detailed
+openresolv: instructions.
+openresolv:
+openresolv: Homepage: https://roy.marples.name/projects/openresolv
+openresolv:
+openresolv:

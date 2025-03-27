@@ -1,0 +1,11 @@
+icecream: icecream (distributed C/C++ compiler daemon/scheduler)
+icecream:
+icecream: Icecream is a distributed compile system. Icecream was created by SUSE
+icecream: based on distcc. Like distcc, Icecream takes compile jobs from a build
+icecream: and distributes it among remote machines allowing a parallel build.
+icecream: But unlike distcc, Icecream uses a central server that dynamically
+icecream: schedules the compile jobs to the fastest free server.
+icecream:
+icecream: Homepage: https://github.com/icecc/icecream
+icecream:
+icecream:

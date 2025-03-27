@@ -1,0 +1,11 @@
+spirv-llvm-translator: spirv-llvm-translator (LLVM/SPIR-V Bi-Directional Translator)
+spirv-llvm-translator:
+spirv-llvm-translator: This is the LLVM/SPIR-V Bi-Directional Translator, a library and tool
+spirv-llvm-translator: for translation between LLVM IR and SPIR-V.
+spirv-llvm-translator:
+spirv-llvm-translator: Homepage: https://github.com/KhronosGroup/SPIRV-LLVM-Translator
+spirv-llvm-translator:
+spirv-llvm-translator:
+spirv-llvm-translator:
+spirv-llvm-translator:
+spirv-llvm-translator:

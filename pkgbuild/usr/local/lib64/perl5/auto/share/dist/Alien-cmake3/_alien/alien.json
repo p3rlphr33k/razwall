@@ -1,0 +1,15 @@
+{
+   "alien_build_version" : "2.84",
+   "command" : "/usr/bin/cmake",
+   "install_type" : "system",
+   "legacy" : {
+      "finished_installing" : 1,
+      "install_type" : "system",
+      "original_prefix" : "/usr/local/lib64/perl5/auto/share/dist/Alien-cmake3",
+      "version" : "3.21.4"
+   },
+   "perl_module_version" : "0.08",
+   "prefix" : "/usr/local/lib64/perl5/auto/share/dist/Alien-cmake3",
+   "style" : "system",
+   "version" : "3.21.4"
+}

@@ -1,0 +1,11 @@
+gnome-themes-extra: gnome-themes-extra (default icons used by GTK+)
+gnome-themes-extra:
+gnome-themes-extra: A set of default icons used by many GTK+ applications.
+gnome-themes-extra:
+gnome-themes-extra:
+gnome-themes-extra:
+gnome-themes-extra:
+gnome-themes-extra:
+gnome-themes-extra:
+gnome-themes-extra:
+gnome-themes-extra:
