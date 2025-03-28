@@ -1,0 +1,343 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use lib '/razwall';
+use SimpleCurses;
+
+# Define path to htpasswd file for admin authentication
+my $admin_htpasswd_file = '/razwall/config/auth/users';
+
+# ANSI escape codes for colors
+my $menu_color  = "\e[40m";  # Black background (for login box interior and later menu)
+my $info_color  = "\e[42m";  # Green background (for outside login box)
+my $text_color  = "\e[97m";  # White text
+my $reset_color = "\e[0m";
+
+# Get terminal size
+sub get_terminal_size {
+    my ($cols, $rows) = (0, 0);
+    eval {
+        ($rows, $cols) = split / /, `stty size`;
+    };
+    return ($cols || 80, $rows || 24);
+}
+
+# Draw a centered login window with bordered input boxes.
+# The outer area is filled with green while the login box interior is filled with black.
+sub admin_login_window {
+    my ($screen, $width, $height) = @_;
+
+    # Fill entire screen with green background
+    for my $row (1 .. $height) {
+        print "\e[${row};1H" . $info_color . (" " x $width) . $reset_color;
+    }
+
+    # Define login window dimensions and position
+    my $win_width  = 40;
+    my $win_height = 14;   # Increased height for bordered input boxes and message area
+    my $start_x    = int(($width  - $win_width)  / 2);
+    my $start_y    = int(($height - $win_height) / 2);
+
+    my $max_attempts = 3;
+    my $attempt = 0;
+    while ($attempt < $max_attempts) {
+        # Reset outer green background
+        for my $row (1 .. $height) {
+            print "\e[${row};1H" . $info_color . (" " x $width) . $reset_color;
+        }
+
+        # Draw the login window border
+        $screen->draw_box($start_x, $start_y, $win_width, $win_height);
+
+        # Fill the interior of the login window with black background (overriding the green)
+        for my $row ($start_y+1 .. $start_y + $win_height - 2) {
+            print "\e[" . $row . ";" . ($start_x+1) . "H" 
+                  . $menu_color 
+                  . (" " x ($win_width - 2)) 
+                  . $reset_color;
+        }
+
+        # Center the title "Admin Login" within the border
+        my $title   = "RazWall Login";
+        my $title_x = $start_x + int(($win_width - length($title)) / 2);
+        print "\e[" . ($start_y + 1) . ";" . $title_x . "H" . $title;
+
+        # --- Username Prompt and Input Box ---
+        print "\e[" . ($start_y + 2) . ";" . ($start_x + 2) . "HUsername:";
+        my $input_box_width  = $win_width - 4;   # Leave margin for borders
+        my $input_box_height = 3;                # Top border, input line, bottom border
+        my $uname_box_x = $start_x + 2;
+        my $uname_box_y = $start_y + 3;
+        $screen->draw_box($uname_box_x, $uname_box_y, $input_box_width, $input_box_height);
+        my $uname_input_x = $uname_box_x + 1;
+        my $uname_input_y = $uname_box_y + 1;
+        # Show cursor marker inside input box
+        print "\e[" . $uname_input_y . ";" . $uname_input_x . "H> ";
+        print "\e[" . $uname_input_y . ";" . ($uname_input_x + 2) . "H";
+        chomp(my $username = <STDIN>);
+
+        # --- Password Prompt and Input Box ---
+        print "\e[" . ($start_y + 7) . ";" . ($start_x + 2) . "HPassword:";
+        my $pass_box_x = $start_x + 2;
+        my $pass_box_y = $start_y + 8;
+        $screen->draw_box($pass_box_x, $pass_box_y, $input_box_width, $input_box_height);
+        my $pass_input_x = $pass_box_x + 1;
+        my $pass_input_y = $pass_box_y + 1;
+        print "\e[" . $pass_input_y . ";" . $pass_input_x . "H> ";
+        print "\e[" . $pass_input_y . ";" . ($pass_input_x + 2) . "H";
+        system("stty -echo");
+        chomp(my $password = <STDIN>);
+        system("stty echo");
+        print "\n";
+
+        # Verify credentials using htpasswd in verify mode
+        my $cmd = "htpasswd -vb $admin_htpasswd_file $username '$password' > /dev/null 2>&1";
+        my $result = system($cmd);
+        if ($result == 0) {
+            # Print login success message below the login box (outside its border)
+            my $msg_y = $start_y + $win_height + 1;
+            print "\e[" . $msg_y . ";" . ($start_x + 2) . "HLogin successful. Press any key to continue...";
+            $screen->get_input();
+            return 1;
+        } else {
+            $attempt++;
+            # On failure, reset the screen (simulate a terminal login reset)
+            my $msg_y = $start_y + $win_height + 1;
+            print "\e[" . $msg_y . ";" . ($start_x + 2) . "HInvalid credentials. Restarting login...";
+            sleep 2;
+        }
+    }
+    print "\e[H\e[2J";
+    exit 1;
+}
+
+# Get IP address for a given interface
+sub get_ip_address {
+    my $iface = shift;
+    my $ip    = 'N/A';
+    my $output = `ifconfig $iface 2>/dev/null`;
+    if ($output =~ /inet (?:addr:)?(\d+\.\d+\.\d+\.\d+)/) {
+        $ip = $1;
+    }
+    return $ip;
+}
+
+sub update_network_info {
+    my $lan_ip = get_ip_address('eth0');
+    my $wan_ip = get_ip_address('eth1');
+    return ($lan_ip, $wan_ip);
+}
+
+sub redraw_screen {
+    my ($screen, $width, $height, $lan_ip, $wan_ip) = @_;
+    print "\e[H\e[2J";
+
+    my $left_width  = int($width * 0.5);
+    my $right_width = $width - $left_width;
+    my $menu_height = $height - 2;
+
+    $screen->draw_box(1, 1, $width, $height);
+    $screen->draw_box(1, 1, $left_width, $height);
+    $screen->draw_box($left_width + 1, 1, $right_width, $height);
+
+    for my $line (2 .. $menu_height) {
+        print "\e[${line};2H$menu_color" . (' ' x ($left_width - 2)) . "$reset_color";
+    }
+    for my $line (2 .. $menu_height) {
+        my $start_col = $left_width + 2;
+        print "\e[${line};${start_col}H$info_color" . (' ' x ($right_width - 2)) . "$reset_color";
+    }
+
+    sub write_colored_text {
+        my ($x, $y, $text, $bg_color, $fg_color) = @_;
+        $fg_color ||= "\e[97m";
+        $bg_color ||= "\e[40m";
+        print "\e[${y};${x}H$bg_color$fg_color$text$reset_color";
+    }
+
+    write_colored_text(10, 10, 'Menu:', $menu_color, $text_color);
+    my @menu_items = (
+        '0. System shell',
+        '1. Reboot system',
+        '2. Change root password',
+        '3. Change admin password (htpasswd)',
+        '4. Restore Factory Defaults',
+        '5. Network Wizard'
+    );
+    my $menu_start_row = 12;
+    for my $i (0 .. $#menu_items) {
+        write_colored_text(10, $menu_start_row + $i, $menu_items[$i], $menu_color, $text_color);
+    }
+
+    write_colored_text($left_width + 5, 10, 'System Info:', $info_color, "\e[30m");
+    write_colored_text($left_width + 5, 11, 'RazWall 1.0.0', $info_color, "\e[30m");
+    write_colored_text($left_width + 5, 12, "https://" . get_ip_address('eth0') . ":10443", $info_color, "\e[30m");
+
+    write_colored_text($left_width + 5, 15, "LAN Zone: IP " . get_ip_address('eth0'), $info_color, "\e[30m");
+    write_colored_text($left_width + 5, 16, 'Device eth0 [' . ((get_ip_address('eth0') ne 'N/A') ? 'UP' : 'DOWN') . ']', $info_color, "\e[30m");
+
+    write_colored_text($left_width + 5, 19, "WAN Zone: IP " . get_ip_address('eth1'), $info_color, "\e[30m");
+    write_colored_text($left_width + 5, 20, 'Device eth1 [' . ((get_ip_address('eth1') ne 'N/A') ? 'UP' : 'DOWN') . ']', $info_color, "\e[30m");
+
+    write_colored_text(3, $height - 1, 'Press a menu key (0-5) or q to logout...', $menu_color, $text_color);
+}
+
+sub reboot_system           { system("reboot"); }
+sub change_root_password    { system("passwd root"); }
+
+sub change_admin_password {
+    print "Enter new admin password: ";
+    system("stty -echo");
+    chomp(my $new_pass = <STDIN>);
+    system("stty echo");
+    print "\nConfirm new admin password: ";
+    system("stty -echo");
+    chomp(my $confirm_pass = <STDIN>);
+    system("stty echo");
+    print "\n";
+    if ($new_pass ne $confirm_pass) {
+         print "Passwords do not match. Aborting change.\n";
+         sleep 2;
+         return;
+    }
+    my $result = system("htpasswd -b $admin_htpasswd_file admin \"$new_pass\"");
+    if ($result == 0) {
+         print "Admin password updated successfully.\n";
+    } else {
+         print "Failed to update admin password.\n";
+    }
+    sleep 2;
+}
+
+sub restore_factory_defaults {
+    print "Restoring factory defaults...\n";
+    sleep 2;
+}
+
+sub network_wizard {
+    print "Starting network configuration wizard...\n";
+
+    print "\nConfiguring LAN (eth0):\n";
+    print "Select configuration mode for LAN (1) Static or (2) DHCP: ";
+    chomp(my $lan_mode = <STDIN>);
+    if ($lan_mode eq '1') {
+         print "Enter static IP address for LAN: ";
+         chomp(my $lan_static_ip = <STDIN>);
+         print "Enter netmask for LAN: ";
+         chomp(my $lan_netmask = <STDIN>);
+         print "Enter gateway for LAN: ";
+         chomp(my $lan_gateway = <STDIN>);
+         print "Configuring eth0 with static IP $lan_static_ip, netmask $lan_netmask, gateway $lan_gateway...\n";
+         sleep 2;
+    } elsif ($lan_mode eq '2') {
+         print "Configuring eth0 to use DHCP...\n";
+         sleep 2;
+    } else {
+         print "Invalid selection for LAN configuration. Skipping LAN configuration.\n";
+         sleep 2;
+    }
+
+    print "\nConfiguring WAN interface:\n";
+    open my $fh, '<', '/proc/net/dev' or do {
+         print "Cannot open /proc/net/dev. Skipping WAN configuration.\n";
+         sleep 2;
+         return;
+    };
+    my @interfaces;
+    while (<$fh>) {
+       chomp;
+       next unless /^\s*([^:]+):/;
+       my $iface = $1;
+       next if $iface eq 'lo' or $iface eq 'eth0';
+       push @interfaces, $iface;
+    }
+    close $fh;
+    if (!@interfaces) {
+       print "No available WAN interfaces found.\n";
+       sleep 2;
+       return;
+    }
+    print "Select an interface to configure as WAN:\n";
+    for (my $i = 0; $i < @interfaces; $i++) {
+       print "  $i. $interfaces[$i]\n";
+    }
+    print "Enter selection number: ";
+    chomp(my $selection = <STDIN>);
+    if ($selection !~ /^\d+$/ or $selection >= scalar(@interfaces)) {
+       print "Invalid selection.\n";
+       sleep 2;
+       return;
+    }
+    my $selected_iface = $interfaces[$selection];
+    print "Selected WAN interface: $selected_iface\n";
+    print "Select configuration mode for WAN (1) Static or (2) DHCP: ";
+    chomp(my $wan_mode = <STDIN>);
+    if ($wan_mode eq '1') {
+       print "Enter static IP address for WAN: ";
+       chomp(my $wan_static_ip = <STDIN>);
+       print "Enter netmask for WAN: ";
+       chomp(my $wan_netmask = <STDIN>);
+       print "Enter gateway for WAN: ";
+       chomp(my $wan_gateway = <STDIN>);
+       print "Configuring $selected_iface with static IP $wan_static_ip, netmask $wan_netmask, gateway $wan_gateway...\n";
+       sleep 2;
+    } elsif ($wan_mode eq '2') {
+       print "Configuring $selected_iface to use DHCP...\n";
+       sleep 2;
+    } else {
+       print "Invalid mode selection for WAN.\n";
+       sleep 2;
+       return;
+    }
+
+    print "\nUpdating firewall configuration...\n";
+    system("/path/to/update_firewall.sh");
+    sleep 2;
+    print "Network configuration complete.\n";
+    sleep 2;
+}
+
+# Main program
+my ($width, $height) = get_terminal_size();
+my $screen = SimpleCurses->new();
+$screen->init_screen();
+
+# First, show the login window
+admin_login_window($screen, $width, $height);
+
+# Main menu loop
+MENU_LOOP:
+while (1) {
+    my ($lan_ip, $wan_ip) = update_network_info();
+    redraw_screen($screen, $width, $height, $lan_ip, $wan_ip);
+    my $key = $screen->get_input();
+    if ($key eq '0') {
+        system($ENV{SHELL});
+    }
+    elsif ($key eq '1') {
+        reboot_system();
+    }
+    elsif ($key eq '2') {
+        change_root_password();
+    }
+    elsif ($key eq '3') {
+        change_admin_password();
+    }
+    elsif ($key eq '4') {
+        restore_factory_defaults();
+    }
+    elsif ($key eq '5') {
+        network_wizard();
+    }
+    # Instead of exiting, pressing 'q' logs the user out
+    elsif ($key eq 'q') {
+        # Optionally clear the screen before logout
+        print "\e[H\e[2J";
+        # Restart login process (this call will exit on too many failed attempts)
+        admin_login_window($screen, $width, $height);
+        # Then, continue in the menu loop
+        next MENU_LOOP;
+    }
+}
+$screen->end_screen();

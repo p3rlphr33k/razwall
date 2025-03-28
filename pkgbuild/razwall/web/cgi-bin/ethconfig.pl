@@ -24,10 +24,10 @@
 
 require 'header.pl';
 
-my $mactabfile = '/var/efw/ethernet/mactab';
-my $bondfiles = '/var/efw/ethernet/bond*';
-my $ifacesjson = '/var/cache/ethconfig/interfaces.json';
-my $ethernet_settings_file = '/var/efw/ethernet/settings';
+my $mactabfile = '/razwall/config/ethernet/mactab';
+my $bondfiles = '/razwall/config/ethernet/bond*';
+my $ifacesjson = '/razwall/cache/ethconfig/interfaces.json';
+my $ethernet_settings_file = '/razwall/config/ethernet/settings';
 my $ips_settings_file = '/usr/lib/efw/snort/default/settings';
 
 my %ethconfighash=();
