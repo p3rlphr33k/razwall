@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>RazWall Firewall</title>
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="stylesheet" type="text/css" href="/css/SocketStatus.css">
+<link rel="stylesheet" type="text/css" href="/css/razwall-main.css">
+<link rel="stylesheet" type="text/css" href="/css/tiles.css">
+<link rel="stylesheet" type="text/css" href="/css/smoothie.css"/>
+<link rel="stylesheet" type="text/css" href="/css/plugin.css"/>
+
+<!--link rel="stylesheet" type="text/css" href="/css/signaturesinformationcontent.css" media="all" /-->
+<link rel="stylesheet" type="text/css" href="/css/hardwareinformationcontent.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/css/serviceinformationcontent.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/css/networkinformationcontent.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/css/uplinkinformationcontent.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/css/autorefreshwrapper.css" media="all" />
+
+<script type="text/javascript" src="/js/websocket.js"></script>   
+<script language="javascript" src="/js/smoothie.js"></script>
+<script type="text/javascript" src="/js/consolelogger.js"></script>
+
+<script type="text/javascript" src="/js/systeminformationplugin.js"></script>
+<!--script type="text/javascript" src="/js/signaturesinformationplugin.js"></script-->
+<script type="text/javascript" src="/js/hardwareinformationplugin.js"></script>
+<script type="text/javascript" src="/js/serviceinformationplugin.js"></script>
+<script type="text/javascript" src="/js/networkinformationplugin.js"></script>
+<script type="text/javascript" src="/js/uplinkinformationplugin.js"></script>
+<script type="text/javascript" src="/js/jobsinformationplugin.js"></script>
+<script type="text/javascript" src="/js/autorefreshwrapper.js"></script>
+
+	<!-- Uplink Call -->
+    <script type="text/javascript">
+	document.addEventListener("DOMContentLoaded",function() {
+		autorefreshwrapper_register('autorefreshwrapper-UpLinkInformationPlugin',
+                                'uplinkinformationpluginInit',
+                                '/cgi-bin/dash.pl?plugin=uplinks', 
+                                null,
+                                'uplinkinformationpluginUpdate',
+                                '/cgi-bin/dash.pl?plugin=uplinks',
+                                null,
+                                '',
+                                'True',
+                                5000);
+	});
+    </script>
+	<!-- System Info Call -->
+     <script type="text/javascript">
+	document.addEventListener("DOMContentLoaded", function() {
+		autorefreshwrapper_register(
+								"autorefreshwrapper-SystemInformationPlugin",
+								"systeminformationpluginUpdate",
+								"/cgi-bin/dash.pl?plugin=system",
+								null,
+								"systeminformationpluginUpdate",
+								"/cgi-bin/dash.pl?plugin=system",
+								null,
+								"",
+								"True",
+								5000);
+	});
+	</script>
+	<!-- Signatures Call -->
+	<!--script type="text/javascript">
+	document.addEventListener("DOMContentLoaded", function() {
+    // needs to be done before pageload!!
+    autorefreshwrapper_register('autorefreshwrapper-SignaturesInformationPlugin',
+                                'signaturesinformationpluginUpdate',
+                                '/cgi-bin/dash.pl?plugin=signatures', 
+                                null,
+                                'signaturesinformationpluginUpdate',
+                                '/cgi-bin/dash.pl?plugin=signatures',
+                                null,
+                                '',
+                                'True',
+                                5000);
+	});
+    </script-->
+	<!-- Hardware Call -->
+	<script type="text/javascript">
+	document.addEventListener("DOMContentLoaded", function() {
+    // needs to be done before pageload!!
+    autorefreshwrapper_register('autorefreshwrapper-HardwareInformationPlugin',
+                                'hardwareinformationpluginUpdate',
+                                '/cgi-bin/dash.pl?plugin=hardware', 
+                                null,
+                                'hardwareinformationpluginUpdate',
+                                '/cgi-bin/dash.pl?plugin=hardware',
+                                null,
+                                '',
+                                'True',
+                                5000);
+	});
+    </script>
+	<!-- Network Call -->
+    <script type="text/javascript">
+	document.addEventListener("DOMContentLoaded",function() {
+    // needs to be done before pageload!!
+    autorefreshwrapper_register('autorefreshwrapper-NetworkInformationPlugin',
+                                'networkinformationpluginInit',
+                                '/cgi-bin/dash.pl?plugin=network', 
+                                null,
+                                'networkinformationpluginUpdate',
+                                '/cgi-bin/dash.pl?plugin=network',
+                                null,
+                                '',
+                                'True',
+                                5000);
+	});
+    </script>
+	<!-- Services Call -->
+    <!--script type="text/javascript">
+	document.addEventListener("DOMContentLoaded",function() {
+    // needs to be done before pageload!!
+    autorefreshwrapper_register('autorefreshwrapper-ServiceInformationPlugin',
+                                'serviceinformationpluginInit',
+                                '/cgi-bin/dash.pl?plugin=service', 
+                                null,
+                                'serviceinformationpluginUpdate',
+                                '/cgi-bin/dash.pl?plugin=service',
+                                {"keys": ["memory/memory-used", "filecount-postfix_queue/files", "tail-smtp/connections-noqueue", "tail-smtp/connections-virus", "tail-smtp/connections-spam", "tail-smtp/connections-clean", "tail-smtp/connections-incoming", "tail-smtp/connections-sent", "tail-pop/connections-spam", "tail-pop/connections-virus", "tail-pop/connections-scanned", "tail-http/connections-hit", "tail-http/connections-miss", "tail-http/connections-denied", "tail-http/connections-virus"]},
+                                '',
+                                'True',
+                                5000);
+	});
+    </script-->
+</head>
+<body>
+
+<!-- Preload audio clips -->
+<span id="dummy" style="display:none;height:0px;width:0px;">
+	<audio id="incoming" src="/sounds/sound_1.mp3" preload="true" autobuffer=""></audio>
+	<audio id="outgoing" src="/sounds/sound_2.mp3" preload="true" autobuffer=""></audio>
+	<audio id="login" src="/sounds/sound_3.mp3" preload="true" autobuffer=""></audio>
+	<audio id="logout" src="/sounds/sound_4.mp3" preload="true" autobuffer=""></audio>
+	<audio id="razbot" src="/sounds/sound_5.mp3" preload="true" autobuffer=""></audio>
+	<audio id="error" src="/sounds/sound_6.mp3" preload="true" autobuffer=""></audio>
+</span> 
+
+  <header>
+    <div>
+      <div class="logo">
+		<img src="" alt="Socket" id="socketStatus" onclick="RazConnectWS(); return false;"/><img src="/images/2025/razwall_light.png" alt="RazWall" id="razwall" class="theme-icon"/>
+	  </div>
+    </div>
+	
+	<div class="version">
+		Appliance <span  id="systeminformationplugin-appliance"></span><br>
+	    Version <span  id="systeminformationplugin-version"></span><br>
+	    Kernel <span  id="systeminformationplugin-kernel"></span><br>
+	    Uptime <span  id="systeminformationplugin-uptime"></span><br>
+	</div>
+	
+    <div class="status-bar">
+	
+	<!-- Uplink display -->
+	  
+	<div id="UpLinkInformationPlugin">
+		<script type="text/javascript">
+		var UPLINK_RECONNECT = 'reconnect';
+		</script>
+		<div id="uplinkinformationplugin-information"></div>	
+		<div><i>&rarr; = F/O</i></div>
+	</div>
+
+    
+  </header>
+  <!-- Add Overlay titles to graphs -->
+  <div class="graphs">
+    <div class="graph">
+		<div class="dashboard-graph-title">Incoming</div>
+		<canvas id="rx-chart"></canvas>
+	</div>
+    <div class="graph">
+		<div class="dashboard-graph-title">Outgoing</div>
+		<canvas id="tx-chart"></canvas>
+	</div>
+  </div>
+
+  <!-- START MAIN CONTENT -->
+  <main>
+  
+    <!-- Services Display Box -->
+  <!--
+	<div class="services">
+	
+	<div id="ServicesInformationPlugin">
+        <div id="signaturesinformationplugin-information"></div>
+	</div>
+	
+	</div>
+  -->
+  
+  <!-- Signature Display Box -->
+  <!--
+	<div class="signature">
+  
+	<div id="SignaturesInformationPlugin">
+		<div id="signaturesinformationplugin-information"></div>
+    </div>
+	
+	</div>
+  -->
+  
+  <!-- Wrap both boxes in a container -->
+  <div class="plugin-container">
+
+  <!-- Interfaces Display Box -->
+  <div class="interfaces">
+  <h3>Interfaces</h3>
+	<div id="networkinformationplugin-information"></div>
+  </div>
+  
+  <!-- Interfaces Display Box -->
+  <div class="hardware">
+  <h3>Resources</h3>
+	<div id="hardwareinformationplugin"></div>
+  </div>
+
+  </div>
+  
+  <!-- END MAIN CONTENT -->
+  </main>
+  
+
+  <!-- Navigation Tiles Footer -->
+  <footer class="navigation" id="tileNav">
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="home" src="/images/2025/home_light.png"></div>Monitor</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="system" src="/images/2025/system_light.png"></div>Sytem</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="snat" src="/images/2025/snat_light.png"></div>SNAT</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="dnat" src="/images/2025/dnat_light.png"></div>DNAT</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="zonefw" src="/images/2025/zonefw_light.png"></div>Zone FW</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="outfw" src="/images/2025/outfw_light.png"></div>Outboud</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="vpnfw" src="/images/2025/vpnfw_light.png"></div>VPN FW</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="sysfw" src="/images/2025/sysfw_light.png"></div>Access</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="routing" src="/images/2025/routing_light.png"></div>Routing</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="hosts" src="/images/2025/hosts_light.png"></div>Hosts</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="users" src="/images/2025/users_light.png"></div>Users</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="network" src="/images/2025/network_light.png"></div>Network</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="zones" src="/images/2025/zones_light.png"></div>Zones</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="dhcp" src="/images/2025/dhcp_light.png"></div>DHCP</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="vpn" src="/images/2025/vpn_light.png"></div>OpenVPN</div>
+	 <div class="tile" onclick="toggleTheme()"><div class="tile-icon"><img class="theme-icon" id="theme" src="/images/2025/theme_light.png"></div>Theme</div>
+	 <div class="tile" onclick="javascript:window.open('https://razwall.com/forum','_blank','height=700,width=1000,location=no,menubar=no,scrollbars=yes');"><div class="tile-icon"><img class="theme-icon" id="help" src="/images/2025/help_light.png"></div>Help</div>
+	 <div class="tile" onclick="window.location.href='/cgi-bin/logout.cgi';"><div class="tile-icon"><img class="theme-icon" id="logout" src="/images/2025/logout_light.png"></div>Logout</div>
+  </footer>
+
+  <!-- Mobile Drawer Toggle -->
+  <div class="drawer-toggle" onclick="toggleDrawer()">
+    <span id="drawer-arrow">▲</span>
+  </div>
+  
+  <script>
+	function toggleTheme() {
+	  document.body.classList.toggle('light-theme');
+	  var isLight = document.body.classList.contains('light-theme');
+	  localStorage.setItem('theme', isLight ? 'dark' : 'light');
+
+	  // Swap icons using ID
+	  document.querySelectorAll('.theme-icon').forEach(icon => {
+		var id = icon.id; 
+		icon.src = `/images/2025/${id}_${isLight ? 'dark' : 'light'}.png`;
+	  });
+	}
+	
+	function toggleDrawer() {
+      const nav = document.getElementById('tileNav');
+      const arrow = document.getElementById('drawer-arrow');
+      if (nav.classList.contains('open')) {
+        nav.classList.remove('open');
+        arrow.textContent = '▲';
+      } else {
+        nav.classList.add('open');
+        arrow.textContent = '▼';
+      }
+    }
+	
+
+    window.onload = () => {
+      var saved = localStorage.getItem('theme');
+      if (saved === 'dark') {
+        document.body.classList.add('light-theme');
+      }
+    };
+	
+	var rxchart = new SmoothieChart({millisPerPixel:100,grid:{fillStyle:'transparent'},labels:{showIntermediateLabels:true},tooltip:true,tooltipLine:{strokeStyle:'#bbbbbb'},horizontalLines:[{color:'#ffffff',lineWidth:1,value:0},{color:'#880000',lineWidth:2,value:3333},{color:'#880000',lineWidth:2,value:-3333}]}),
+    rxcanvas = document.getElementById('rx-chart'),
+    netRXseries = new TimeSeries();
+	
+	var txchart = new SmoothieChart({millisPerPixel:100,grid:{fillStyle:'transparent'},labels:{showIntermediateLabels:true},tooltip:true,tooltipLine:{strokeStyle:'#bbbbbb'},horizontalLines:[{color:'#ffffff',lineWidth:1,value:0},{color:'#880000',lineWidth:2,value:3333},{color:'#880000',lineWidth:2,value:-3333}]}),
+    txcanvas = document.getElementById('tx-chart'),
+    netTXseries = new TimeSeries();
+
+	rxchart.addTimeSeries(netRXseries, {lineWidth:2,strokeStyle:'#00ff00',fillStyle:'rgba(0,255,0,0.20)',interpolation:'bezier'});
+	rxchart.streamTo(rxcanvas, 5000);
+
+	txchart.addTimeSeries(netTXseries, {lineWidth:2,strokeStyle:'#ff0000',fillStyle:'rgba(255,0,0,0.20)',interpolation:'bezier'});
+	txchart.streamTo(txcanvas, 5000);
+
+	var RazIP = '$thisAddress';
+	RazConnectWS();
+	
+	function resizeCanvas(canvas) {
+	// Set the internal resolution to match the displayed size
+	canvas.width = canvas.offsetWidth;
+	canvas.height = canvas.offsetHeight;
+	}
+
+	// Call it initially and on resize for both canvases
+	function updateCanvases() {
+	  resizeCanvas(rxcanvas);
+	  resizeCanvas(txcanvas);
+	}
+	
+	// Initial resize
+	updateCanvases();
+
+	// Update on window resize
+	window.addEventListener('resize', updateCanvases);
+  </script>
+	
+</body>
+</html>

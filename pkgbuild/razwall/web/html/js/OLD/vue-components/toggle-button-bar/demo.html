@@ -1,0 +1,39 @@
+<script src="https://unpkg.com/vue@2.3.3"></script>
+<script src="toggle-button-bar.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<style>
+.bg-slate-700 {
+	background-color: #ffffff;
+	border-color: #cccccc;
+	color: #000000;
+}
+.bg-teal {
+	background-color: #cccccc;
+	border-color: #cccccc;
+	color: #000000;
+}
+</style>
+
+<div id="app">
+    <div style="width: 250px">
+        <toggle-button-bar :buttons="buttons" @toggle="showToggledButton"></toggle-button-bar>
+    </div>
+</div>
+
+<script>
+window.toggleButtonBar.registerVueComponent();
+var app = new Vue({
+    el: "#app",
+    data: {
+        buttons: [{label: 'All', value: 'all'},
+                  {label: 'Online', value: 'online', selected: true },
+                  {label: 'Offline', value: 'offline'}]
+    },
+    methods: {
+        showToggledButton: function(value){
+            console.log(value);
+        }
+    }
+});
+</script>

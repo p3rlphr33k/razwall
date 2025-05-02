@@ -1,48 +1,33 @@
-.plugin .closeablecontainer-content {
-    padding-top: 16px;
-    padding: 10px;
+/* Ensure proper mobile scaling */
+@media screen {
+  html {
+    box-sizing: border-box;
+  }
 }
 
-.plugin table {
-    border-spacing: 0;
+/* Flex container */
+.plugin-container {
+  display: flex;
+  flex-wrap: wrap;  /* Allows wrapping on smaller screens */
+  /*gap: 20px;*/        /* Optional: space between boxes */*
 }
 
-.plugin table tr.bridge td,table tr.bridge th {
-    border-top: dotted 1px rgb(160,160,160);
-    padding-bottom: 2px;
+/* Desktop: side-by-side layout */
+.interfaces, 
+.hardware {
+  flex: 1 1 calc(50% - 20px); /* Adjust the 20px according to your gap value */
+  box-sizing: border-box;
+  padding: 10px;
+  /*border: 1px solid #ddd;
+  background-color: #f9f9f9;
+  */
 }
 
-.plugin table tr.device td, table tr.device th {
-    border-top: dotted 1px rgb(160,160,160);
-    padding-bottom: 2px;
+/* Mobile: stack vertically */
+@media (max-width: 768px) {
+  .interfaces, 
+  .hardware {
+    flex: 1 1 100%;
+  }
 }
 
-.plugin table tr.uplink td,table tr.uplink th {
-    border-top: dotted 1px rgb(160,160,160);
-    padding-bottom: 2px;
-}
-
-.plugin table td.legend {
-    border-top: solid 1px #cccccc;
-}
-
-.plugin table td {
-    padding-top: 2px;
-    padding-bottom: 3px;
-}
-
-.plugin table th.orange, .plugin table td.orange {
-    color: orange;
-}
-.plugin table th.blue, .plugin table td.blue {
-    color: blue;
-}
-.plugin table th.red, .plugin table td.red {
-    color: red;
-}
-.plugin table th.green, .plugin table td.green {
-    color: green;
-}
-.plugin table th.purple, .plugin table td.purple {
-    color: purple;
-}

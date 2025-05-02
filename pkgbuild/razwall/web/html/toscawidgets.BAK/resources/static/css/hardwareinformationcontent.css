@@ -1,0 +1,17 @@
+table.hardwareinformation_percentage {
+	border-spacing: 0;
+	padding: 0;
+	border: 1px solid rgb(160,160,160);
+	width: 80px;
+	height: 10px;
+}
+
+table.hardwareinformation_percentage td.used {
+	border: 1px solid rgb(226,226,226);
+	background-color: rgb(160,160,160);
+}
+
+table.hardwareinformation_percentage td.unused {
+	border: 1px solid rgb(226,226,226);
+	background-color: rgb(226,226,226);
+}

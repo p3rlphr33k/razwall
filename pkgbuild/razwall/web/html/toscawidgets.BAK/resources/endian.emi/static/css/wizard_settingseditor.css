@@ -1,0 +1,63 @@
+
+.wizard .page .plugin-content .standalone_wizard_title,
+.wizard .page .plugin-content h2{
+    width: 570px;
+    height: 30px;
+    margin: 20px;
+    color: green;
+    font-size: 30px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.wizard .page .plugin-content .standalone_wizard_description{
+    width: 510px;
+    height: 80px;
+    margin: 10px 50px;
+}
+
+.wizard .page .plugin-content .standalone_wizard_inner_content{
+    background-image: url("/toscawidgets/resources/endian.emi/static/images/wizard_settingseditor_inner_content_bg.png");
+    background-repeat: no-repeat;
+    width: 550px;
+    height: 209px;
+    margin: 10px 30px;
+    margin-bottom: 0px;
+    overflow: auto;
+}
+
+.wizard .page .plugin-content #outer_description_container_div {
+    padding: 0px;
+}
+
+.wizard .page .plugin-content #outer_description_container {
+    height: 289px;
+    position: relative;
+}
+
+.wizard .page .plugin-content #outer_description_container .fieldhelp,
+.wizard .page .plugin-content #outer_description_container #outer_description_container_control_widget{
+    margin: 10px 50px;
+    margin-bottom: 0px;
+    display: block;
+}
+
+.wizard .page .plugin-content #outer_description_container div .fieldhelp{
+    margin: 0px;
+}
+
+.wizard .page .plugin-content #outer_description_container_inner_content_container_div{
+    position: absolute;
+    top: 80px;
+    padding: 0px;
+}
+
+.wizard .page .plugin-content #outer_description_container_inner_content_container{
+    background-image: url("/toscawidgets/resources/endian.emi/static/images/wizard_settingseditor_inner_content_bg.png");
+    background-repeat: no-repeat;
+    width: 550px;
+    height: 209px;
+    margin: 10px 30px;
+    margin-bottom: 0px;
+    overflow: auto;
+}

@@ -1,0 +1,56 @@
+ul.ui-multicheck {
+    width: 320px;
+    float: left;
+    list-style-type: none;
+    display: visible;
+    padding: 0;
+    margin-right: 0;
+    margin-bottom: 5px; 
+    margin-top: 5px;
+}
+
+ul.ui-multicheck li {
+    width: 100%;
+    list-style-type: none;
+    display: visible;
+}
+
+ul.ui-multicheck li.ui-widget-content {
+    border-top: 0;
+}
+
+ul.ui-multicheck li span.toggle {
+    float: left;
+    margin: 3px;
+    cursor: pointer;
+}
+
+ul.ui-multicheck li span.text {
+    width: 240px;
+    float: left;
+    padding: 4px;
+    padding-left: 0;
+    cursor: pointer;
+}
+
+ul.ui-multicheck li img.status {
+    float: right;
+    padding: 4px;
+    cursor: pointer;
+}
+
+ul.ui-multicheck li span.status {
+    float: right;
+    margin: 3px;
+    cursor: pointer;
+}
+
+ul.ui-multicheck li.item {
+    cursor: pointer;
+}
+
+ul.ui-multicheck li.item span.text {
+    float: left;
+    padding: 4px;
+    padding-left: 22px;
+}

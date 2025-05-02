@@ -1,0 +1,162 @@
+.ui-multiselect-endian ul {
+    -moz-user-select: none;
+}
+
+.ui-multiselect-endian ul li {
+    position: relative;
+    width: inherit;
+    cursor: default;
+    line-height: 20px;
+    height: 20px;
+    list-style: none;
+}
+.ui-multiselect-endian li a { }
+
+.ui-multiselect-endian div.selected {
+    padding: 0;
+    margin: 0;
+    border-left: 0;
+    border-bottom: 0;
+    float: left;
+}
+.ui-multiselect-endian ul.selected {
+    padding: 0;
+    margin: 0;
+    border-left: 0;
+    border-bottom: 0;
+    overflow: auto;
+    overflow-x: hidden;
+    float: left;
+    list-style: none;
+    width: 100%;
+}
+.ui-multiselect-endian ul.selected li {
+    border-left: 0;
+    border-right: 0;
+    border-top: 0;
+}
+
+.ui-multiselect-endian div.removeall {
+    border-left: 0;
+    float: left;
+}
+
+.ui-multiselect-endian div.available {
+    padding: 0;
+    margin: 0;
+    border-bottom: 0px;
+    float:left;
+}
+.ui-multiselect-endian ul.available {
+    padding: 0;
+    margin: 0;
+    border-bottom: 0px;
+    overflow: auto;
+    overflow-x: hidden;
+    float: left;
+    list-style: none;
+    width: 100%;
+}
+.ui-multiselect-endian ul.available li {
+    border-left: 0;
+    border-right: 0;
+    border-top: 0;
+}
+.ui-multiselect-endian div.addall {
+    float: left;
+}
+ 
+.ui-multiselect-endian .ui-state-default { }
+.ui-multiselect-endian .ui-state-hover { }
+.ui-multiselect-endian .ui-widget-header {
+    width: 100%;
+}
+.ui-multiselect-endian .ui-widget-content {
+    background: #fff;
+    margin: 0px;
+    padding: 0px;
+}
+ 
+.ui-multiselect-endian span.searchicon {
+    float: left;
+    margin-top: 3px;
+    margin-left: 5px;
+}
+.ui-multiselect-endian input.search {
+    float: left;
+    height: 14px;
+    opacity: 1;
+    margin: 4px;
+    margin-bottom: 3px;
+    padding: 2px;
+    background-color: white !important;
+    color: black;
+}
+.ui-multiselect-endian .addto {
+    float:left;
+}
+.ui-multiselect-endian span.addto {
+    margin-top: 3px;
+    padding: 5px;
+    padding-top: 0;
+}
+.ui-multiselect-endian select.addto {
+    height: 20px;
+    margin: 3px;
+    margin-top: 2px;
+}
+.ui-multiselect-endian span.title {
+    float: left;
+    padding: 5px;
+    padding-bottom: 4px;
+    margin-top: 2px;
+}
+.ui-multiselect-endian span.count {
+    float: left;
+    padding: 5px;
+    padding-bottom: 7px;
+    margin-top: 2px;
+    font-weight: normal;
+}
+.ui-multiselect-endian .addall a,
+.ui-multiselect-endian .removeall a {
+    float: right;
+    padding: 4px;
+    font-weight: normal;
+}
+
+.ui-multiselect-endian li span {
+    margin-top: 0px;
+}
+.ui-multiselect-endian li span.sortable {
+    float: left;
+    margin-top: 2px;
+}
+.ui-multiselect-endian li span.moveable {
+    float: left;
+    margin-top: 2px;
+}
+.ui-multiselect-endian li select.selectedin {
+    width: auto;
+    float: left;
+    margin-left: 5px;
+}
+.ui-multiselect-endian li span.target {
+    float: left;
+    padding-left: 5px;
+}
+.ui-multiselect-endian li a.action {
+    position: absolute;
+    right: 2px;
+    top: 2px;
+    clear: both;
+}
+
+.actions.ui-widget-header {
+    height: 33px;
+}
+
+.selfservice .actions.ui-widget-header {
+    height: 56px;
+}
+

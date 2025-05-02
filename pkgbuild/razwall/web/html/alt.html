@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>RazWall Firewall</title>
+
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="stylesheet" type="text/css" href="/css/SocketStatus.css">
+<link rel="stylesheet" type="text/css" href="/css/razwall2025.css">
+<link rel="stylesheet" type="text/css" href="/css/tiles.css">
+<link rel="stylesheet" type="text/css" href="/css/smoothie.css"/>
+<link rel="stylesheet" type="text/css" href="/css/plugin.css"/>
+<link rel="stylesheet" type="text/css" href="/css/serviceinformationcontent.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/css/uplinkinformationcontent.css" media="all" />
+<link rel="stylesheet" type="text/css" href="/css/autorefreshwrapper.css" media="all" />
+<style>
+ 
+    /* DNAT Rule Styles */
+    .rule {
+      background: var(--tile-bg);
+      padding: 0.5rem;
+      margin-bottom: 0.5rem;
+      border-radius: 0.4rem;
+      transition: background 0.3s;
+    }
+    .rule:hover {
+      background: var(--tile-hover);
+    }
+    .rule-header {
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .rule-details {
+      display: none;
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      background-color: var(--tile-bg);
+      border-radius: 0.4rem;
+    }
+    .rule.expanded .rule-details {
+      display: block;
+    }
+    /* Desktop: labels and fields in one row */
+    .rule-details form label {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+    .rule-details form label span.label-text {
+      width: 120px;
+      display: inline-block;
+    }
+    .rule-details select,
+    .rule-details input,
+    .rule-details textarea {
+      width: 100%;
+      max-width: 300px;
+      box-sizing: border-box;
+      vertical-align: top;
+    }
+    /* Mobile: stack label above field */
+    @media (max-width: 600px) {
+      .rule-details form label {
+        display: block;
+      }
+      .rule-details form label span.label-text {
+        width: auto;
+        display: block;
+        margin-bottom: 0.3rem;
+      }
+    }
+    .rule-actions {
+      margin-top: 0.5rem;
+    }
+    .rule-actions button {
+      margin-right: 0.5rem;
+      padding: 0.3rem 0.6rem;
+      border: none;
+      border-radius: 0.3rem;
+      cursor: pointer;
+    }
+    /* Navigation Tiles Footer */
+    footer.navigation {
+      flex-shrink: 0;
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      padding: 0.5rem;
+      border-top: 1px solid #333;
+      background: var(--tile-bg);
+    }
+    .tile {
+      background-color: var(--tile-bg);
+      color: var(--text-color);
+      text-align: center;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      width: 60px;
+      font-size: 0.75rem;
+    }
+    .tile:hover {
+      background-color: var(--tile-hover);
+    }
+    .tile-icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.3rem;
+    }
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    /* Mobile Drawer Toggle */
+    .drawer-toggle {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: var(--tile-bg);
+      color: var(--text-color);
+      text-align: center;
+      padding: 0.5rem;
+      cursor: pointer;
+      border-top: 1px solid #333;
+      z-index: 1001;
+      display: none; /* Only visible on mobile */
+    }
+    /* Mobile styles */
+    @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      /* Hide navigation footer by default on mobile */
+      footer.navigation {
+        display: none;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        transition: bottom 0.3s ease;
+        z-index: 1000;
+      }
+      /* When open, position the tray above the drawer toggle */
+      footer.navigation.open {
+        display: flex;
+        bottom: 2.5rem;
+      }
+      .drawer-toggle {
+        display: block;
+      }
+      main {
+        padding-bottom: 3rem; /* Make room for drawer toggle */
+      }
+    }
+    /* Desktop: Always show navigation footer */
+    @media (min-width: 601px) {
+      footer.navigation {
+        display: flex;
+      }
+    }
+  </style>
+  
+<script type="text/javascript" src="/js/websocket.js"></script>   
+<script language="javascript" src="/js/smoothie.js"></script>
+<script type="text/javascript" src="/js/consolelogger.js"></script>
+<script type="text/javascript" src="/js/systeminformationplugin.js"></script>
+<script type="text/javascript" src="/js/uplinkinformationplugin.js"></script>
+<script type="text/javascript" src="/js/autorefreshwrapper.js"></script>
+
+	<!-- Uplink Call -->
+    <script type="text/javascript">
+	document.addEventListener("DOMContentLoaded",function() {
+		autorefreshwrapper_register('autorefreshwrapper-UpLinkInformationPlugin',
+                                'uplinkinformationpluginInit',
+                                '/cgi-bin/dash.pl?plugin=uplinks', 
+                                null,
+                                'uplinkinformationpluginUpdate',
+                                '/cgi-bin/dash.pl?plugin=uplinks',
+                                null,
+                                '',
+                                'True',
+                                5000);
+	});
+    </script>
+	<!-- System Info Call -->
+     <script type="text/javascript">
+	document.addEventListener("DOMContentLoaded", function() {
+		autorefreshwrapper_register(
+								"autorefreshwrapper-SystemInformationPlugin",
+								"systeminformationpluginUpdate",
+								"/cgi-bin/dash.pl?plugin=system",
+								null,
+								"systeminformationpluginUpdate",
+								"/cgi-bin/dash.pl?plugin=system",
+								null,
+								"",
+								"True",
+								5000);
+	});
+	</script>
+</head>
+<body>
+
+<!-- Preload audio clips -->
+<span id="dummy" style="display:none;height:0px;width:0px;">
+	<audio id="incoming" src="/sounds/sound_1.mp3" preload="true" autobuffer=""></audio>
+	<audio id="outgoing" src="/sounds/sound_2.mp3" preload="true" autobuffer=""></audio>
+	<audio id="login" src="/sounds/sound_3.mp3" preload="true" autobuffer=""></audio>
+	<audio id="logout" src="/sounds/sound_4.mp3" preload="true" autobuffer=""></audio>
+	<audio id="razbot" src="/sounds/sound_5.mp3" preload="true" autobuffer=""></audio>
+	<audio id="error" src="/sounds/sound_6.mp3" preload="true" autobuffer=""></audio>
+</span> 
+
+  <header>
+    <div>
+      <div class="logo">
+		<img src="" alt="Socket" id="socketStatus" onclick="RazConnectWS(); return false;"/><img src="/images/2025/razwall_light.png" alt="RazWall" id="razwall" class="theme-icon"/>
+	  </div>
+    </div>
+	
+	<div class="version">
+		Appliance <span  id="systeminformationplugin-appliance"></span><br>
+	    Version <span  id="systeminformationplugin-version"></span><br>
+	    Kernel <span  id="systeminformationplugin-kernel"></span><br>
+	    Uptime <span  id="systeminformationplugin-uptime"></span><br>
+	</div>
+	
+    <div class="status-bar">
+	
+	<!-- Uplink display -->
+	  
+	<div id="UpLinkInformationPlugin">
+		<script type="text/javascript">
+		var UPLINK_RECONNECT = 'reconnect';
+		</script>
+		<div id="uplinkinformationplugin-information"></div>	
+		<div><i>&rarr; = F/O</i></div>
+	</div>
+
+  </header>
+  
+	<!-- Add Overlay titles to graphs -->
+  <div class="graphs">
+    <div class="graph">
+		<div class="dashboard-graph-title">Incoming</div>
+		<canvas id="rx-chart"></canvas>
+	</div>
+    <div class="graph">
+		<div class="dashboard-graph-title">Outgoing</div>
+		<canvas id="tx-chart"></canvas>
+	</div>
+  </div>
+
+  <!--<main> MAIN IS ONLY FOR TILED DATA STRUCTURES , NOT FOR RULE LSITS! -->
+    <h2>Destination NAT Rules</h2>
+    
+    <!-- Rule 1 -->
+    <div class="rule">
+      <div class="rule-header" onclick="toggleRule(this.parentElement)">Rule 1: TCP 80 → 192.168.1.10</div>
+      <div class="rule-details">
+        <form>
+          <label>
+            <span class="label-text">Source:</span>
+            <select multiple>
+              <option value="192.168.1.1">192.168.1.1</option>
+              <option value="192.168.1.2">192.168.1.2</option>
+              <option value="192.168.1.3">192.168.1.3</option>
+            </select>
+          </label>
+          <label>
+            <span class="label-text">Source Port:</span>
+            <input type="number" value="80" />
+          </label>
+          <label>
+            <span class="label-text">Destination:</span>
+            <select multiple>
+              <option value="192.168.1.10">192.168.1.10</option>
+              <option value="192.168.1.20">192.168.1.20</option>
+            </select>
+          </label>
+          <label>
+            <span class="label-text">Destination Port:</span>
+            <input type="number" value="80" />
+          </label>
+          <label>
+            <span class="label-text">Rule Number:</span>
+            <input type="text" value="1" readonly />
+          </label>
+          <label>
+            <span class="label-text">Notes:</span>
+            <textarea rows="2" cols="20">Sample note</textarea>
+          </label>
+          <label>
+            <span class="label-text">Enabled:</span>
+            <input type="checkbox" checked />
+          </label>
+          <div class="rule-actions">
+            <button type="button" onclick="saveRule(1)">Save</button>
+            <button type="button" onclick="cancelRule(1)">Cancel</button>
+            <button type="button" onclick="deleteRule(1)">Delete</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    
+    <!-- Rule 2 -->
+    <div class="rule">
+      <div class="rule-header" onclick="toggleRule(this.parentElement)">Rule 2: TCP 443 → 192.168.1.20</div>
+      <div class="rule-details">
+        <form>
+          <label>
+            <span class="label-text">Source:</span>
+            <select multiple>
+              <option value="192.168.1.4">192.168.1.4</option>
+              <option value="192.168.1.5">192.168.1.5</option>
+              <option value="192.168.1.6">192.168.1.6</option>
+            </select>
+          </label>
+          <label>
+            <span class="label-text">Source Port:</span>
+            <input type="number" value="443" />
+          </label>
+          <label>
+            <span class="label-text">Destination:</span>
+            <select multiple>
+              <option value="192.168.1.20">192.168.1.20</option>
+              <option value="192.168.1.30">192.168.1.30</option>
+            </select>
+          </label>
+          <label>
+            <span class="label-text">Destination Port:</span>
+            <input type="number" value="443" />
+          </label>
+          <label>
+            <span class="label-text">Rule Number:</span>
+            <input type="text" value="2" readonly />
+          </label>
+          <label>
+            <span class="label-text">Notes:</span>
+            <textarea rows="2" cols="20">Another sample note</textarea>
+          </label>
+          <label>
+            <span class="label-text">Enabled:</span>
+            <input type="checkbox" checked />
+          </label>
+          <div class="rule-actions">
+            <button type="button" onclick="saveRule(2)">Save</button>
+            <button type="button" onclick="cancelRule(2)">Cancel</button>
+            <button type="button" onclick="deleteRule(2)">Delete</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!-- Additional rules can follow the same pattern -->
+    
+  <!--</main> MAIN IS ONLY FOR TILED DATA STRUCTURES , NOT FOR RULE LSITS! -->
+
+  <!-- Navigation Tiles Footer (Desktop: always visible, Mobile: toggled) -->
+  <footer class="navigation" id="tileNav">
+ 	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="home" src="/images/2025/home_light.png"></div>Monitor</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="system" src="/images/2025/system_light.png"></div>Sytem</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="snat" src="/images/2025/snat_light.png"></div>SNAT</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="dnat" src="/images/2025/dnat_light.png"></div>DNAT</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="zonefw" src="/images/2025/zonefw_light.png"></div>Zone FW</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="outfw" src="/images/2025/outfw_light.png"></div>Outboud</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="vpnfw" src="/images/2025/vpnfw_light.png"></div>VPN FW</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="sysfw" src="/images/2025/sysfw_light.png"></div>Access</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="routing" src="/images/2025/routing_light.png"></div>Routing</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="hosts" src="/images/2025/hosts_light.png"></div>Hosts</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="users" src="/images/2025/users_light.png"></div>Users</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="network" src="/images/2025/network_light.png"></div>Network</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="zones" src="/images/2025/zones_light.png"></div>Zones</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="dhcp" src="/images/2025/dhcp_light.png"></div>DHCP</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="vpn" src="/images/2025/vpn_light.png"></div>OpenVPN</div>
+	 <div class="tile" onclick="toggleTheme()"><div class="tile-icon"><img class="theme-icon" id="theme" src="/images/2025/theme_light.png"></div>Theme</div>
+	 <div class="tile" onclick="javascript:window.open('https://razwall.com/forum','_blank','height=700,width=1000,location=no,menubar=no,scrollbars=yes');"><div class="tile-icon"><img class="theme-icon" id="help" src="/images/2025/help_light.png"></div>Help</div>
+	 <div class="tile" onclick="window.location.href='/cgi-bin/logout.cgi';"><div class="tile-icon"><img class="theme-icon" id="logout" src="/images/2025/logout_light.png"></div>Logout</div>
+  </footer>
+
+  <!-- Mobile Drawer Toggle -->
+  <div class="drawer-toggle" onclick="toggleDrawer()">
+    <span id="drawer-arrow">▲</span>
+  </div>
+
+  <script>
+	function toggleTheme() {
+	  document.body.classList.toggle('light-theme');
+	  var isLight = document.body.classList.contains('light-theme');
+	  localStorage.setItem('theme', isLight ? 'dark' : 'light');
+
+	  // Swap icons using ID
+	  document.querySelectorAll('.theme-icon').forEach(icon => {
+		var id = icon.id; 
+		icon.src = `/images/2025/${id}_${isLight ? 'dark' : 'light'}.png`;
+	  });
+	}
+    
+    function toggleRule(ruleElement) {
+      // Collapse any other expanded rule
+      document.querySelectorAll('.rule.expanded').forEach(function(el) {
+        if (el !== ruleElement) {
+          el.classList.remove('expanded');
+        }
+      });
+      // Toggle the clicked rule's expansion
+      ruleElement.classList.toggle('expanded');
+    }
+    
+    function toggleDrawer() {
+      const nav = document.getElementById('tileNav');
+      const arrow = document.getElementById('drawer-arrow');
+      if(nav.classList.contains('open')) {
+        nav.classList.remove('open');
+        arrow.textContent = '▲';
+      } else {
+        nav.classList.add('open');
+        arrow.textContent = '▼';
+      }
+    }
+    
+    // Placeholder functions for Save/Cancel/Delete actions
+    function saveRule(ruleId) {
+      alert("Save rule " + ruleId);
+    }
+    function cancelRule(ruleId) {
+      alert("Cancel changes for rule " + ruleId);
+    }
+    function deleteRule(ruleId) {
+      alert("Delete rule " + ruleId);
+    }
+    
+    window.onload = () => {
+      const saved = localStorage.getItem('theme');
+      if (saved === 'light') {
+        document.body.classList.add('light-theme');
+      }
+    };
+  </script>
+</body>
+</html>
+
+  <script>
+
+
+ /*   function toggleDrawer() {
+     var drawer = document.getElementById('tileDrawer');
+      var arrow = document.getElementById('drawer-arrow');
+      drawer.classList.toggle('open');
+      arrow.textContent = drawer.classList.contains('open') ? '▼' : '▲';
+    }
+
+*/
+	var rxchart = new SmoothieChart({millisPerPixel:100,grid:{fillStyle:'transparent'},labels:{showIntermediateLabels:true},tooltip:true,tooltipLine:{strokeStyle:'#bbbbbb'},horizontalLines:[{color:'#ffffff',lineWidth:1,value:0},{color:'#880000',lineWidth:2,value:3333},{color:'#880000',lineWidth:2,value:-3333}]}),
+    rxcanvas = document.getElementById('rx-chart'),
+    netRXseries = new TimeSeries();
+	
+	var txchart = new SmoothieChart({millisPerPixel:100,grid:{fillStyle:'transparent'},labels:{showIntermediateLabels:true},tooltip:true,tooltipLine:{strokeStyle:'#bbbbbb'},horizontalLines:[{color:'#ffffff',lineWidth:1,value:0},{color:'#880000',lineWidth:2,value:3333},{color:'#880000',lineWidth:2,value:-3333}]}),
+    txcanvas = document.getElementById('tx-chart'),
+    netTXseries = new TimeSeries();
+
+	rxchart.addTimeSeries(netRXseries, {lineWidth:2,strokeStyle:'#00ff00',fillStyle:'rgba(0,255,0,0.20)',interpolation:'bezier'});
+	rxchart.streamTo(rxcanvas, 5000);
+
+	txchart.addTimeSeries(netTXseries, {lineWidth:2,strokeStyle:'#ff0000',fillStyle:'rgba(255,0,0,0.20)',interpolation:'bezier'});
+	txchart.streamTo(txcanvas, 5000);
+
+	var RazIP = '$thisAddress';
+	RazConnectWS();
+	
+	function resizeCanvas(canvas) {
+	// Set the internal resolution to match the displayed size
+	canvas.width = canvas.offsetWidth;
+	canvas.height = canvas.offsetHeight;
+	}
+
+	// Call it initially and on resize for both canvases
+	function updateCanvases() {
+	  resizeCanvas(rxcanvas);
+	  resizeCanvas(txcanvas);
+	}
+	
+	// Initial resize
+	updateCanvases();
+
+	// Update on window resize
+	window.addEventListener('resize', updateCanvases);
+  </script>

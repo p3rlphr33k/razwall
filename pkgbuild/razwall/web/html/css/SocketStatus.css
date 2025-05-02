@@ -1,21 +1,22 @@
 #socketStatus {
-/*	position:absolute;
-	top:15px;
-	left:15px; */
-	width:22px;
-	height:22px;
-	background-image: url('/images/loading-sprite.png');
-	/*z-index:100;*/
+	/*left: 22px;*/
+	float: left;
+	/*position: relative;*/
+	/*top: 27px;*/
+	margin: 0px;
+	padding: 0px;
+	/*content:url('/images/logo_razwall.png');*/
+	cursor: pointer;
 }
 
 .socketGreen {
-	background-position:0px 0px;
+	content:url('/images/2025/razwall_green.png');
 }
 
 .socketYellow {
-	background-position:0px -22px;
+	content:url('/images/2025/razwall_yellow.png');
 }
 
 .socketRed {
-	background-position:0px -44px;
+	content:url('/images/2025/razwall_red.png');
 }

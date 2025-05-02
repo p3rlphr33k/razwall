@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Firewall UI</title>
+  <style>
+    :root {
+      --bg-color: #111;
+      --text-color: #fff;
+      --tile-bg: #222;
+      --tile-hover: #333;
+      --accent: #09f;
+    }
+
+    .light-theme {
+      --bg-color: #f5f5f5;
+      --text-color: #111;
+      --tile-bg: #ddd;
+      --tile-hover: #ccc;
+      --accent: #06c;
+    }
+
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 1rem;
+      border-bottom: 1px solid #333;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    .version {
+      font-size: 0.75rem;
+      margin-top: 0.2rem;
+      color: #888;
+    }
+
+    .status-bar {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.9rem;
+      align-items: center;
+    }
+
+    .graphs {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      padding: 1rem;
+      border-bottom: 1px solid #333;
+      gap: 1rem;
+    }
+
+    .graph {
+      flex: 1 1 45%;
+      min-width: 250px;
+      height: 150px;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      color: #888;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* New Interfaces Display Box */
+    .interfaces {
+      padding: 1rem;
+      border-bottom: 1px solid #333;
+    }
+    .interfaces h3 {
+      margin: 0 0 0.5rem 0;
+    }
+    .interface {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0;
+      border-top: 1px solid #333;
+    }
+    .interface:first-child {
+      border-top: none;
+    }
+    .interface .interface-name {
+      font-weight: bold;
+    }
+    .interface .traffic {
+      font-size: 0.9rem;
+    }
+    .interface .status {
+      font-weight: bold;
+    }
+    .status.connected {
+      color: #0f0;
+    }
+    .status.disconnected {
+      color: #f00;
+    }
+
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 1rem;
+      padding: 1rem;
+    }
+
+    .tile {
+      background-color: var(--tile-bg);
+      text-align: center;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      transition: background 0.3s;
+      cursor: pointer;
+    }
+
+    .tile:hover {
+      background-color: var(--tile-hover);
+    }
+
+    .tile-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    /* Drawer Toggle */
+    .drawer-toggle {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: var(--tile-bg);
+      color: var(--text-color);
+      text-align: center;
+      padding: 0.5rem;
+      cursor: pointer;
+      border-top: 1px solid #333;
+      z-index: 1001;
+    }
+
+    .drawer {
+      position: fixed;
+      bottom: -100%;
+      left: 0;
+      width: 100%;
+      background: var(--tile-bg);
+      border-top: 1px solid #333;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      transition: bottom 0.3s ease;
+      z-index: 1000;
+      padding: 0.5rem 0;
+    }
+
+    .drawer.open {
+      bottom: 2.5rem;
+    }
+
+    /* Mobile view (drawer active) */
+    @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .graphs {
+        flex-direction: row;
+        flex-wrap: nowrap; /* Prevent wrapping */
+        justify-content: space-evenly;
+        gap: 1rem;
+      }
+
+      .graph {
+        flex: 1 1 50%;  /* Each graph takes up 50% of available width */
+        min-width: 0;
+      }
+
+      main {
+        display: none;
+        padding-bottom: 4rem;
+      }
+
+      .drawer-toggle {
+        display: block;
+      }
+
+      .drawer {
+        display: flex;
+      }
+    }
+
+    /* Desktop view (tile grid visible, drawer hidden) */
+    @media (min-width: 601px) {
+      .drawer-toggle,
+      .drawer {
+        display: none !important;
+      }
+
+      main {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 1rem;
+        padding: 1rem;
+      }
+      
+      /* Keep desktop tiles as squares */
+      main .tile {
+        aspect-ratio: 1 / 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <div class="logo">FIREWALL</div>
+      <div class="version">Version 1.0</div>
+    </div>
+    <div class="status-bar">
+      <span>Uplink: Online</span>
+      <a href="#">Log Off</a>
+    </div>
+  </header>
+
+  <div class="graphs">
+    <div class="graph">[Graph: Traffic In]</div>
+    <div class="graph">[Graph: Traffic Out]</div>
+  </div>
+
+  <!-- Interfaces Display Box -->
+  <div class="interfaces">
+    <h3>Interfaces</h3>
+    <div class="interface">
+      <span class="interface-name">Interface 1</span>
+      <span class="traffic">In: 12 MB / Out: 8 MB</span>
+      <span class="status connected">Connected</span>
+    </div>
+    <div class="interface">
+      <span class="interface-name">Interface 2</span>
+      <span class="traffic">In: 5 MB / Out: 3 MB</span>
+      <span class="status disconnected">Disconnected</span>
+    </div>
+    <div class="interface">
+      <span class="interface-name">Interface 3</span>
+      <span class="traffic">In: 20 MB / Out: 15 MB</span>
+      <span class="status connected">Connected</span>
+    </div>
+    <div class="interface">
+      <span class="interface-name">Interface 4</span>
+      <span class="traffic">In: 7 MB / Out: 4 MB</span>
+      <span class="status disconnected">Disconnected</span>
+    </div>
+    <div class="interface">
+      <span class="interface-name">Interface 5</span>
+      <span class="traffic">In: 30 MB / Out: 25 MB</span>
+      <span class="status connected">Connected</span>
+    </div>
+    <div class="interface">
+      <span class="interface-name">Interface 6</span>
+      <span class="traffic">In: 9 MB / Out: 6 MB</span>
+      <span class="status disconnected">Disconnected</span>
+    </div>
+    <div class="interface">
+      <span class="interface-name">Interface 7</span>
+      <span class="traffic">In: 14 MB / Out: 10 MB</span>
+      <span class="status connected">Connected</span>
+    </div>
+    <div class="interface">
+      <span class="interface-name">Interface 8</span>
+      <span class="traffic">In: 3 MB / Out: 2 MB</span>
+      <span class="status disconnected">Disconnected</span>
+    </div>
+  </div>
+
+  <!-- TILE GRID (visible only on desktop) -->
+  <main>
+    <div class="tile" onclick="toggleTheme()">
+      <div class="tile-icon">🌓</div>
+      Theme
+    </div>
+    <div class="tile"><div class="tile-icon">⇆</div>SNAT</div>
+    <div class="tile"><div class="tile-icon">⇄</div>DNAT</div>
+    <div class="tile"><div class="tile-icon">⤴</div>Routing</div>
+    <div class="tile"><div class="tile-icon">🖧</div>Hosts</div>
+    <div class="tile"><div class="tile-icon">🔒</div>VPN</div>
+    <div class="tile"><div class="tile-icon">📡</div>DHCP</div>
+    <div class="tile"><div class="tile-icon">👥</div>Users</div>
+    <div class="tile"><div class="tile-icon">🌐</div>Network</div>
+  </main>
+
+  <!-- MOBILE DRAWER TOGGLE -->
+  <div class="drawer-toggle" onclick="toggleDrawer()">
+    <span id="drawer-arrow">▲</span>
+  </div>
+
+  <!-- TILE DRAWER (visible only on mobile) -->
+  <footer class="drawer" id="tileDrawer">
+    <div class="tile" onclick="toggleTheme()">
+      <div class="tile-icon">🌓</div>
+      Theme
+    </div>
+    <div class="tile"><div class="tile-icon">⇆</div>SNAT</div>
+    <div class="tile"><div class="tile-icon">⇄</div>DNAT</div>
+    <div class="tile"><div class="tile-icon">⤴</div>Routing</div>
+    <div class="tile"><div class="tile-icon">🖧</div>Hosts</div>
+    <div class="tile"><div class="tile-icon">🔒</div>VPN</div>
+    <div class="tile"><div class="tile-icon">📡</div>DHCP</div>
+    <div class="tile"><div class="tile-icon">👥</div>Users</div>
+    <div class="tile"><div class="tile-icon">🌐</div>Network</div>
+  </footer>
+
+  <script>
+    function toggleTheme() {
+      document.body.classList.toggle('light-theme');
+      localStorage.setItem('theme', document.body.classList.contains('light-theme') ? 'light' : 'dark');
+    }
+
+    function toggleDrawer() {
+      const drawer = document.getElementById('tileDrawer');
+      const arrow = document.getElementById('drawer-arrow');
+      drawer.classList.toggle('open');
+      arrow.textContent = drawer.classList.contains('open') ? '▼' : '▲';
+    }
+
+    window.onload = () => {
+      const saved = localStorage.getItem('theme');
+      if (saved === 'light') {
+        document.body.classList.add('light-theme');
+      }
+    };
+  </script>
+</body>
+</html>

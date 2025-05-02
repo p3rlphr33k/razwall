@@ -1,0 +1,149 @@
+    /* New Form */
+    .new-object-form {
+      background: var(--tile-bg);
+      border-radius: 0.4rem;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      display: none;
+    }
+    .new-object-form form label {
+      /*display: flex;*/
+      align-items: center;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+	.new-object-form form label div {
+	  display: inline-block;
+	  /*width: 150px;*/
+	}
+    .new-object-form form label span.label-text {
+      /*width: 120px;*/
+      display: inline-block;
+    }
+    .new-object-form form input {
+      /*width: 100%;*/
+      max-width: 300px;
+      box-sizing: border-box;
+    }
+    /* Add New User Button */
+    .add-object-btn {
+      display: block;
+      font-size: 1.2rem;
+      padding: 0.75rem 1.5rem;
+      margin-bottom: 1.5rem;
+      width: fit-content;
+    }
+
+    /* Default Button Styling (matching the VPN page default style) */
+    .btn {
+	  background: ButtonFace;
+	  color: ButtonText;
+	  padding: 0.4rem 0.8rem;
+      border: none;
+	  margin-right: 0.5rem;
+	  cursor: pointer;
+	  border-radius: 0.3rem;
+	}
+    .btn:hover {
+      opacity: 0.9;
+    }
+	
+	.rowItemIcon {
+		width:50px;	
+	}
+	.rowItemEle {
+		width:200px;
+	}
+	.rowItemNote {
+		width:300px;
+	}
+	.rowItemPos {
+		width:50px;
+	}
+	.ruleOptions {
+		width:100px;
+	}
+	
+	@media (max-width: 600px) {
+		.rowItemEle {
+			display:none;
+			width:0px;
+		}	
+	}
+
+		  
+/* ======================
+   DNAT Form Responsive Styles
+   ====================== */
+.dnat-form {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  grid-auto-rows: auto;
+  gap: 1rem 2rem;
+  max-width: 1000px;
+  margin: 1rem auto;
+  font-family: sans-serif;
+  /*color: #000;*/
+}
+
+/* Incoming IP grid: left (type/interfaces), right (service, protocol, port) */
+.incoming-grid {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 1rem;
+}
+.incoming-left, .incoming-right {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.port-range.full-width {
+  grid-column: 1 / span 2;
+}
+
+/* Translate To grid: type & NAT side by side */
+.translate-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+/* Fieldset positioning */
+.incoming       { grid-column: 1 / span 2; }
+.translate      { grid-column: 1 / span 2; }
+.access         { grid-column: 1; }
+.rule-options   { grid-column: 2; }
+
+/* Fieldgroup styling */
+.fieldgroup { /*display: flex;*/ /*flex-direction: column;*/ gap: 0.3rem; }
+label { font-size: 0.9rem; text-align: left; }
+.label-text { font-weight: bold; margin-bottom: 0.2rem; display: block; }
+
+/* Uniform control widths */
+input[type="text"], select, textarea {
+  display: block;
+  width: 300px;
+  /*max-width: 100%;*/
+  padding: 0.4rem;
+  font-size: 1rem;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  color: #000;
+  text-align: left;
+}
+textarea { min-height: 60px; resize: vertical; }
+.checkbox-row { display: flex; gap: 1rem; align-items: center; }
+
+.fieldgroup.protocol {
+  width: 50%;
+}
+
+@media (max-width: 768px) {
+  .dnat-form { grid-template-columns: 1fr; justify-items: start; }
+  .incoming-grid, .translate-grid, .target-row { display: block; }
+  input[type="text"], select, textarea { /*width: 100%;*/ }
+}

@@ -1,17 +1,39 @@
-table.hardwareinformation_percentage {
-	border-spacing: 0;
-	padding: 0;
-	border: 1px solid rgb(160,160,160);
-	width: 80px;
-	height: 10px;
+.hardware-row {
+  display: flex;
+  align-items: center;
+  padding: 5px 0;
+  border-bottom: 1px solid #ddd;
 }
 
-table.hardwareinformation_percentage td.used {
-	border: 1px solid rgb(226,226,226);
-	background-color: rgb(160,160,160);
+.hardware-label {
+  flex: 1; /* Adjust as needed */
+  font-weight: bold;
+  width:;
 }
 
-table.hardwareinformation_percentage td.unused {
-	border: 1px solid rgb(226,226,226);
-	background-color: rgb(226,226,226);
+.hardware-bar {
+  flex: 2;
+  height: 20px;
+  background: #333;
+  margin: 0 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hardware-bar .used {
+  display: inline-block;
+  height: 100%;
+  background: #00C618;  /* or any color */
+}
+
+.hardware-bar .unused {
+  display: inline-block;
+  height: 100%;
+  background: transparent;
+}
+
+.hardware-usage, .hardware-total {
+  flex: 1;
+  text-align: right;
+  margin-left: 10px;
 }

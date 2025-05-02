@@ -39,10 +39,10 @@ my @white_list = undef;
 my @black_list = undef;
 my $has_gui_profile = 0;
 my $thisAddress = $ENV{'SERVER_NAME'};
-
-sub check_user_profile() {
+=pod
+sub check_user_profile() { # NEEDED?
     my $guiuser_filename = "";
-    foreach my $f (glob('/usr/lib/efw/auth/guiuser*.default')) {
+    foreach my $f (glob('/razwall/config/auth/guiuser*.default')) {
         $guiuser_filename = $f;
     }
     if (-f '/razwall/config/auth/guiuser') {
@@ -107,7 +107,10 @@ sub check_user_profile() {
     print "\r\n";
     exit 0;
 }
+
+
 check_user_profile();
+=cut
 
 $|=1; # line buffering
 
@@ -117,41 +120,39 @@ sub escape_quotes($) {
     return $var;
 }
 
-sub get_version_info() {
+sub get_version_info() { # DONE SOURCE: /razwall/config/product/settings
 
-    if ( $version_custom ) {
-        $release = $version_custom;
-    } elsif ( $version_vendor ) {
-        $release = $version_vendor;
-    } else {
-        $release = '/etc/release';
-    }
-
-    open(FILE, $release);
+    $ver_source = '/razwall/config/product/settings';
+	$release;
+    open(FILE, $ver_source);
     while (<FILE>) {
-        $read_ver = $_;
+        ($K,$V) =~ split(/=/,$_);
+		$release{$K}=$V;
     }
 
-    if ($read_ver =~ /^$/) {
-        return "RazWall Firewall";
-    }
-    return $read_ver;
+	#$release{'BRAND'}='RazWall';
+	#$release{'VERSION'}='1.3.0';
+	#$release{'COMAPNY'}='Supervene LLC';
+	#$release{'PRODUCT'}='RazWall Firewall';
+	#$release{'DOCS_URL'}='https://razwall.com/forum';
+	#$release{'EN_URL'}='https://razwall.com';
+    return \$release;
 }
-
-sub get_documentation_type() {
+=pod
+sub get_documentation_type() { # NOT USED YET...
     my %productsettings = ();
     &readhash("/razwall/config/product/settings", \%productsettings);
     return $productsettings{'DOCUMENTATION_TYPE'} ne "" ? $productsettings{'DOCUMENTATION_TYPE'} : "";
 }
 
-sub get_settings_product_name() {
+sub get_settings_product_name() { # USE get_version_info() DELETE THIS?
     my %productsettings = ();
     &readhash("/razwall/config/product/settings", \%productsettings);
     return $productsettings{'PRODUCT_NAME'};
 }
 
 # Return all brand specific settings
-sub get_brand_settings {
+sub get_brand_settings { # USED FOR REBRANDING.. DELETE!
     my $hash = shift;
     
     if(-f "/etc/custom.conf") {
@@ -159,6 +160,7 @@ sub get_brand_settings {
         $branded = 1;
     }
 }
+=cut
 
 my $webroot = '/razwall/web/cgi-bin/';
 if ($ENV{'DOCUMENT_ROOT'}) {
@@ -168,8 +170,10 @@ if ($ENV{'DOCUMENT_ROOT'}) {
 my $menuCache = '/razwall/web/menus/cache/';
 my $menuRegistry = '/razwall/web/menus/';
 
-$version = "1.0.0";
-$brand = "RazWall";
+$release = &get_version_info();
+
+$version = $release{'VERSION'};
+$name = $release{'NAME'};
 $product = "Firewall";
 
 $network_name = $brand.' '.$product;
@@ -177,8 +181,8 @@ $network_name = $brand.' '.$product;
 $branded = 0;
 $revision = 'final';
 $swroot = '/razwall/config';
+$zone_settings = "${swroot}/zones/settings"; # RAZWALL ZONE SETTINGS
 $pagecolour = '#ffffff';
-#$tablecolour = '#a0a0a0';
 $tablecolour = '#FFFFFF';
 $bigboxcolour = '#F6F4F4';
 $boxcolour = '#EAE9EE';
@@ -208,7 +212,7 @@ my $useFlavour = 'main';
 @URI = ();
 $supported=0;
 
-$HOTSPOT_ENABLED = '/razwall/config/hotspot/enabled';
+$HOTSPOT_ENABLED = '/razwall/config/hotspot/enabled'; # Future...
 
 $DOWNLOADJOB_TIMESTAMPS = '/razwall/config/download/timestamps';
 
@@ -224,13 +228,13 @@ $DELETE_PNG = '/images/delete.png';
 $OPTIONAL_PNG = '/images/blob.png';
 $CLEAR_PNG = '/images/clear.gif';
 
-$PERSISTENT_DIR = '/usr/lib/efw/';
+$PERSISTENT_DIR = '/usr/lib/efw/'; # Can we remove this, obviously not used yet in RazWall
 $USER_DIR = '/razwall/config/';
 $STATE_DIR = '/razwall/defaults/';
-$PROVISIONING_DIR = '/var/emc/';
-$VENDOR_DIR = 'vendor';
+$PROVISIONING_DIR = '/var/emc/'; # Can we remove this, obviously not used yet in RazWall
+$VENDOR_DIR = 'vendor'; # Can we remove this, obviously not used yet in RazWall
 $DEFAULT_DIR = 'default';
-$VENDOR_DIR = 'vendor';
+
 @IGNORE_SUFFICES = qw'old orig rej rpmsave rpmnew';
 
 my %cookies = fetch CGI::Cookie;
@@ -250,27 +254,77 @@ $language = $settings{'LANGUAGE'};
 $hostname = $settings{'HOSTNAME'};
 $hostnameintitle = 0;
 
-### Initialize language
+### Initialize language # more efw garbage to clean out..
 if ($language =~ /^(\w+)$/) {$language = $1;}
 gettext_init($language, "efw");
 gettext_init($language, "efw.enterprise");
 gettext_init($language, "efw.vendor");
 
-@zones = qw 'LAN DMZ LAN2 WAN';
-%zonecolors = (
-        WAN => $colourred,
-        LAN2 => $colourblue,
-        LAN => $colourgreen,
-        DMZ => $colourorange,
-        LOCAL => $colourfw
-);
-%strings_zone = (
-	'LAN' => _('LAN'),
-	'LAN2' => _('LAN2'),
-	'DMZ' => _('DMZ'),
-	'WAN' => _('WAN'),
-    'LOCAL' => _('LOCAL'),
-);
+# replace manual definition with dynamic zone data - RazWall:
+#@zones = qw 'LAN DMZ LAN2 WAN'; 
+
+%zonecolors;
+%strings_zone;
+%zone_ifaces;
+@zones; # FETCH DYNAMIC ZONES - RAZWALL
+@zones = &get_zones();
+
+foreach $zone (@zones) {
+	open(ZF, "< $swroot/zones/$zone") or print "Unable to open zone file: $!\n";
+	@data = <ZF>;
+	close(ZF);
+
+	# @data sample:
+	# ZIFACE=eth0|eth1|eth2
+	# ZSTRING=LAN|PRETTY NAME|DUMB NAME
+	# ZCOLOR=green|red|blue|orange|yellow|... endless opportunitures
+	# ZTYPE=LAN|WAN|LOCAL
+	# ZDESC=Description of zone
+	# ZADDRESS=
+	# ZNETMASK=
+	# ZADDITIONAL=
+	# ZDHCP=off
+	
+	foreach $kv (@data) {
+		($k,$v) = split(/=/, $kv);
+		${$k} = $v;
+	}
+	
+	%zonecolors = ($zone => "$ZCOLOR");
+	%strings_zone = ($zone => "$ZSTRING"); 
+	%zone_ifaces = ($zone => "$ZIFACE");
+	%zone_type = ($zone => "$ZTYPE");
+	%zone_desc = ($zone => "$ZDESC");
+	%zone_address = ($zone => "$ZADDRESS");
+	%zone_netmask = ($zone => "$ZNETMASK");
+	%zone_additional = ($zone => "$ZADDITIONAL");
+	%zone_dhcp = ($zone => "$ZDHCP");
+}
+
+##### RAZWALL ZONE SUBROUTINES
+sub get_zones() { # ADDED FOR RAZWALL DYNAMIC ZONES
+	my $file = $zone_settings;
+	return read_config_file($file,'default');
+}
+
+sub read_config_file($$) {
+    my $filename = shift;
+    my $filename_default = shift;
+    my @lines;
+    if (! -e $filename) {
+	$filename = $filename_default;
+    }
+    open (FILE, "$filename");
+    foreach my $line (<FILE>) {
+    chomp($line);
+    $line =~ s/[\r\n]//g;
+
+    push(@lines, $line);
+    }
+    close (FILE);
+    return @lines;
+}
+
 
 @bypassuris = qw '/welcome /hotspot /template.cgi';
 generalRedirect();
@@ -303,14 +357,14 @@ sub checkForLogout() {
 	my $timeout = "";
 	my $cookiepath = "/";
 	foreach $key (keys %cookies) {
-	    if ($key eq "EFWlogout") {
+	    if ($key eq "RazLogout") {
 		$logout = 1;
 	    }
 	}
 
 	if ($logout == 0) {
 	    $timeout = gmtime(time()+365*24*3600)." GMT";
-	    print "Set-Cookie: EFWlogout=1; expires=$timeout; path=$cookiepath\r\n";
+	    print "Set-Cookie: RazLogout=1; expires=$timeout; path=$cookiepath\r\n";
 	    print "Status: 401 Unauthorized\r\n";
 	    my $realm_suffix = "";
 	    if ($is_opera) {
@@ -319,14 +373,14 @@ sub checkForLogout() {
 	    print "WWW-authenticate: Basic realm=\"Restricted$realm_suffix\"\r\n\r\n";
 	} else {
 	    $timeout = gmtime(time()-365*24*3600)." GMT";
-	    print "Set-Cookie: EFWlogout=1; expires=$timeout; max-age=0; path=$cookiepath\r\n";
+	    print "Set-Cookie: RazLogout=1; expires=$timeout; max-age=0; path=$cookiepath\r\n";
 	    print "Location: https://$ENV{'SERVER_ADDR'}:10443/\r\n\r\n";
 	}
     } else {
 	my $timeout = "";
 	my $cookiepath = "/";
 	$timeout = gmtime(time()-365*24*3600)." GMT";
-	print "Set-Cookie: EFWlogout=1; expires=$timeout; max-age=0; path=$cookiepath\r\n";
+	print "Set-Cookie: RazLogout=1; expires=$timeout; max-age=0; path=$cookiepath\r\n";
     }
 }
 
@@ -440,28 +494,6 @@ sub checkForHASlave() {
     return 1;
 }
 
-sub dmz_used () {
-    if ($ethsettings{'CONFIG_TYPE'} =~ /^[1357]$/) {
-	return 1;
-    }
-    return 0;
-}
-
-sub lan2_used () {
-    if ($ethsettings{'CONFIG_TYPE'} =~ /^[4567]$/) {
-	return 1;
-    }
-    return 0;
-}
-
-sub is_modem {
-    if ($ethsettings{'CONFIG_TYPE'} =~ /^[0145]$/) {
-	return 1;
-    }
-    return 0;
-}
-
-
 ### Initialize menu
 #
 # New dynamic menu structure:
@@ -485,7 +517,7 @@ sub is_modem {
 
 sub genmenu {
     if ($useFlavour ne 'main') {
-	$menu = $flavourmenus->{$useFlavour};
+		$menu = $flavourmenus->{$useFlavour};
     }
     return $menu;
 }
@@ -531,7 +563,6 @@ sub is_menu_visible($) {
     return (-e $webroot."/../$link");
 }
 
-
 sub getlink($) {
     my $root = shift;
     if (! $root->{'enabled'}) {
@@ -560,7 +591,6 @@ sub getlink($) {
     return '';
 }
 
-
 sub compare_url($) {
     my $conf = shift;
 
@@ -584,7 +614,6 @@ sub compare_url($) {
     }
     return ($URI[1] =~ /$vars.*/);
 }
-
 
 sub gettitle($) {
     my $root = shift;
@@ -634,7 +663,9 @@ sub disableInexistentMenus($) {
     }
 }
 
-sub showmenu() {
+# Replaced by RazWall new (simple) menu structure
+=pod
+sub showmenuOLDEndian() {
     printf <<EOF
 <div id="menu-top-background"></div>
 <div id="menu-top">
@@ -677,9 +708,9 @@ EOF
             next;
         }
         if ($menu->{$k1}->{'selected'}) {
-            print '<li class="selected">';
+            print '<li class="selected">'.$k1;
         } else {
-            print '<li>';
+            print '<li>'.$k1;
         }
         printf <<EOF
             <a href="$link">$menu->{$k1}{'caption'}</a>
@@ -690,17 +721,60 @@ EOF
     printf <<EOF
     </ul>
 </div>
-<script language="javascript" type="text/javascript">
-\$(document).ready(function() {
-    \$("#menu-top-background").stalker();
-    \$("#menu-top").stalker();
-});
-</script>
+
 EOF
     ;
 }
+=cut
 
-sub getselected($) {
+sub showmenu() { # Modified for RazWall Menu
+    # Iterate over the menu items in order based on their key (which contains the ordering prefix).
+    foreach my $k1 ( sort keys %$menu ) {
+        # Skip if the item is not enabled.
+        next unless $menu->{$k1}{'enabled'};
+
+        # Get the link; if empty, skip.
+        my $link = getlink($menu->{$k1});
+        next if $link eq '';
+
+        # If the GUI profile is active, apply blacklist/whitelist checks.
+        if ($has_gui_profile) {
+            my $b = 0;
+            foreach my $glob (@black_list) {
+                if ( ($glob =~ /\/\*$/ && match_glob( substr($glob, 0, -2), $link ))
+                     || match_glob($glob, $link) ) {
+                    $b = 1;
+                    last;
+                }
+            }
+            next if $b;
+
+            if ((scalar @white_list != 0) && ($white_list[0] ne '')) {
+                my $m = 0;
+                foreach my $glob (@white_list) {
+                    if ( ($glob =~ /\/\*$/ && match_glob( substr($glob, 0, -2), $link ))
+                         || match_glob($glob, $link) ) {
+                        $m = 1;
+                        last;
+                    }
+                }
+                next unless $m;
+            }
+        }
+
+        # Skip if the menu item should not be visible.
+        next unless is_menu_visible($link);
+
+        # Get values from the menu item.
+        my $id      = $menu->{$k1}{'id'};
+        my $title   = $menu->{$k1}{'title'};
+        my $caption = $menu->{$k1}{'caption'};
+        my $uri     = $menu->{$k1}{'uri'};
+		print qq{<div class="tile" onclick="$uri"><div class="tile-icon"><img class="theme-icon" id="$id" src="$caption"></div>$title</div>\n};
+    }
+}
+
+sub getselected($) { # Can probably get deleted in RazWall, for old Endian menus
     my $root = shift;
     if (!$root) {
 		#print "NO ROOT SENT FOR SELECTION!";
@@ -714,17 +788,13 @@ sub getselected($) {
     }
 }
 
-sub showsubsection($$) {
+sub showsubsection($$) { # Can probably get deleted in RazWall, for old Endian menus
     my $root = shift;
     my $id = shift;
     if ($id eq '') {
         $id = 'menu-left';
 printf <<EOF
-<script language="javascript" type="text/javascript">
-\$(document).ready(function() {
-    \$("#menu-left").stalker({offset: 35});
-});
-</script>
+
 EOF
 ;
     }
@@ -823,7 +893,7 @@ EOF
     }
 }
 
-sub showsubsubsection($) {
+sub showsubsubsection($) { # Can probably get deleted in RazWall, for old Endian menus
     my $root = shift;
     if (!$root) {
 	return;
@@ -837,7 +907,6 @@ sub showsubsubsection($) {
     }
     showsubsection($selected->{'subMenu'}, 'menu-subtop');
 }
-
 
 sub get_helpuri_recursive($) {
     my $root = shift;
@@ -863,8 +932,9 @@ sub get_helpuri_recursive($) {
     }
     return '';
 }
-
-sub get_helpuri($) {
+# Old Endian versioning help link geenrator. We might ruse some of thi at a later time - RazWall
+=pod
+sub get_helpuri($) { # DELETE
     my $root = shift;
     
     # Retrieve product settings
@@ -873,20 +943,20 @@ sub get_helpuri($) {
     
     # Retrieve brand settings
     my %brandsettings = ();
-    &get_brand_settings(\%brandsettings);
+    #&get_brand_settings(\%brandsettings); # REMOVE
     
     my $uri = get_helpuri_recursive($root);
     # Retrieve docs URL from custom.conf for custom branding
-    my $rooturi = "http://docs.endian.com/%(MAJOR_VERSION)s/%(LANGUAGE)s/";
+    my $rooturi = $release{'EN_URL'}; #"http://razwall.com/forum/";
     if($productsettings{'DOCUMENTATION_URL'} ne '') {
         $rooturi = $productsettings{'DOCUMENTATION_URL'} . '/';
         # replace efw. for branding
         $uri =~ s/efw.//g
     } elsif($brandsettings{'DOCS_URL'} ne '') {
-        $rooturi = $brandsettings{'DOCS_URL'} . '/';
+    #    $rooturi = $brandsettings{'DOCS_URL'} . '/';
         # replace efw. for branding
-        $uri =~ s/efw.//g
-    }
+    #    $uri =~ s/efw.//g
+    #}
     
     #my $version = get_version();
     $rooturi =~ s/\%\(VERSION\)s/$version/g;
@@ -901,6 +971,7 @@ sub get_helpuri($) {
     return $uri if ($uri =~ /^\//);
     return $rooturi.$uri;
 }
+=cut
 
 sub jsonifyMenu($) {
     my $menu = shift;
@@ -916,439 +987,22 @@ sub menu_to_json {
 }
 
 ### HTML PAGE HEAD
-sub openpage {
-    my $title = shift;
-    my $boh = shift;
-    my $extrahead = shift;
+sub openpage { # Improve so we don't have to include so much junk in the pages calls... dashboard.cgi and razwall-dnat.cgi are a mess!
+    my $title = shift; # Passed page title..
+    #my $boh = shift; # DONT KNOW WHAT THIS IS? DELETE?
+    my $extrahead = shift; # Pass custom header data such as javascript/css to include in the header
 
-    #&readhash("${swroot}/main/settings", \%settings);
-    #if(!($nomenu == 1)) {
-        &genmenu();
-    #}
+    &genmenu();
+	
+	#$release = &get_version_info; # Already calling with RazWall Header
+	
     my $h2 = gettitle($menu);
-    my $helpuri = get_helpuri($menu);
+    my $helpuri = $release{'DOCS_URL'}."/".$menu;
 
-    $title = $brand.' '.$product." - $title";
-    if ($settings{'WINDOWWITHHOSTNAME'} eq 'on') {
-        $title =  "$settings{'HOSTNAME'}.$settings{'DOMAINNAME'} - $title"; 
-    }
-
-    printf <<END
-<!DOCTYPE html 
-     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-        <title>$title</title>
-        <link rel="shortcut icon" href="/favicon.ico" />
-		<link rel="stylesheet" type="text/css" href="/css/SocketStatus.css">
-        <style type="text/css">\@import url(/include/style.css);</style>
-        <style type="text/css">\@import url(/include/menu.css);</style>
-        <style type="text/css">\@import url(/include/content.css);</style>
-        <style type="text/css">\@import url(/include/folding.css);</style>
-        <style type="text/css">\@import url(/include/service-notifications.css);</style>
-        <style type="text/css">\@import url(/include/updates.css);</style>
-END
-;
-if (-e "/razwall/web/html/include/branding.css" ) {
-    print '<style type="text/css">@import url(/include/branding.css);</style>';
-}
-printf <<END        
-        <script language="JavaScript" type="text/javascript" src="/include/overlib_mini.js"></script>
-        <script language="javascript" type="text/javascript" src="/include/jquery.min.js"></script>
-        <script language="javascript" type="text/javascript" src="/include/jquery.ifixpng.js"></script>
-        <script language="javascript" type="text/javascript" src="/include/jquery.selectboxes.js"></script>
-        <script language="javascript" type="text/javascript" src="/include/folding.js"></script>
-        <script language="javascript" type="text/javascript" src="/include/form.js"></script>
-		<script type="text/javascript" src="/js/websocket.js"></script>  
-        <!-- Include Service Notification API -->
-        <script language="javascript" type="text/javascript" src="/include/servicesubscriber.js"></script>
-		<!--
-#raw
-		-->
-        <script language="javascript" type="text/javascript" src="/include/jquery.stalker.js"></script>
-        <script language="javascript" type="text/javascript">
-            \$(document).ready(function() {
-                try {
-                    \$.ifixpng('/images/clear.gif');
-                    \$('img').ifixpng();
-                    \$('input').ifixpng();
-                }
-                catch(e) {
-                    
-                }
-            });
-        </script>
-      	<!--
-#end raw
-		-->
-        $extrahead
-    
-        <script type="text/javascript">
-            overlib_pagedefaults(WIDTH,300,FGCOLOR,'#ffffcc',BGCOLOR,'#666666');
-            function swapVisibility(id) {
-                el = document.getElementById(id);
-                if(el.style.display != 'block') {
-                    el.style.display = 'block'
-                }
-                else {
-                    el.style.display = 'none'
-                }
-            }
-        </script>
-        <script type="text/javascript" src="/include/accordion.js"></script>
-END
-;
-    if($ENV{'SCRIPT_NAME'} eq '/cgi-bin/dashboard.cgi') {
-        printf <<END
-		 <link rel="stylesheet" type="text/css" href="/css/smoothie.css"/>
- <link rel="stylesheet" type="text/css" href="/css/SocketStatus.css"/>
-
-<link rel="stylesheet" type="text/css" href="/toscawidgets/resources/static/css/notification.css" media="all" />
-<script type="text/javascript" src="/include/jquery.min.js"></script>
-<script type="text/javascript" src="/include/toastr.js"></script>
-<script type="text/javascript" src="/toscawidgets/resources/static/js/jquery.emi.toast.js"></script>
-<script type="text/javascript" src="/toscawidgets/resources/static/js/jquery.emi.apply.js"></script>
-<link rel="stylesheet" type="text/css" href="/toscawidgets/resources/static/css/draganddropsort.css" media="all" />
-<link rel="stylesheet" type="text/css" href="/toscawidgets/resources/static/css/dashboardcontainer.css" media="all" />
-<script type="text/javascript" src="/toscawidgets/resources/static/js/consolelogger.js"></script>
-<script type="text/javascript" src="/include/jquery.ui.core.min.js"></script>
-<script type="text/javascript" src="/include/jquery.ui.widget.min.js"></script>
-<script type="text/javascript" src="/include/jquery.ui.mouse.min.js"></script>
-<script type="text/javascript" src="/include/jquery.ui.sortable.min.js"></script>
-<script type="text/javascript" src="/toscawidgets/resources/static/js/draganddropsort.js"></script>
-<link rel="stylesheet" type="text/css" href="/include/style.css" media="all" />
-<link rel="stylesheet" type="text/css" href="/include/jquery-ui-core.css" media="all" />
-<link rel="stylesheet" type="text/css" href="/include/jquery-ui-theme.css" media="all" />
-<link rel="stylesheet" type="text/css" href="/toscawidgets/resources/static/css/closeablecontainer.css" media="all" />
-<link rel="stylesheet" type="text/css" href="/toscawidgets/resources/static/css/plugin.css" media="all" />
-<script type="text/javascript" src="/toscawidgets/resources/static/js/systeminformationplugin.js"></script>
-<script type="text/javascript" src="/toscawidgets/resources/static/js/signaturesinformationplugin.js"></script>
-<script type="text/javascript" src="/toscawidgets/resources/static/js/hardwareinformationplugin.js"></script>
-<script type="text/javascript" src="/toscawidgets/resources/static/js/serviceinformationplugin.js"></script>
-<script type="text/javascript" src="/include/excanvas.min.js"></script>
-<script type="text/javascript" src="/include/jquery.flot.min.js"></script>
-<script type="text/javascript" src="/toscawidgets/resources/static/js/networkinformationplugin.js"></script>
-<script type="text/javascript" src="/toscawidgets/resources/static/js/uplinkinformationplugin.js"></script>
-<script type="text/javascript" src="/toscawidgets/resources/static/js/jobsinformationplugin.js"></script>
-<link rel="stylesheet" type="text/css" href="/toscawidgets/resources/static/css/autorefreshwrapper.css" media="all" />
-<script type="text/javascript" src="/toscawidgets/resources/static/js/autorefreshwrapper.js"></script>
-<link rel="stylesheet" type="text/css" href="/toscawidgets/resources/static/css/systeminformationcontent.css" media="all" />
-<link rel="stylesheet" type="text/css" href="/toscawidgets/resources/static/css/signaturesinformationcontent.css" media="all" />
-<link rel="stylesheet" type="text/css" href="/toscawidgets/resources/static/css/hardwareinformationcontent.css" media="all" />
-<link rel="stylesheet" type="text/css" href="/toscawidgets/resources/static/css/serviceinformationcontent.css" media="all" />
-<link rel="stylesheet" type="text/css" href="/toscawidgets/resources/static/css/networkinformationcontent.css" media="all" />
-<link rel="stylesheet" type="text/css" href="/toscawidgets/resources/static/css/uplinkinformationcontent.css" media="all" />
-     <script type="text/javascript" src="/js/websocket.js"></script>   
-	<script language="javascript" src="/js/smoothie.js"></script>
-	
-        <title>RazWall Firewall</title>
-        
-        <script type="text/javascript" src="/include/jquery.stalker.js"></script>
-        <script language="javascript" type="text/javascript">
-\$(document).ready(function() {
-    if (\$.browser.msie) {
-        \$("#main_header_logout").removeAttr("href");
-        \$("#main_header_logout").parent().unbind('click').click(function() {
-            \$.ajax({
-                url: "/cgi-bin/logout.cgi",
-                username: 'username',
-                password: 'wrong_password_for_username'
-            });
-        document.location = "/";
-        });
-    }
-    \$("#menu-top-background").stalker();
-    \$("#menu-top").stalker();
-    \$("#menu-left").stalker({offset: 35});
-
- 
-	function callReboot(){
-        \$.ajax({
-            type: 'POST',
-            url: "/manage/commands/commands.system.reboot",
-            error: function(id, error_type, xhr, ajaxOptions, thrownError) {
-                console.log("js: callReboot error")
-            },
-            success: function () {
-                document.getElementById('page-content').innerHTML = "<div id=\"module-content\">                    <div align=\"center\">                    <table width=\"100%\" bgcolor=\"#ffffff\">                    <tbody><tr><td align=\"center\">                    <br><br><img src=\"/images/reboot_splash.png\"><br><br><br>                    </td></tr>                    </tbody></table>                    <br>                    <font size=\"5\">The appliance is being rebooted.</font>                    </div>                    </div>";
-            }
-        });
-    }
-
-    function acknowledgeReboot(){
-        \$.ajax({
-            type: 'POST',
-            url: "/manage/commands/commands.system.acknowledge_reboot",
-            error: function(id, error_type, xhr, ajaxOptions, thrownError) {
-                console.log("js: acknowledgeReboot error")
-            }
-        });
-    }
-
-    function pollReboot() {
-        \$.ajax({
-            type: 'GET',
-            url: "/manage/commands/commands.system.notify_reboot",
-            success: pollSuccess,
-            error: pollError,
-            dataType: "json"
-        });
-    }
-
-    function pollSuccess(result) {
-        if (result != null) {
-            var status = result['notify_reboot'];
-            if (status == true)
-                makeRebootToast();
-        }
-        setTimeout(pollReboot, 60000);
-    }
-
-    function pollError(id, error_type, xhr, ajaxOptions, thrownError) {
-        setTimeout(pollReboot, 60000);
-    }
-
-    function makeRebootToast(){
-        var toastr_settings = {
-            type: "warning",
-            title: "System reboot required",
-            message: "Reboot is required to complete the installation of software updates.",
-            confirmation_button_label: "Ok, reboot now",
-            confirmation_button: true,
-            confirmation_callback: callReboot,
-            close_callback: acknowledgeReboot,
-            toastr_options: {
-                "closeButton": true,
-                "positionClass": "toast-top-right",
-                "preventDuplicates": true,
-            }
-        };
-
-        \$().emitoast(toastr_settings);
-    }
-
-    pollReboot();
-
-});
-        </script>
-        
-        <link rel="shortcut icon" href="/favicon.ico" />
-        <style type="text/css">@import url(/include/menu.css);</style>
-        <style type="text/css">@import url(/include/branding.css);</style>
-        <style type="text/css">@import url(/include/toastr.css);</style>
-        <style type="text/css">
-.state-msg { 
-    margin: 0px;
-    margin-top: 12px; 
-    padding: 5px; 
-    background-color: #f3f3f3; 
-    width: 98%; 
-    border: #cccccc 2px solid; 
-    overflow: hidden; 
-    font-weight: bold;
-    color: #555555; 
-}
-.error-msg { 
-    margin: 0px;
-    margin-top: 12px; 
-    padding: 5px; 
-    background-color: #fff0f0;
-    width: 98%; 
-    border: #d69497 2px solid; 
-    overflow: hidden;
-    font-weight: bold;
-    color: #ca232a; 
-}
-.k-tooltip {
-    margin-top: 10px;
-}
-        </style>
-END
-;
-	}
-    if($ENV{'SCRIPT_NAME'} eq '/cgi-bin/dashboard.cgi' && -e '/razwall/web/html/include/uplink.js') {
-        printf <<END
-            <script language="javascript" type="text/javascript" src="/include/uplink.js"></script>
-            <link rel="stylesheet" type="text/css" media="screen" title="Uplinks Status" href="/include/uplinks-status.css" />
-END
-;
-    }
-    if($ENV{'SCRIPT_NAME'} eq '/cgi-bin/uplinkeditor.cgi') {
-        printf <<END
-            <script language="javascript" type="text/javascript" src="/include/uplinkeditor.js"></script>
-END
-;
-    }
-    if ($ENV{'SCRIPT_NAME'} eq '/cgi-bin/updates.cgi' && -e '/razwall/web/html/include/ajax.js'  && -e '/razwall/web/cgi-bin/updates-ajax.cgi'
-        && -e '/razwall/web/html/include/updates.js' && -e'/razwall/web/html/include/updates.css') {
-      printf <<END
-
-        <script type="text/javascript" language="JavaScript" src="/include/ajax.js"></script>
-        <script type="text/javascript" language="JavaScript" src="/include/updates.js"></script>
-    </head>
-    <body class="language-$language">
-
-END
-;
-    } else {
-      printf <<END
-      </head>
-      <body class="language-$language">
-END
-;
-    }
-    printf <<END
-<!-- EFW HEADER -->
-	<span id="dummy" style="display:none;height:0px;width:0px;">
-	<audio id="incoming" src="/sounds/sound_1.mp3" preload="true" autobuffer=""></audio>
-	<audio id="outgoing" src="/sounds/sound_2.mp3" preload="true" autobuffer=""></audio>
-	<audio id="login" src="/sounds/sound_3.mp3" preload="true" autobuffer=""></audio>
-	<audio id="logout" src="/sounds/sound_4.mp3" preload="true" autobuffer=""></audio>
-	<audio id="razbot" src="/sounds/sound_5.mp3" preload="true" autobuffer=""></audio>
-	<audio id="error" src="/sounds/sound_6.mp3" preload="true" autobuffer=""></audio>
-	</span> 
-<div id="background">
-    <div id="background-overlay"></div>
-</div>
-<div id="header-background"></div>
-<div id="header">
-END
-;
-
-#### END HEADER
-
-$logo_orig = </razwall/web/html/images/logo_*.png>;
-    
-$logo_path = $logo_orig;
-
-if ( $logo_path ) {
-    $filename=substr($logo_path,24);
-    print "     <img id=\"logo\" src=\"/images/$filename\" alt=\"Logo\" />";
-};
-
-
-printf <<END
-	<div id="header-icons">
-<ul>
-    <li id="logout-icon" onclick="window.location.href='/cgi-bin/logout.cgi';">
-        <a href="#" onclick="return false;">%s</a>
-    </li>
-    <li id="help-icon" onclick="javascript:window.open('$helpuri','_blank','height=700,width=1000,location=no,menubar=no,scrollbars=yes');">
-        <a href="#" onclick="return false;">%s</a>
-    </li>
-	<li>
-		<div id="socketStatus" class="socketGreen" onclick="RazConnectWS(); return false;"></div>
-	</li>
-</ul>
-<script language="javascript" type="text/javascript">
-\$(document).ready(function() {
-	if (\$.browser.msie) {
-		\$("#main_header_logout").removeAttr("href");
-		\$("#main_header_logout").parent().unbind('click').click(function() {
-			\$.ajax({
-				url: "/cgi-bin/logout.cgi",
-				username: 'username',
-				password: 'wrong_password_for_username'
-			});
-		document.location = "/";
-		});
-	}
-});
-</script>
-END
-,
-_("Logout"),
-_("Help")
-;
-printf <<END
-   </div><!-- header-icons -->
-   </div><!-- HEADER -->
-<!-- BEGIN MENU -->
-END
-;
-
-    &showmenu();
-
-printf <<END
-<!-- END MENU -->
-<div id="content">
-<!-- BEGIN SUB MENU -->
-END
-;
-	
-    &showsubsection($menu);
-
-printf <<END
-<!-- END SUB MENU -->
-    <div id="page-content">
-    <h2>$h2</h2>
-<!-- SHOW SUB SECTION -->
-END
-    ;
-    
-    &showsubsubsection($menu);
-
-if ( -e '/var/tmp/oldkernel' && $ENV{'SCRIPT_NAME'} eq '/cgi-bin/dashboard.pl') {
-    printf <<END                                                                                                                                                                
-    <h3 class="warning">%s</h3>                                                                                                                                                 
-    <table class="list"><tr><td align="center"><img src="/images/dialog-warning.png"/></td><td align="left">%s</td></tr></table>                                                
-    <br/>                                                                                                                                                                       
-END
-,                                                                                                                                                                           
-_('Old kernel'),
-_('You are not running the latest kernel version. If your Firewall has been updated this could mean that a new kernel has been installed. To activate it you will have to <a href="%s">reboot</a> the system.<br/>If this is not the case you should check your %s file and make sure that the newest kernel will be booted after a restart.',"/cgi-bin/shutdown.cgi","/boot/grub/grub.conf")
-;                 
-}
-    # Add HTML required to display notifications posted from service(s)
-printf <<END
-<!-- END SUB SECTION -->
-        <div id="notification-view" class="spinner" style="display:none"></div>
-END
-;
-
-printf <<END
-        <div id="module-content">
-		<!-- BEGIN PAGE DATA -->
-END
-;
+    $title = $release{'BRAND'}.' '.$release{'PRODUCT'}." - $title";
 }
 
-
-#### HTML PAGE FOOT
-sub closepage () {
-    print <<END
-			  <!-- END PAGE DATA -->
-              </div>
-              <div id="footer">
-END
-;
-    if (!($nostatus == 1)) {
-        my $status = &connectionstatus();
-        $uptime = `/usr/bin/uptime`;
-        print '<div style="font-size: 9px"><b>Status:</b> '.$status.' <b>Uptime:</b>'.$uptime.'</div>';
-    }
-	print "<p>".$version." (c) ".'<a href="http://www.razwall.com">RazWall</a><span style="font-size: 7px"></span></p>';
-	
-print <<END
-              </div>
-            </div>
-            <div class="cb"></div>
-          </div><!-- page_content -->
-        </div><!-- content -->
-	<script>
-	var RazIP = '$thisAddress';
-	RazConnectWS();
-	</script>
-  </body>
-</html>
-END
-;
-}
-
-sub openbigbox($$$) {
+sub openbigbox($$$) { # Phasing out in RazWall
     my $error=shift;
     my $warning=shift;
     my $note=shift;
@@ -1358,11 +1012,11 @@ sub openbigbox($$$) {
     notificationbox($note);
 }
 
-sub closebigbox {
+sub closebigbox { # Phasing out in RazWall
     return;
 }
 
-sub openbox {
+sub openbox { # Phasing out in RazWall
     $width = $_[0];
     $align = $_[1];
     $caption = $_[2];
@@ -1398,7 +1052,7 @@ EOF
     ;
 }
 
-sub closebox {
+sub closebox { # Phasing out in RazWall
     printf <<EOF
             </td>
         </tr>
@@ -1409,7 +1063,7 @@ EOF
     ;
 }
 
-sub openeditorbox($$$$@) {
+sub openeditorbox($$$$@) { 
     my $linktext = shift;
     my $title = shift;
     my $show = shift;
@@ -1470,7 +1124,7 @@ EOF
     ;
 }
 
-sub closeeditorbox {
+sub closeeditorbox { 
     my $submitvalue = shift;
     my $cancelvalue = shift;
     my $submitname = shift;
@@ -1960,7 +1614,7 @@ sub CheckSortOrder {
 
 }
 
-sub PrintActualLeases {
+sub PrintActualLeases { # Needs Responsive rewrite for RazWall <fieldset>,<span>,<div>
     if (! -f "/var/lib/dhcp/dhcpd.leases") {
 	return;
     }
@@ -2057,7 +1711,6 @@ END
     print "</table>";
     &closebox();
 }
-
 
 # This sub is used during display of actives leases
 sub leasesort {
@@ -2207,7 +1860,7 @@ sub get_wan_ifaces() {
     return \@gottypeiface;
 }
 
-sub get_zone_devices($) {
+sub get_zone_devices($) { # Modify for new dynamic zones?
     my $bridge = shift;
     my @ifaces = ();
     $filename = searchplainfile("/razwall/config/ethernet/$bridge");
@@ -2221,8 +1874,7 @@ sub get_zone_devices($) {
     return \@ifaces;
 }
 
-
-sub register_submenuitem($$$$) {
+sub register_submenuitem($$$$) { # Phase out in RazWAll
     my $menuitem = shift;
     my $submenuitem = shift;
     my $newitem = shift;
@@ -2233,7 +1885,7 @@ sub register_submenuitem($$$$) {
 
 }
 
-sub register_menuitem($$$) {
+sub register_menuitem($$$) { # Phase out in RazWall
     my $menuitem = shift;
     my $newitem = shift;
     my $hash = shift;
@@ -2261,23 +1913,30 @@ sub register_menuitem($$$) {
     #
 }
 
+
+##### RAZWALL REPLACEMENT ATTEMPT 1:
 sub validzones() {
-    my @ret = ();
-
-    push(@ret, 'LAN');
-    if (dmz_used()) {
-	push(@ret, 'DMZ');
-    }
-    if (lan2_used()) {
-	push(@ret, 'LAN2');
-    }
-    if (!is_modem()) {
-	push(@ret, 'WAN');
-    }
-
+	my @ret = ();
+    my @zones = get_zones;
+	
+	# USE NEW ZONE CONFIG PARAMS:
+	# %zonecolors = ($zone => "$ZCOLOR");
+	# %strings_zone = ($zone => "$ZSTRING"); 
+	# %zone_ifaces = ($zone => "$ZIFACE");
+	# %zone_type = ($zone => "$ZTYPE");
+	
+	foreach $zone (@zones) {
+		if($zone_type{$zone} eq 'LAN') {
+			push(@ret, $zone);
+			next;
+		}
+		if( (!$zone_type{$zone} eq 'WAN') && (!$zone_type{$zone} eq 'LOCAL')) {
+			push(@ret, $zone);
+			next;
+		}
+	}
     return \@ret;
 }
-
 
 sub get_wan_devices() {
     my $ref = get_uplinks();
@@ -2328,7 +1987,7 @@ sub disable_uplink($) {
     return 0
 }
 
-sub setbgcolor($$$) {
+sub setbgcolor($$$) { # not sure RazWall will use this, I see it getting applied when rule lists are generated.
     my $is_editing = shift;
     my $line = shift;
     my $i = shift;
@@ -2352,7 +2011,7 @@ sub value_or_nbsp($) {
     return $value;
 }
 
-sub get_hotspot_dev() {
+sub get_hotspot_dev() { # RazWall doesnt use yet, maybe in the future..
     if (! -e "$HOTSPOT_ENABLED") {
 	return "";
     }
@@ -2367,7 +2026,7 @@ sub get_hotspot_dev() {
 
 sub getzonebyinterface($) {
     my $iface = shift;
-    my $zones = validzones();
+    my $zones = validzones(); # First attempt at rewriteing validated zones for RazWall..
     foreach my $zone (@$zones) {
         my $devices = get_zone_devices($ethsettings{$zone.'_DEV'});
         return $zone if (grep(/^$iface$/, @$devices));
@@ -2410,7 +2069,7 @@ sub removefrombridge($$) {
     close(F);
 }
 
-sub toggle_file($$) {
+sub toggle_file($$) { # I think this creats and deletes files used to indicate a rule has changed but not applied. This triggers the "apply" box to appear
     my $file = shift;
     my $set = shift;
 
@@ -2424,7 +2083,7 @@ sub toggle_file($$) {
     return 0;
 }
 
-sub applybox($) {
+sub applybox($) { # REUSE IN RAZWALL? - This only appears if a file exists created by toggle_file
     my $text = shift;
     
     printf <<EOF
@@ -2451,7 +2110,7 @@ EOF
 , _("Apply");
 }
 
-sub errorbox($) {
+sub errorbox($) { # REUSE IN RAZWALL? If so, reformat for responsive theme
     my $text = shift;
     my $id = shift;
     my $style = shift;
@@ -2476,7 +2135,7 @@ EOF
 , $text;
 }
 
-sub warnbox($) {
+sub warnbox($) { # REUSE IN RAZWALL?  If so, reformat for responsive theme
     my $caption = shift;
     if ($caption =~ /^\s*$/) {
         return;
@@ -2488,7 +2147,7 @@ EOF
 ;
 }
 
-sub notificationbox($) {
+sub notificationbox($) { # REUSE IN RAZWALL? If so, reformat for responsive theme
     my $text = shift;
     my $id = shift;
     my $style = shift;
@@ -2578,7 +2237,7 @@ sub ipmask_to_cidr($) {
    return $addr;
 }
 
-sub get_taps() {
+sub get_taps() { # OpenVPN
     my @ret = ();
 
     if (open (F, "${swroot}/openvpn/clientconfig")) {
@@ -2712,7 +2371,6 @@ sub get_aliases() {
 
     return $ret;
 }
-
 
 sub getSpareMemory() {
     my $swapfree = 0;
@@ -2978,7 +2636,6 @@ sub readhash($$) {
     readhashfile($filename, $hash);
 }
 
-
 sub searchplainfile($) {
     my $filename = shift;
 
@@ -3046,8 +2703,98 @@ sub searchplainfile($) {
     return $filename;
 }
 
-
 sub getcgihash {
+    my ($hash, $params) = @_;
+
+    # Always store raw method for your logic
+    my $method = ($ENV{REQUEST_METHOD}||'GET') =~ tr/a-z/A-Z/r;
+
+    # Early exit unless POST
+    return unless $method eq 'POST';
+
+    # Determine content type & length
+    my $content_type = $ENV{CONTENT_TYPE}  || '';
+    my $content_len  = $ENV{CONTENT_LENGTH} || 0;
+
+    # Enforce POST_MAX
+    my $max_len = $params->{wantfile}
+                ? 10 * 1024 * 1024      # 10 MB for uploads
+                : 512  * 1024;           # 512 KB otherwise
+    return if $content_len > $max_len;
+
+    # Read the raw POST body
+    read(STDIN, my $body, $content_len);
+
+    # If it's not multipart, do simple urlencoded parse
+    if ($content_type =~ m{^application/x-www-form-urlencoded}i) {
+        for my $pair (split /&/, $body) {
+            my ($k,$v) = split /=/, $pair, 2;
+            next unless defined $k;
+            $k =~ s/\+/ /g;  $v =~ s/\+/ /g if defined $v;
+            $k = URI::Escape::uri_unescape($k);
+            $v = URI::Escape::uri_unescape($v // '');
+            _store_pair($hash, $k, $v);
+        }
+    }
+    elsif ($params->{wantfile}
+       && $content_type =~ m{^multipart/form-data;\s*boundary=(.+)$}i) {
+        my $boundary = "--" . $1;
+        my @parts = split /\Q$boundary\E/, $body;
+        for my $part (@parts) {
+            next if $part =~ /^(?:--\s*)?$/;  # skip epilogue/preamble
+            # split headers from content
+            my ($hdrs, $data) = split /\r?\n\r?\n/, $part, 2;
+            next unless defined $hdrs && defined $data;
+            $data =~ s/\r?\n$//;  # strip trailing newline
+            # parse Content-Disposition for name and filename
+            if ($hdrs =~ /name="([^"]+)"/i) {
+                my $fname = $1;
+                if (defined $params->{filevar}
+                 && $fname eq $params->{filevar}
+                 && $hdrs =~ /filename="([^"]*)"/i) {
+                    # store the raw file content as a scalarref
+                    my $filedata = $data;
+                    $hash->{$fname} = \$filedata;
+                }
+                else {
+                    _store_pair($hash, $fname, $data);
+                }
+            }
+        }
+    }
+    else {
+        # unsupported content type
+        return;
+    }
+
+    # Optional referer check
+    if (my $ref = $ENV{HTTP_REFERER} // '') {
+        if ($ref =~ m{^https?://([^/]+)}) {
+            my $server = ($ENV{HTTP_HOST}||'') =~ m{^([^:]+)} ? $1 : '';
+            return if $1 ne $server;
+        }
+    }
+
+    # stash a flag if you need the raw body
+    $hash->{__RAW_BODY__} = $body;
+}
+
+# internal helper to clean & store
+sub _store_pair {
+    my ($hash, $k, $v) = @_;
+    $v =~ tr{\0}{|};                # replace nulls with pipes
+    $v =~ s/^\s+|\s+$//g;           # trim whitespace
+    $v = URI::Escape::uri_unescape($v);
+    $v = encode_entities($v, q{"'<>&});
+    # allow multiple values separated by | to accumulate
+    if (exists $hash->{$k}) {
+        $hash->{$k} .= '|' . $v;
+    } else {
+        $hash->{$k} = $v;
+    }
+}
+
+sub getcgihashOLD {
 	my ($hash, $params) = @_;
 	my $cgi = CGI->new ();
 	$hash->{'__CGI__'} = $cgi;
@@ -3170,8 +2917,8 @@ print qq~
 Content-type: text/html
 <html>
 <body>
-<h2>RazDC: Error</h2>
-<div>An error occured while loading the RazDC template file:</div>
+<h2>RazWall: Error</h2>
+<div>An error occured while loading the RazWall template file:</div>
 <div>$@</div>
 </body></html>
 ~;
@@ -3182,8 +2929,8 @@ print qq~
 Content-type: text/html
 <html>
 <body>
-<h2>RazDC: Error</h2>
-<div>An error occured while loading the RazDC template file:</div>
+<h2>RaWall: Error</h2>
+<div>An error occured while loading the RazWall template file:</div>
 <div>$@</div>
 </body></html>
 ~;
@@ -3230,4 +2977,25 @@ sub printTemplate {
  s/~~CARET/\^/g;
  print "$_";
 }
+sub processLoops {
+	my ($dataref) = @_;  # hashref of arrays
+
+	# Handle FOR loops of form: [?FOR^ARRAY AS VAR^CONTENT?]
+	while (/\[\?FOR\^(\w+)\s+AS\s+(\w+)\^(.*?)\?\]/s) {
+		my ($array_name, $var, $content) = ($1, $2, $3);
+		my $items = $dataref->{$array_name};
+		my $output = '';
+
+		if (ref($items) eq 'ARRAY') {
+			foreach my $item (@$items) {
+				my $line = $content;
+				$line =~ s/\[!\Q$var\E!\]/$item/g;
+				$output .= $line;
+			}
+		}
+
+		s/\[\?FOR\^$array_name\s+AS\s+$var\^.*?\?\]/$output/s;
+	}
+}
+
 1;

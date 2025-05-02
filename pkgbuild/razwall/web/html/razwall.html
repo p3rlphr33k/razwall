@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<title>RazWall Firewall</title>
+
+<link rel="shortcut icon" href="favicon.ico" />
+<link rel="stylesheet" type="text/css" href="css/SocketStatus.css">
+<style type="text/css">@import url(include/style.css);</style>
+<style type="text/css">@import url(include/menu.css);</style>
+<style type="text/css">@import url(include/content.css);</style>
+<style type="text/css">@import url(include/folding.css);</style>
+<style type="text/css">@import url(include/service-notifications.css);</style>
+<style type="text/css">@import url(include/updates.css);</style>
+
+<!--script language="javascript" type="text/javascript" src="/include/jquery.min.js"></script>
+<script language="javascript" type="text/javascript" src="/include/jquery.ifixpng.js"></script>
+<script language="javascript" type="text/javascript" src="/include/jquery.selectboxes.js"></script>
+<script language="javascript" type="text/javascript" src="/include/folding.js"></script>
+<script language="javascript" type="text/javascript" src="/include/form.js"></script-->
+<script type="text/javascript" src="js/websocket.js"></script>  
+<script language="JavaScript" src="include/firewall_type.js"></script>
+<script language="JavaScript" src="include/services_selector.js"></script>
+<script language="JavaScript" src="include/dnat.js"></script>
+    
+<!--script type="text/javascript">
+            overlib_pagedefaults(WIDTH,300,FGCOLOR,'#ffffcc',BGCOLOR,'#666666');
+            function swapVisibility(id) {
+                el = document.getElementById(id);
+                if(el.style.display != 'block') {
+                    el.style.display = 'block'
+                }
+                else {
+                    el.style.display = 'none'
+                }
+            }
+</script-->
+<!--script type="text/javascript" src="include/accordion.js"></script-->
+</head>
+<body class="language-">
+
+<span id="dummy" style="display:none;height:0px;width:0px;">
+<audio id="incoming" src="sounds/sound_1.mp3" preload="true" autobuffer=""></audio>
+<audio id="outgoing" src="sounds/sound_2.mp3" preload="true" autobuffer=""></audio>
+<audio id="login" src="sounds/sound_3.mp3" preload="true" autobuffer=""></audio>
+<audio id="logout" src="sounds/sound_4.mp3" preload="true" autobuffer=""></audio>
+<audio id="razbot" src="sounds/sound_5.mp3" preload="true" autobuffer=""></audio>
+<audio id="error" src="sounds/sound_6.mp3" preload="true" autobuffer=""></audio>
+</span> 
+
+<div id="background">
+    <div id="background-overlay"></div>
+</div>
+<div id="header-background"></div>
+<div id="header">
+     <img id="logo" src="images/logo_razwall.png" alt="Logo" />	<div id="header-icons">
+<ul>
+    <li id="logout-icon" onclick="window.location.href='/cgi-bin/logout.cgi';">
+        <a href="#" onclick="return false;">Logout</a>
+    </li>
+    <li id="help-icon" onclick="javascript:window.open('http://razwall.com/forum/firewall.html#port-forwarding-destination-nat','_blank','height=700,width=1000,location=no,menubar=no,scrollbars=yes');">
+        <a href="#" onclick="return false;">Help</a>
+    </li>
+	<li>
+		<div id="socketStatus" class="socketGreen" onclick="RazConnectWS(); return false;"></div>
+	</li>
+</ul>
+<!--script language="javascript" type="text/javascript">
+$(document).ready(function() {
+	if ($.browser.msie) {
+		$("#main_header_logout").removeAttr("href");
+		$("#main_header_logout").parent().unbind('click').click(function() {
+			$.ajax({
+				url: "/cgi-bin/logout.cgi",
+				username: 'username',
+				password: 'wrong_password_for_username'
+			});
+		document.location = "/";
+		});
+	}
+});
+</script-->
+   </div><!-- header-icons -->
+   </div><!-- HEADER -->
+<!-- BEGIN MENU -->
+<div id="menu-top-background"></div>
+<div id="menu-top">
+<ul>
+<li><a href="/manage/dashboard">System</a></li>
+<li><a href="/cgi-bin/status.cgi">Status</a></li>
+<li><a href="/manage/dnsmasq/hosts">Network</a></li>
+<li><a href="/manage/dhcp/settings">Services</a></li>
+<li class="selected"><a href="/cgi-bin/dnat.cgi">Firewall</a></li>
+<li><a href="/cgi-bin/proxyconfig.cgi">Proxy</a></li>
+<li><a href="/manage/openvpn">VPN</a></li>
+<li><a href="/cgi-bin/logs_live_list.cgi">Logs</a></li>
+</ul>
+</div>
+<!--script language="javascript" type="text/javascript">
+$(document).ready(function() {
+    $("#menu-top-background").stalker();
+    $("#menu-top").stalker();
+});
+</script-->
+<!-- END MENU -->
+<div id="content">
+<!-- BEGIN SUB MENU -->
+<!--script language="javascript" type="text/javascript">
+$(document).ready(function() {
+    $("#menu-left").stalker({offset: 35});
+});
+</script-->
+    <div id="menu-left">
+        <ul>
+<li class="selected"><a href="/cgi-bin/dnat.cgi">Port forwarding / NAT</a></li><li><a href="/cgi-bin/outgoingfw.cgi">Outgoing traffic</a></li><li><a href="/cgi-bin/zonefw.cgi">Inter-Zone traffic</a></li><li><a href="/cgi-bin/vpnfw.cgi">VPN traffic</a></li><li><a href="/cgi-bin/xtaccess.cgi">System access</a></li><li><a href="/manage/firewall/diagram">Firewall Diagrams</a></li>        </ul>
+    </div>
+<!-- END SUB MENU -->
+    <div id="page-content">
+    <h2>Port forwarding / Destination NAT</h2>
+<!-- SHOW SUB SECTION -->
+    <div id="menu-subtop">
+        <ul>
+<li class="selected"><a href="/cgi-bin/dnat.cgi">Port forwarding / Destination NAT</a></li><li><a href="/cgi-bin/snat.cgi">Source NAT</a></li><li><a href="/cgi-bin/incoming.cgi">Incoming routed traffic</a></li>        </ul>
+    </div>
+<br /><!-- END SUB SECTION -->
+        <div id="notification-view" class="spinner" style="display:none"></div>
+        <div id="module-content">
+		<!-- BEGIN PAGE DATA -->
+<div>
+    <h3>Current rules</h3>
+    <table class="list">
+        <tr>
+            <td align="left">
+    <div class="editoradd " id="createrule" name="createrule">
+        <div><a class="editoradd" name="createrule" href="#createrule" onclick="return false;">Add a new Port forwarding / Destination NAT rule</a></div>
+    </div>
+    <div class="editorbox hidden" name="createrule">
+        <div class="editortitle"><b>Port forwarding / Destination NAT Rule Editor</b>&nbsp;<div style="float: right;">
+                <span class="simple ">Simple Mode</span>
+                <a id="simple" class="hidden">Simple Mode</a>
+                &nbsp;|&nbsp;
+                <span class="advanced hidden">Advanced Mode</span>
+                <a id="advanced" class="">Advanced Mode</a>
+                </div><div style="clear: both;"></div><b></b></div>
+        <form enctype='multipart/form-data' method='post' action='/cgi-bin/dnat.cgi#createrule'>
+        <table width="100%" cellpadding="0" cellspacing="0">
+            <tr width="50%">
+                <!-- begin source/dest -->
+                <td valign="top" width="40%">
+                    <!-- begin destination -->
+                    <b>Incoming IP</b><br />
+                    <table cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td>Type *&nbsp;&nbsp;
+                                <select name="dst_type"  onchange="toggleTypes('dst');" onkeyup="toggleTypes('dst');">
+                                    <option value="dev" selected>Zone/VPN/Uplink</option>
+                                    <option value="ip" >Network/IP/Range</option>
+                                    <option value="user" >OpenVPN User</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div id="dst_dev_t" style="display:block">Select interfaces (hold CTRL for multiselect)</div>
+                                <div id="dst_ip_t" style="display:none">Insert network/IPs (one per line)</div>
+                                <div id="dst_user_t" style="display:none" style="width: 250px; height: 90px;">Select OpenVPN users (hold CTRL for multiselect)</div>
+                                <div id='dst_dev_v' style='display:block'>
+                                    <select name="dst_dev" multiple  style="width: 250px; height: 90px;">
+                                        <option value='UPLINK:ANY' >&lt;ANY Uplink&gt;</option>
+                                        <option value='UPLINK:main' >Uplink Main - IP:All known</option>
+                                        <option value='11.11.11.11:UPLINK:main' >Uplink Main - IP:11.11.11.11</option>
+                                        <option value='11.11.11.12:UPLINK:main' >Uplink Main - IP:11.11.11.12</option>
+                                        <option value='11.11.11.13:UPLINK:main' >Uplink Main - IP:11.11.11.13</option>
+                                        <option value='11.11.11.14:UPLINK:main' >Uplink Main - IP:11.11.11.14</option>
+                                        <option value='11.11.11.15:UPLINK:main' >Uplink Main - IP:11.11.11.15</option>
+                                        <option value='VPN:Gw2Gw' >VPN Gw2Gw - IP:All known</option>
+                                    </select>
+                                </div>
+                                <div id='dst_ip_v' style='display:none'>
+                                    <textarea name='dst_ip' wrap='off'  style="width: 250px; height: 90px;"></textarea>
+                                </div>
+                                <div id='dst_user_v' style='display:none'>
+                                    <select name="dst_user" multiple  style="width: 250px; height: 90px;">
+                                        <option value="OPENVPNUSER:ALL" >&lt;ANY&gt;</option>
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <!-- end destination -->
+                </td>
+                <td valign="top" width="50%">
+                    <table>
+                        <tr>
+                            <td colspan="2"><b>Incoming Service/Port</b></td>
+                        </tr>
+                        <tr>
+                            <td valign="top" nowrap="true">Service *<br />
+                                <select name="service_port"  onchange="selectService('protocol', 'service_port', 'port'); toggle_target_ports('protocol');" onkeyup="selectService('protocol', 'service_port', 'port');">
+                                    <option value="any/any">&lt;ANY&gt;</option>
+<option value="">User defined</option>
+<option value='0:65535/tcp&udp' >&lt;ALL&gt;</option><option value='5190:5194/tcp' >AOL</option><option value='53/tcp&udp' >DNS</option><option value='47624/tcp' >Direct X games</option><option value='21/tcp' >FTP</option><option value='79/tcp' >Finger</option><option value='70/tcp' >Gopher</option><option value='1720/tcp' >H323 (NetMeeting)</option><option value='80/tcp' >HTTP</option><option value='443/tcp' >HTTPS</option><option value='1024:65535/tcp&udp' >High ports</option><option value='5190:5194/tcp' >ICQ</option><option value='993/tcp' >IMAP over SSL</option><option value='143/tcp' >IMAP</option><option value='6667:7000/tcp' >IRC</option><option value='113/tcp' >Ident</option><option value='389/tcp' >LDAP</option><option value='1:1023/tcp&udp' >Low ports</option><option value='1863/tcp' >MSN Messenger</option><option value='119/tcp' >NNTP</option><option value='123/tcp&udp' >NTP</option><option value='1194/tcp&udp' >OpenVPN</option><option value='5631/tcp&udp' >PC Anywhere</option><option value='995/tcp' >POP3 over SSL</option><option value='110/tcp' >POP3</option><option value='7070/tcp' >Real Audio</option><option value='115/tcp' >SFTP</option><option value='5060/udp' >SIP</option><option value='137:139&445/tcp&udp' >SMB All</option><option value='138/tcp&udp' >SMB DGM</option><option value='137/tcp&udp' >SMB NS</option><option value='139/tcp&udp' >SMB SSN</option><option value='445/tcp' >SMB over TCP</option><option value='25/tcp' >SMTP</option><option value='161:162/tcp&udp' >SNMP</option><option value='1080/tcp&udp' >SOCKS</option><option value='22/tcp' >SSH</option><option value='111/tcp&udp' >Sun RPC</option><option value='514/udp' >Syslog</option><option value='69/udp' >TFTP</option><option value='23/tcp' >Telnet</option><option value='33434:33600/udp' >UDP Traceroute</option>                                </select>
+                            </td>
+                            <td valign="top" rowspan="2">Incoming port/range (one per line, e.g. 80, 80:88)<br />
+                                <textarea name="port"  rows="3" disabled="true" onkeyup="updateService('protocol', 'service_port', 'port');"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td valign="top">Protocol *<br />
+                                <select name="protocol"  onchange="updateService('protocol', 'service_port', 'port'); toggle_target_ports('protocol');" onkeyup="updateService('protocol', 'service_port', 'port');">
+                                    <option value="any" selected>&lt;ANY&gt;</option>
+                                    <option value="tcp" >TCP</option>
+                                    <option value="udp" >UDP</option>
+                                    <option value="tcp&udp" >TCP + UDP</option>
+                                    <option value="esp" >ESP</option>
+                                    <option value="gre" >GRE</option>
+                                    <option value="icmp" >ICMP</option>
+                                </select>
+                            </td>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        <hr size="1" color="#cccccc"/>
+        <table width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+                <!-- begin target/port/policy -->
+                <td valign="top" colspan="2">
+                    <!-- begin target -->
+                    <b>Translate to *</b><br />
+                </td>
+            </tr>
+
+            <tr>
+                <td width="300">
+                    <div class="advanced hidden">
+                        Type &nbsp;&nbsp;
+                        <div>
+                            <select id="target_type" name="target_type"  onchange="toggleTypes('target');" onkeyup="toggleTypes('target');">
+                                <option value="ip" selected>IP</option>
+                                <option value="user" >OpenVPN User</option>
+                                <option value="lb" >Load balancing</option>
+                                <option value="map" >Map network</option>
+                            </select>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                </td>
+            </tr>
+        </table>
+        <br />
+        <div id='target_ip_v' style='display:block'>
+            <table>
+                <tr>
+                    <td width="300">Insert IP</td>
+                    <td width="200">Port/Range (e.g. 80, 80:88)</td>
+                    <td>NAT</td>
+                </tr>
+                <tr>
+                    <td>
+                        <input name='target_ip_ip' value=""  size="10" type="text" style="width: 250px;" />
+                    </td>
+                    <td>
+                        <input name='target_port_ip' value=""  size="10" type="text" style="width: 150px;" />
+                    </td>
+                    <td>
+                        <select class="policy" name="policy_ip" >
+                            <option value="DNAT" selected>NAT</option>
+                            <option value="RETURN" >Do not NAT</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div id='target_user_v' style='display:none'>
+            <table>
+                <tr>
+                    <td width="300">Select OpenVPN user</td>
+                    <td width="200">Port/Range (e.g. 80, 80:88)</td>
+                    <td>NAT</td>
+                </tr>
+                <tr>
+                    <td>
+                        <select name="target_ip_user"  style="width: 250px;">
+                        </select>
+                    </td>
+                    <td>
+                        <input name='target_port_user' value=""  size="10" type="text" style="width: 150px;" />
+                    </td>
+                    <td>
+                        <select class="policy" name="policy_user" >
+                            <option value="DNAT" selected>NAT</option>
+                            <option value="RETURN" >Do not NAT</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div id='target_lb_v' style='display:none'>
+            <table>
+                <tr>
+                    <td width="300">Insert IP range (e.g. 10.1.1.1-10.1.1.10)</td>
+                    <td width="200">Port/Range (e.g. 80, 80:88)</td>
+                    <td>NAT</td>
+                </tr>
+                <tr>
+                    <td>
+                        <input name='target_ip_lb' value=""  size="10" type="text" style="width: 250px;" />
+                    </td>
+                    <td>
+                        <input name='target_port_lb' value=""  size="10" type="text" style="width: 150px;" />
+                    </td>
+                    <td>
+                        <select class="policy" name="policy_lb" >
+                            <option value="DNAT" selected>NAT</option>
+                            <option value="RETURN" >Do not NAT</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div id='target_map_v' style='display:none'>
+            <table>
+                <tr>
+                    <td width="300">Insert subnet</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>
+                        <input name='target_ip_map' value=""  size="10" type="text" style="width: 250px;" />
+                    </td>
+                    <td>&nbsp;</td>
+                    <td></td>
+                </tr>
+            </table>
+        </div>
+        <div class="advanced hidden">
+            <hr size="1" color="#cccccc"/>
+            <table width="100%" cellpadding="0" cellspacing="0">
+                <tr width="50%">
+                    <!-- begin source/dest -->
+                    <td valign="top" width="40%">
+                    <!-- begin source -->
+                        <b>Access From</b><br />
+                        <table width="100%" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td>SourceType &nbsp;&nbsp;
+                                    <select id="src_type" name="src_type" onchange="toggleTypes('src');" onkeyup="toggleTypes('src');">
+                                        <option value="any" selected>ANY</option>
+                                        <option value="dev" >Zone/VPN/Uplink</option>
+                                        <option value="ip" >Network/IP/Range</option>
+                                        <option value="user" >OpenVPN User</option>
+
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div id="src_any_t" style="display:block; width: 250px; height: 90px;">Access from every zone</div>
+                                    <div id="src_dev_t" style="display:none;">Select interfaces (hold CTRL for multiselect)</div>
+                                    <div id="src_ip_t" style="display:none;">Insert network/IPs (one per line)</div>
+                                    <div id="src_user_t" style="display:none;">Select OpenVPN users (hold CTRL for multiselect)</div>
+                                    <div id='src_any_v' style='display:block'>&nbsp;</div>
+                                    <div id='src_dev_v' style='display:none'>
+                                        <select name="src_dev" multiple style="width: 250px; height: 90px;">
+                                            <option value='UPLINK:ANY' >&lt;ANY Uplink&gt;</option>
+                                            <option value='UPLINK:main' >Uplink Main [WAN]</option>
+                                            <option value="VPN:IPSEC" >IPSEC</option>
+                                            <option value='VPN:Gw2Gw' >VPN Gw2Gw</option>
+                                        </select>
+                                    </div>
+                                    <div id='src_user_v' style='display:none'>
+                                        <select name="src_user" multiple style="width: 250px; height: 90px;">
+                                            <option value="OPENVPNUSER:ALL" >&lt;ANY&gt;</option>
+                                        </select>
+                                    </div>
+                                    <div id='src_ip_v' style='display:none'>
+                                        <textarea name='src_ip' wrap='off' style="width: 250px; height: 90px;"></textarea>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                        <!-- end source field -->
+                    </td>
+                    <td valign="top" width="50%">
+                        <div class="advanced hidden">
+                            <div class="filter_policy ">
+                                <b>Filter policy</b><br />
+                                <!-- begin policy -->
+                                <select id="filter_policy" name="filter_policy" >
+                                    
+                                    <option value="ACCEPT" >ALLOW</option>
+                                    <option value="DROP" >DROP</option>
+                                    <option value="REJECT" >REJECT</option>
+                                </select>
+                                <!-- end policy -->
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <hr size="1" color="#cccccc">
+        <table>
+            <tr>
+                <td><input name="enabled" value="on"  checked type="checkbox">Enabled</td>
+                <td><input name="log" value="on"   type="checkbox">Log</td>
+    	    <td>&nbsp;</td>
+                <td align="top">Remark
+                    <input name="remark" value=""  size="50" maxlength="50" type="text"/>
+                </td>
+                <td>&nbsp;</td>
+                <td align="left">Position *&nbsp;
+                    <select name="position" >
+                        <option value="0">First</option>
+                        <option value="1" >After rule #1</option>
+                        <option value="2" >After rule #2</option>
+                        <option value="3" >After rule #3</option>
+                        <option value="4" >After rule #4</option>
+                        <option value="5" >After rule #5</option>
+                        <option value="6" >After rule #6</option>
+                        <option value="7" >After rule #7</option>
+                        <option value="8" selected>Last</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+        <input type="hidden" name="ACTION" value="add"/>
+        <input type="hidden" name="line" value=""/>
+        <input type="hidden" name="old_source" value=""/>
+        <input type="hidden" name="old_src_dev" value=""/>
+        <input type="hidden" name="sure" value="y"/>
+            <div class="editorsubmit">
+                <div style="float: left;"><input class='submitbutton' type='submit' name='routebutton' value='Create Rule' />&nbsp;or&nbsp;<a class="editorcancel" name='createrule' href="/cgi-bin/dnat.cgi">Cancel</a></div>
+                <div style="float: right; padding-top: 4px;">* This Field is required.</div>
+                <br class="cb"/>
+            </div>
+        </form>
+        <input type="hidden" class="form" name="color" value="" />
+    </div>    
+    <table class="ruleslist" cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+            <td class="boldbase" width="2%">#</td>
+            <td class="boldbase" width="15%">Incoming IP</td>
+            <td class="boldbase" width="12%">Service</td>
+            <td class="boldbase" width="3%">Policy</td>
+            <td class="boldbase" width="25%">Translate to</td>
+            <td class="boldbase" width="20%">Remark</td>
+            <td class="boldbase" style="width: 150px;">Actions</td>
+        </tr>
+            <tr class="odd">
+                <td valign="top" align="center">1</td>
+                <td valign="top"><font color=''></font></td>
+                <td valign="top">TCP/80</td>
+                <td valign="top" align="center">
+                  <img src="images/firewall_ips.png" alt="ALLOW with IPS" title="ALLOW with IPS">
+                </td>
+                <td valign="top">192.168.0.14 : 80</td>
+                <td valign="top" >HTTP Example</td>
+
+                <td class="actions" valign="top" nowrap="nowrap">
+                    <form METHOD="post" action="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class="imagebutton hidden" type='image' name="submit" SRC="images/stock_up-16.png" ALT="Up" />
+                        <input TYPE="hidden" name="ACTION" value="up"/>
+                        <input TYPE="hidden" name="line" value="0"/>
+			<img class="clear " src="images/clear.gif"/>
+                    </form>
+                    <form METHOD="post" action="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton ' type='image' name="submit" SRC="images/stock_down-16.png" ALT="Down"/>
+                        <input TYPE="hidden" name="ACTION" value="down"/>
+                        <input TYPE="hidden" name="line" value="0"/>
+			<img class="clear hidden" src="images/clear.gif"/>
+                    </form>
+                    <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton' type='image' name="submit" SRC="images/off.png" ALT="Disabled (click to enable)"/>
+                        <input TYPE="hidden" name="ACTION" value="enable"/>
+                        <input TYPE="hidden" name="line" value="0"/>
+                    </FORM>
+                    <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton' type='image' name="submit" SRC="images/add.png" ALT="Add access rule"/>
+                        <input TYPE="hidden" name="ACTION" value="add_external"/>
+                        <input TYPE="hidden" name="line" value="0"/>
+                    </FORM>                    
+                    <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton' type='image' name="submit" SRC="images/edit.png" ALT="Edit"/>
+                        <input TYPE="hidden" name="source" value="any"/>
+                        <input TYPE="hidden" name="src_dev" value=""/>
+                        <input TYPE="hidden" name="ACTION" value="edit"/>
+                        <input TYPE="hidden" name="line" value="0"/>
+                    </FORM>
+                    <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton' type='image' name="submit" SRC="images/delete.png" ALT="Delete" />
+                        <input TYPE="hidden" name="ACTION" value="delete"/>
+                        <input TYPE="hidden" name="line" value="0"/>
+                    </FORM>
+                </td>
+            </tr>
+            <tr class="odd">
+              <td>&nbsp;</td>
+              <td valign="top" colspan='3'><font color='#339933'>ALLOW with IPS from</font>:</td>
+              <td align='left' colspan='2'>&lt;ANY&gt;</td>
+              <td class="actions" valign="top" nowrap="nowrap" >
+                  <img class="clear" src="images/clear.gif"/>
+                  <img class="clear" src="images/clear.gif"/>
+                  <img class="clear" src="images/clear.gif"/>
+                  <img class="clear" src="images/clear.gif"/>
+                  <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                      <input class='imagebutton' type='image' name="submit" SRC="images/edit.png" ALT="" />
+                      <input TYPE="hidden" name="source" value="any"/>
+                      <input TYPE="hidden" name="ACTION" value="edit_external"/>
+                      <input TYPE="hidden" name="line" value="0"/>
+                  </FORM>
+                  <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                      <input class='imagebutton' type='image' name="submit" SRC="images/delete.png" ALT="" />
+                      <input TYPE="hidden" name="old_source" value="any"/>
+                      <input TYPE="hidden" name="ACTION" value="delete_external"/>
+                      <input TYPE="hidden" name="line" value="0"/>
+                  </FORM>
+              </td>
+            </tr>
+            <tr class="even">
+                <td valign="top" align="center">2</td>
+                <td valign="top"><font color=''></font></td>
+                <td valign="top">TCP/443</td>
+                <td valign="top" align="center">
+                  <img src="images/firewall_ips.png" alt="ALLOW with IPS" title="ALLOW with IPS">
+                </td>
+                <td valign="top">192.168.0.14 : 443</td>
+                <td valign="top" >HTPS Example</td>
+
+                <td class="actions" valign="top" nowrap="nowrap">
+                    <form METHOD="post" action="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class="imagebutton " type='image' name="submit" SRC="images/stock_up-16.png" ALT="Up" />
+                        <input TYPE="hidden" name="ACTION" value="up"/>
+                        <input TYPE="hidden" name="line" value="1"/>
+			<img class="clear hidden" src="images/clear.gif"/>
+                    </form>
+                    <form METHOD="post" action="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton ' type='image' name="submit" SRC="images/stock_down-16.png" ALT="Down"/>
+                        <input TYPE="hidden" name="ACTION" value="down"/>
+                        <input TYPE="hidden" name="line" value="1"/>
+			<img class="clear hidden" src="images/clear.gif"/>
+                    </form>
+                    <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton' type='image' name="submit" SRC="images/off.png" ALT="Disabled (click to enable)"/>
+                        <input TYPE="hidden" name="ACTION" value="enable"/>
+                        <input TYPE="hidden" name="line" value="1"/>
+                    </FORM>
+                    <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton' type='image' name="submit" SRC="images/add.png" ALT="Add access rule"/>
+                        <input TYPE="hidden" name="ACTION" value="add_external"/>
+                        <input TYPE="hidden" name="line" value="1"/>
+                    </FORM>                    
+                    <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton' type='image' name="submit" SRC="images/edit.png" ALT="Edit"/>
+                        <input TYPE="hidden" name="source" value="any"/>
+                        <input TYPE="hidden" name="src_dev" value=""/>
+                        <input TYPE="hidden" name="ACTION" value="edit"/>
+                        <input TYPE="hidden" name="line" value="1"/>
+                    </FORM>
+                    <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton' type='image' name="submit" SRC="images/delete.png" ALT="Delete" />
+                        <input TYPE="hidden" name="ACTION" value="delete"/>
+                        <input TYPE="hidden" name="line" value="1"/>
+                    </FORM>
+                </td>
+            </tr>
+            <tr class="even">
+              <td>&nbsp;</td>
+              <td valign="top" colspan='3'><font color='#339933'>ALLOW with IPS from</font>:</td>
+              <td align='left' colspan='2'>&lt;ANY&gt;</td>
+              <td class="actions" valign="top" nowrap="nowrap" >
+                  <img class="clear" src="images/clear.gif"/>
+                  <img class="clear" src="images/clear.gif"/>
+                  <img class="clear" src="images/clear.gif"/>
+                  <img class="clear" src="images/clear.gif"/>
+                  <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                      <input class='imagebutton' type='image' name="submit" SRC="images/edit.png" ALT="" />
+                      <input TYPE="hidden" name="source" value="any"/>
+                      <input TYPE="hidden" name="ACTION" value="edit_external"/>
+                      <input TYPE="hidden" name="line" value="1"/>
+                  </FORM>
+                  <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                      <input class='imagebutton' type='image' name="submit" SRC="images/delete.png" ALT="" />
+                      <input TYPE="hidden" name="old_source" value="any"/>
+                      <input TYPE="hidden" name="ACTION" value="delete_external"/>
+                      <input TYPE="hidden" name="line" value="1"/>
+                  </FORM>
+              </td>
+            </tr>
+            <tr class="odd">
+                <td valign="top" align="center">3</td>
+                <td valign="top"><font color=''></font></td>
+                <td valign="top">TCP/22</td>
+                <td valign="top" align="center">
+                  <img src="images/firewall_ips.png" alt="ALLOW with IPS" title="ALLOW with IPS">
+                </td>
+                <td valign="top">192.168.0.14 : 22</td>
+                <td valign="top" >SSH Example</td>
+
+                <td class="actions" valign="top" nowrap="nowrap">
+                    <form METHOD="post" action="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class="imagebutton " type='image' name="submit" SRC="images/stock_up-16.png" ALT="Up" />
+                        <input TYPE="hidden" name="ACTION" value="up"/>
+                        <input TYPE="hidden" name="line" value="2"/>
+			<img class="clear hidden" src="images/clear.gif"/>
+                    </form>
+                    <form METHOD="post" action="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton ' type='image' name="submit" SRC="images/stock_down-16.png" ALT="Down"/>
+                        <input TYPE="hidden" name="ACTION" value="down"/>
+                        <input TYPE="hidden" name="line" value="2"/>
+			<img class="clear hidden" src="images/clear.gif"/>
+                    </form>
+                    <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton' type='image' name="submit" SRC="images/off.png" ALT="Disabled (click to enable)"/>
+                        <input TYPE="hidden" name="ACTION" value="enable"/>
+                        <input TYPE="hidden" name="line" value="2"/>
+                    </FORM>
+                    <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton' type='image' name="submit" SRC="images/add.png" ALT="Add access rule"/>
+                        <input TYPE="hidden" name="ACTION" value="add_external"/>
+                        <input TYPE="hidden" name="line" value="2"/>
+                    </FORM>                    
+                    <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton' type='image' name="submit" SRC="images/edit.png" ALT="Edit"/>
+                        <input TYPE="hidden" name="source" value="any"/>
+                        <input TYPE="hidden" name="src_dev" value=""/>
+                        <input TYPE="hidden" name="ACTION" value="edit"/>
+                        <input TYPE="hidden" name="line" value="2"/>
+                    </FORM>
+                    <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton' type='image' name="submit" SRC="images/delete.png" ALT="Delete" />
+                        <input TYPE="hidden" name="ACTION" value="delete"/>
+                        <input TYPE="hidden" name="line" value="2"/>
+                    </FORM>
+                </td>
+            </tr>
+            <tr class="odd">
+              <td>&nbsp;</td>
+              <td valign="top" colspan='3'><font color='#339933'>ALLOW with IPS from</font>:</td>
+              <td align='left' colspan='2'>&lt;ANY&gt;</td>
+              <td class="actions" valign="top" nowrap="nowrap" >
+                  <img class="clear" src="images/clear.gif"/>
+                  <img class="clear" src="images/clear.gif"/>
+                  <img class="clear" src="images/clear.gif"/>
+                  <img class="clear" src="images/clear.gif"/>
+                  <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                      <input class='imagebutton' type='image' name="submit" SRC="images/edit.png" ALT="" />
+                      <input TYPE="hidden" name="source" value="any"/>
+                      <input TYPE="hidden" name="ACTION" value="edit_external"/>
+                      <input TYPE="hidden" name="line" value="2"/>
+                  </FORM>
+                  <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                      <input class='imagebutton' type='image' name="submit" SRC="images/delete.png" ALT="" />
+                      <input TYPE="hidden" name="old_source" value="any"/>
+                      <input TYPE="hidden" name="ACTION" value="delete_external"/>
+                      <input TYPE="hidden" name="line" value="2"/>
+                  </FORM>
+              </td>
+            </tr>
+            <tr class="even">
+                <td valign="top" align="center">4</td>
+                <td valign="top"><font color=''></font></td>
+                <td valign="top">TCP/25</td>
+                <td valign="top" align="center">
+                  <img src="images/firewall_accept.png" alt="ALLOW" title="ALLOW">
+                </td>
+                <td valign="top">192.168.0.25 : 25</td>
+                <td valign="top" >Source SMTP Example</td>
+
+                <td class="actions" valign="top" nowrap="nowrap">
+                    <form METHOD="post" action="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class="imagebutton " type='image' name="submit" SRC="images/stock_up-16.png" ALT="Up" />
+                        <input TYPE="hidden" name="ACTION" value="up"/>
+                        <input TYPE="hidden" name="line" value="3"/>
+			<img class="clear hidden" src="images/clear.gif"/>
+                    </form>
+                    <form METHOD="post" action="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton ' type='image' name="submit" SRC="images/stock_down-16.png" ALT="Down"/>
+                        <input TYPE="hidden" name="ACTION" value="down"/>
+                        <input TYPE="hidden" name="line" value="3"/>
+			<img class="clear hidden" src="images/clear.gif"/>
+                    </form>
+                    <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton' type='image' name="submit" SRC="images/off.png" ALT="Disabled (click to enable)"/>
+                        <input TYPE="hidden" name="ACTION" value="enable"/>
+                        <input TYPE="hidden" name="line" value="3"/>
+                    </FORM>
+                    <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton' type='image' name="submit" SRC="images/add.png" ALT="Add access rule"/>
+                        <input TYPE="hidden" name="ACTION" value="add_external"/>
+                        <input TYPE="hidden" name="line" value="3"/>
+                    </FORM>                    
+                    <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton' type='image' name="submit" SRC="images/edit.png" ALT="Edit"/>
+                        <input TYPE="hidden" name="source" value="111.112.113.114/32&222.223.224.225/29&113.114.115.116/28&221.222.223.224/29&121.122.123.124/32"/>
+                        <input TYPE="hidden" name="src_dev" value=""/>
+                        <input TYPE="hidden" name="ACTION" value="edit"/>
+                        <input TYPE="hidden" name="line" value="3"/>
+                    </FORM>
+                    <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton' type='image' name="submit" SRC="images/delete.png" ALT="Delete" />
+                        <input TYPE="hidden" name="ACTION" value="delete"/>
+                        <input TYPE="hidden" name="line" value="3"/>
+                    </FORM>
+                </td>
+            </tr>
+            <tr class="even">
+              <td>&nbsp;</td>
+              <td valign="top" colspan='3'><font color='#339933'>ALLOW from</font>:</td>
+              <td align='left' colspan='2'><div>111.112.113.114/32</div>
+<div>222.223.224.225/29</div>
+<div>113.114.115.116/28</div>
+<div>221.222.223.224/29</div>
+<div>121.122.123.124/32</div>
+</td>
+              <td class="actions" valign="top" nowrap="nowrap" >
+                  <img class="clear" src="images/clear.gif"/>
+                  <img class="clear" src="images/clear.gif"/>
+                  <img class="clear" src="images/clear.gif"/>
+                  <img class="clear" src="images/clear.gif"/>
+                  <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                      <input class='imagebutton' type='image' name="submit" SRC="images/edit.png" ALT="" />
+                      <input TYPE="hidden" name="source" value="111.112.113.114/32&222.223.224.225/29&113.114.115.116/28&221.222.223.224/29&121.122.123.124/32"/>
+                      <input TYPE="hidden" name="ACTION" value="edit_external"/>
+                      <input TYPE="hidden" name="line" value="3"/>
+                  </FORM>
+                  <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                      <input class='imagebutton' type='image' name="submit" SRC="images/delete.png" ALT="" />
+                      <input TYPE="hidden" name="old_source" value="111.112.113.114/32&222.223.224.225/29&113.114.115.116/28&221.222.223.224/29&121.122.123.124/32"/>
+                      <input TYPE="hidden" name="ACTION" value="delete_external"/>
+                      <input TYPE="hidden" name="line" value="3"/>
+                  </FORM>
+              </td>
+            </tr>
+            <tr class="odd">
+                <td valign="top" align="center">5</td>
+                <td valign="top"><font color=''></font></td>
+                <td valign="top">TCP+UDP/3389</td>
+                <td valign="top" align="center">
+                  <img src="images/firewall_ips.png" alt="ALLOW with IPS" title="ALLOW with IPS">
+                </td>
+                <td valign="top">192.168.0.38 : 3389</td>
+                <td valign="top" >RDP Example</td>
+
+                <td class="actions" valign="top" nowrap="nowrap">
+                    <form METHOD="post" action="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class="imagebutton " type='image' name="submit" SRC="images/stock_up-16.png" ALT="Up" />
+                        <input TYPE="hidden" name="ACTION" value="up"/>
+                        <input TYPE="hidden" name="line" value="4"/>
+			<img class="clear hidden" src="images/clear.gif"/>
+                    </form>
+                    <form METHOD="post" action="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton ' type='image' name="submit" SRC="images/stock_down-16.png" ALT="Down"/>
+                        <input TYPE="hidden" name="ACTION" value="down"/>
+                        <input TYPE="hidden" name="line" value="4"/>
+			<img class="clear hidden" src="images/clear.gif"/>
+                    </form>
+                    <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton' type='image' name="submit" SRC="images/off.png" ALT="Disabled (click to enable)"/>
+                        <input TYPE="hidden" name="ACTION" value="enable"/>
+                        <input TYPE="hidden" name="line" value="4"/>
+                    </FORM>
+                    <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton' type='image' name="submit" SRC="images/add.png" ALT="Add access rule"/>
+                        <input TYPE="hidden" name="ACTION" value="add_external"/>
+                        <input TYPE="hidden" name="line" value="4"/>
+                    </FORM>                    
+                    <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton' type='image' name="submit" SRC="images/edit.png" ALT="Edit"/>
+                        <input TYPE="hidden" name="source" value="any"/>
+                        <input TYPE="hidden" name="src_dev" value=""/>
+                        <input TYPE="hidden" name="ACTION" value="edit"/>
+                        <input TYPE="hidden" name="line" value="4"/>
+                    </FORM>
+                    <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton' type='image' name="submit" SRC="images/delete.png" ALT="Delete" />
+                        <input TYPE="hidden" name="ACTION" value="delete"/>
+                        <input TYPE="hidden" name="line" value="4"/>
+                    </FORM>
+                </td>
+            </tr>
+            <tr class="odd">
+              <td>&nbsp;</td>
+              <td valign="top" colspan='3'><font color='#339933'>ALLOW with IPS from</font>:</td>
+              <td align='left' colspan='2'>&lt;ANY&gt;</td>
+              <td class="actions" valign="top" nowrap="nowrap" >
+                  <img class="clear" src="images/clear.gif"/>
+                  <img class="clear" src="images/clear.gif"/>
+                  <img class="clear" src="images/clear.gif"/>
+                  <img class="clear" src="images/clear.gif"/>
+                  <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                      <input class='imagebutton' type='image' name="submit" SRC="images/edit.png" ALT="" />
+                      <input TYPE="hidden" name="source" value="any"/>
+                      <input TYPE="hidden" name="ACTION" value="edit_external"/>
+                      <input TYPE="hidden" name="line" value="4"/>
+                  </FORM>
+                  <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                      <input class='imagebutton' type='image' name="submit" SRC="images/delete.png" ALT="" />
+                      <input TYPE="hidden" name="old_source" value="any"/>
+                      <input TYPE="hidden" name="ACTION" value="delete_external"/>
+                      <input TYPE="hidden" name="line" value="4"/>
+                  </FORM>
+              </td>
+            </tr>
+            <tr class="even">
+                <td valign="top" align="center">6</td>
+                <td valign="top"><font color=''></font></td>
+                <td valign="top">&lt;ANY&gt;</td>
+                <td valign="top" align="center">
+                  <img src="images/firewall_ips.png" alt="ALLOW with IPS" title="ALLOW with IPS">
+                </td>
+                <td valign="top">192.168.0.2 </td>
+                <td valign="top" >DNAT Example</td>
+
+                <td class="actions" valign="top" nowrap="nowrap">
+                    <form METHOD="post" action="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class="imagebutton " type='image' name="submit" SRC="images/stock_up-16.png" ALT="Up" />
+                        <input TYPE="hidden" name="ACTION" value="up"/>
+                        <input TYPE="hidden" name="line" value="5"/>
+			<img class="clear hidden" src="images/clear.gif"/>
+                    </form>
+                    <form METHOD="post" action="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton ' type='image' name="submit" SRC="images/stock_down-16.png" ALT="Down"/>
+                        <input TYPE="hidden" name="ACTION" value="down"/>
+                        <input TYPE="hidden" name="line" value="5"/>
+			<img class="clear hidden" src="images/clear.gif"/>
+                    </form>
+                    <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton' type='image' name="submit" SRC="images/off.png" ALT="Disabled (click to enable)"/>
+                        <input TYPE="hidden" name="ACTION" value="enable"/>
+                        <input TYPE="hidden" name="line" value="5"/>
+                    </FORM>
+                    <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton' type='image' name="submit" SRC="images/add.png" ALT="Add access rule"/>
+                        <input TYPE="hidden" name="ACTION" value="add_external"/>
+                        <input TYPE="hidden" name="line" value="5"/>
+                    </FORM>                    
+                    <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton' type='image' name="submit" SRC="images/edit.png" ALT="Edit"/>
+                        <input TYPE="hidden" name="source" value="any"/>
+                        <input TYPE="hidden" name="src_dev" value=""/>
+                        <input TYPE="hidden" name="ACTION" value="edit"/>
+                        <input TYPE="hidden" name="line" value="5"/>
+                    </FORM>
+                    <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton' type='image' name="submit" SRC="images/delete.png" ALT="Delete" />
+                        <input TYPE="hidden" name="ACTION" value="delete"/>
+                        <input TYPE="hidden" name="line" value="5"/>
+                    </FORM>
+                </td>
+            </tr>
+            <tr class="even">
+              <td>&nbsp;</td>
+              <td valign="top" colspan='3'><font color='#339933'>ALLOW with IPS from</font>:</td>
+              <td align='left' colspan='2'>&lt;ANY&gt;</td>
+              <td class="actions" valign="top" nowrap="nowrap" >
+                  <img class="clear" src="images/clear.gif"/>
+                  <img class="clear" src="images/clear.gif"/>
+                  <img class="clear" src="images/clear.gif"/>
+                  <img class="clear" src="images/clear.gif"/>
+                  <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                      <input class='imagebutton' type='image' name="submit" SRC="images/edit.png" ALT="" />
+                      <input TYPE="hidden" name="source" value="any"/>
+                      <input TYPE="hidden" name="ACTION" value="edit_external"/>
+                      <input TYPE="hidden" name="line" value="5"/>
+                  </FORM>
+                  <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                      <input class='imagebutton' type='image' name="submit" SRC="images/delete.png" ALT="" />
+                      <input TYPE="hidden" name="old_source" value="any"/>
+                      <input TYPE="hidden" name="ACTION" value="delete_external"/>
+                      <input TYPE="hidden" name="line" value="5"/>
+                  </FORM>
+              </td>
+            </tr>
+            <tr class="odd">
+                <td valign="top" align="center">7</td>
+                <td valign="top"><font color=''></font></td>
+                <td valign="top">TCP/465</td>
+                <td valign="top" align="center">
+                  <img src="images/firewall_ips.png" alt="ALLOW with IPS" title="ALLOW with IPS">
+                </td>
+                <td valign="top">192.168.0.25 : 465</td>
+                <td valign="top" >Secure SMTP Example</td>
+
+                <td class="actions" valign="top" nowrap="nowrap">
+                    <form METHOD="post" action="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class="imagebutton " type='image' name="submit" SRC="images/stock_up-16.png" ALT="Up" />
+                        <input TYPE="hidden" name="ACTION" value="up"/>
+                        <input TYPE="hidden" name="line" value="6"/>
+			<img class="clear hidden" src="images/clear.gif"/>
+                    </form>
+                    <form METHOD="post" action="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton ' type='image' name="submit" SRC="images/stock_down-16.png" ALT="Down"/>
+                        <input TYPE="hidden" name="ACTION" value="down"/>
+                        <input TYPE="hidden" name="line" value="6"/>
+			<img class="clear hidden" src="images/clear.gif"/>
+                    </form>
+                    <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton' type='image' name="submit" SRC="images/off.png" ALT="Disabled (click to enable)"/>
+                        <input TYPE="hidden" name="ACTION" value="enable"/>
+                        <input TYPE="hidden" name="line" value="6"/>
+                    </FORM>
+                    <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton' type='image' name="submit" SRC="images/add.png" ALT="Add access rule"/>
+                        <input TYPE="hidden" name="ACTION" value="add_external"/>
+                        <input TYPE="hidden" name="line" value="6"/>
+                    </FORM>                    
+                    <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton' type='image' name="submit" SRC="images/edit.png" ALT="Edit"/>
+                        <input TYPE="hidden" name="source" value="any"/>
+                        <input TYPE="hidden" name="src_dev" value=""/>
+                        <input TYPE="hidden" name="ACTION" value="edit"/>
+                        <input TYPE="hidden" name="line" value="6"/>
+                    </FORM>
+                    <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton' type='image' name="submit" SRC="images/delete.png" ALT="Delete" />
+                        <input TYPE="hidden" name="ACTION" value="delete"/>
+                        <input TYPE="hidden" name="line" value="6"/>
+                    </FORM>
+                </td>
+            </tr>
+            <tr class="odd">
+              <td>&nbsp;</td>
+              <td valign="top" colspan='3'><font color='#339933'>ALLOW with IPS from</font>:</td>
+              <td align='left' colspan='2'>&lt;ANY&gt;</td>
+              <td class="actions" valign="top" nowrap="nowrap" >
+                  <img class="clear" src="images/clear.gif"/>
+                  <img class="clear" src="images/clear.gif"/>
+                  <img class="clear" src="images/clear.gif"/>
+                  <img class="clear" src="images/clear.gif"/>
+                  <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                      <input class='imagebutton' type='image' name="submit" SRC="images/edit.png" ALT="" />
+                      <input TYPE="hidden" name="source" value="any"/>
+                      <input TYPE="hidden" name="ACTION" value="edit_external"/>
+                      <input TYPE="hidden" name="line" value="6"/>
+                  </FORM>
+                  <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                      <input class='imagebutton' type='image' name="submit" SRC="images/delete.png" ALT="" />
+                      <input TYPE="hidden" name="old_source" value="any"/>
+                      <input TYPE="hidden" name="ACTION" value="delete_external"/>
+                      <input TYPE="hidden" name="line" value="6"/>
+                  </FORM>
+              </td>
+            </tr>
+            <tr class="even">
+                <td valign="top" align="center">8</td>
+                <td valign="top"><font color=''></font></td>
+                <td valign="top"><div>TCP+UDP/143</div>
+<div>TCP+UDP/993</div>
+</td>
+                <td valign="top" align="center">
+                  <img src="images/firewall_ips.png" alt="ALLOW with IPS" title="ALLOW with IPS">
+                </td>
+                <td valign="top">192.168.0.25 : 143</td>
+                <td valign="top" >Mail iMAP Example</td>
+
+                <td class="actions" valign="top" nowrap="nowrap">
+                    <form METHOD="post" action="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class="imagebutton " type='image' name="submit" SRC="images/stock_up-16.png" ALT="Up" />
+                        <input TYPE="hidden" name="ACTION" value="up"/>
+                        <input TYPE="hidden" name="line" value="7"/>
+			<img class="clear hidden" src="images/clear.gif"/>
+                    </form>
+                    <form METHOD="post" action="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton hidden' type='image' name="submit" SRC="images/stock_down-16.png" ALT="Down"/>
+                        <input TYPE="hidden" name="ACTION" value="down"/>
+                        <input TYPE="hidden" name="line" value="7"/>
+			<img class="clear " src="images/clear.gif"/>
+                    </form>
+                    <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton' type='image' name="submit" SRC="images/off.png" ALT="Disabled (click to enable)"/>
+                        <input TYPE="hidden" name="ACTION" value="enable"/>
+                        <input TYPE="hidden" name="line" value="7"/>
+                    </FORM>
+                    <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton' type='image' name="submit" SRC="images/add.png" ALT="Add access rule"/>
+                        <input TYPE="hidden" name="ACTION" value="add_external"/>
+                        <input TYPE="hidden" name="line" value="7"/>
+                    </FORM>                    
+                    <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton' type='image' name="submit" SRC="images/edit.png" ALT="Edit"/>
+                        <input TYPE="hidden" name="source" value="any"/>
+                        <input TYPE="hidden" name="src_dev" value=""/>
+                        <input TYPE="hidden" name="ACTION" value="edit"/>
+                        <input TYPE="hidden" name="line" value="7"/>
+                    </FORM>
+                    <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                        <input class='imagebutton' type='image' name="submit" SRC="images/delete.png" ALT="Delete" />
+                        <input TYPE="hidden" name="ACTION" value="delete"/>
+                        <input TYPE="hidden" name="line" value="7"/>
+                    </FORM>
+                </td>
+            </tr>
+            <tr class="even">
+              <td>&nbsp;</td>
+              <td valign="top" colspan='3'><font color='#339933'>ALLOW with IPS from</font>:</td>
+              <td align='left' colspan='2'>&lt;ANY&gt;</td>
+              <td class="actions" valign="top" nowrap="nowrap" >
+                  <img class="clear" src="images/clear.gif"/>
+                  <img class="clear" src="images/clear.gif"/>
+                  <img class="clear" src="images/clear.gif"/>
+                  <img class="clear" src="images/clear.gif"/>
+                  <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                      <input class='imagebutton' type='image' name="submit" SRC="images/edit.png" ALT="" />
+                      <input TYPE="hidden" name="source" value="any"/>
+                      <input TYPE="hidden" name="ACTION" value="edit_external"/>
+                      <input TYPE="hidden" name="line" value="7"/>
+                  </FORM>
+                  <FORM METHOD="post" ACTION="/cgi-bin/dnat.cgi" style="float:left">
+                      <input class='imagebutton' type='image' name="submit" SRC="images/delete.png" ALT="" />
+                      <input TYPE="hidden" name="old_source" value="any"/>
+                      <input TYPE="hidden" name="ACTION" value="delete_external"/>
+                      <input TYPE="hidden" name="line" value="7"/>
+                  </FORM>
+              </td>
+            </tr>
+    </table>
+    <table>
+        <tr>
+            <td CLASS="boldbase">Legend:</td>
+            <td>&nbsp;<IMG SRC="images/on.png" ALT="Enabled (click to disable)" /></td>
+            <td CLASS="base">Enabled (click to disable)</td>
+            <td>&nbsp;&nbsp;<IMG SRC='images/off.png' ALT="Disabled (click to enable)" /></td>
+            <td CLASS="base">Disabled (click to enable)</td>
+            <td>&nbsp;&nbsp;<IMG SRC="images/edit.png" alt="Edit" /></td>
+            <td CLASS="base">Edit</td>
+            <td>&nbsp;&nbsp;<IMG SRC="images/delete.png" ALT="Remove" /></td>
+            <td CLASS="base">Remove</td>
+        </tr>
+    </table>
+<br />
+<b>Show system rules</b>&nbsp;&nbsp;<b><input onclick="swapVisibility('systemrules')" value=" &gt;&gt; " type="button"></b>
+            </td>
+        </tr>
+    </table>
+</div>
+<br />
+<div id="systemrules" style="display: none">
+<div>
+    <h3>Rules automatically configured by the system</h3>
+    <table class="list">
+        <tr>
+            <td align="left">
+    <table class="ruleslist" cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+            <td class="boldbase" width="2%">#</td>
+            <td class="boldbase" width="15%">Incoming IP</td>
+            <td class="boldbase" width="12%">Service</td>
+            <td class="boldbase" width="3%">Policy</td>
+            <td class="boldbase" width="25%">Translate to</td>
+            <td class="boldbase" width="20%">Remark</td>
+            <td class="boldbase" style="width: 150px;">Actions</td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td CLASS="boldbase">Legend:</td>
+            <td>&nbsp;<IMG SRC="images/on.png" ALT="Enabled (click to disable)" /></td>
+            <td CLASS="base">Enabled (click to disable)</td>
+            <td>&nbsp;&nbsp;<IMG SRC='images/off.png' ALT="Disabled (click to enable)" /></td>
+            <td CLASS="base">Disabled (click to enable)</td>
+            <td>&nbsp;&nbsp;<IMG SRC="images/edit.png" alt="Edit" /></td>
+            <td CLASS="base">Edit</td>
+            <td>&nbsp;&nbsp;<IMG SRC="images/delete.png" ALT="Remove" /></td>
+            <td CLASS="base">Remove</td>
+        </tr>
+    </table>
+            </td>
+        </tr>
+    </table>
+</div>
+<br />
+</div>			  <!-- END PAGE DATA -->
+              </div>
+              <div id="footer">
+<div style="font-size: 9px"><b>Status:</b> <span class='ipcop_StatusBig'>Connected: main (<span class='ipcop_StatusBigRed'>4d 22h 14m 3s</span>) </span> <b>Uptime:</b> 14:41:46 up 3 days, 17:12,  1 user,  load average: 0.33, 0.12, 0.03
+</div><p>1.0.0 (c) <a href="http://www.razwall.com">RazWall</a><span style="font-size: 7px"></span></p>              </div>
+            </div>
+            <div class="cb"></div>
+          </div><!-- page_content -->
+        </div><!-- content -->
+	<script>
+	var RazIP = '192.168.55.1';
+	RazConnectWS();
+	</script>
+  </body>
+</html>

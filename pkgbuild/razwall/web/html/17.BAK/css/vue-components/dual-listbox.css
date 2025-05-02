@@ -1,0 +1,169 @@
+/* ------------------------------------------------------------------------------
+* 
+*  # CSS based on:
+*
+*  Bootstrap Duallistbox
+*  Version: 1.2
+*
+* ---------------------------------------------------------------------------- */
+.bootstrap-duallistbox-container .box1 {
+  padding-right: 5px;
+  padding-left: 0px;
+}
+.bootstrap-duallistbox-container .box2 {
+  padding-right: 0px;
+  padding-left: 5px;
+}
+.bootstrap-duallistbox-container .box1,
+.bootstrap-duallistbox-container .box2 {
+  box-sizing: border-box !important;
+  margin-bottom: 10px;
+}
+.bootstrap-duallistbox-container ul.form-control {
+  box-sizing: border-box !important;
+  padding: 7px;
+}
+.bootstrap-duallistbox-container ul.form-control li:hover {
+  background-color: #e6e6e6; 
+}
+.bootstrap-duallistbox-container.moveonselect .move,
+.bootstrap-duallistbox-container.moveonselect .remove {
+  display: none;
+}
+.bootstrap-duallistbox-container.moveonselect .moveall,
+.bootstrap-duallistbox-container.moveonselect .removeall {
+  box-sizing: border-box !important;
+  width: 100%;
+  border-top-right-radius: 3px !important;
+  border-top-left-radius: 3px !important;
+}
+.bootstrap-duallistbox-container.moveonselect .btn-group .btn + .btn {
+  box-sizing: border-box !important;
+  border-left-width: 1px;
+}
+.bootstrap-duallistbox-container .buttons {
+  box-sizing: border-box !important;
+  width: 100%;
+  margin-bottom: -1px;
+}
+.bootstrap-duallistbox-container .clear1,
+.bootstrap-duallistbox-container .clear2 {
+  display: none;
+  margin-top: 20px;
+}
+.bootstrap-duallistbox-container .clear1,
+.bootstrap-duallistbox-container .clear2,
+.bootstrap-duallistbox-container .clear1:hover,
+.bootstrap-duallistbox-container .clear2:hover,
+.bootstrap-duallistbox-container .clear1:focus,
+.bootstrap-duallistbox-container .clear2:focus {
+  background-color: transparent;
+  border: 0;
+  color: #1E88E5;
+  padding: 0;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+.bootstrap-duallistbox-container .box1.filtered .clear1,
+.bootstrap-duallistbox-container .box2.filtered .clear2 {
+  display: inline-block;
+}
+.bootstrap-duallistbox-container .move,
+.bootstrap-duallistbox-container .remove,
+.bootstrap-duallistbox-container .moveall,
+.bootstrap-duallistbox-container .removeall {
+  box-sizing: border-box !important;
+  width: 50%;
+}
+.bootstrap-duallistbox-container .btn-group .btn {
+  box-sizing: border-box !important;
+  margin-bottom: -3px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.bootstrap-duallistbox-container .btn-group .btn + .btn {
+  border-left-width: 0;
+}
+.bootstrap-duallistbox-container .btn-group .btn > i {
+  float: none;
+  text-align: center;
+}
+.bootstrap-duallistbox-container .btn-group .btn > i + i {
+  margin-left: -14px;
+}
+.bootstrap-duallistbox-container .filter {
+  width: 100% !important;
+  margin-bottom: 10px;
+  position: relative;
+}
+.bootstrap-duallistbox-container .filter.placeholder {
+  color: #999;
+}
+.bootstrap-duallistbox-container .groupselect {
+  height: 36px;
+  margin-bottom: 10px;
+}
+.bootstrap-duallistbox-container .info-container .filter-info {
+  display: inline-block;
+  margin-top: 10px;
+}
+.bootstrap-duallistbox-container .info-container .filter-info .label {
+  margin-right: 7px;
+  font-size: 100%;
+}
+.bootstrap-duallistbox-container ul {
+  box-sizing: border-box !important;
+  padding: 0;
+  margin: 1px 0 0 0;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  float: left;
+  list-style: none;
+  width: 100%;
+}
+.bootstrap-duallistbox-container ul li {
+  box-sizing: border-box !important;
+  margin-top: 1px;
+  padding: 1px 3px;
+  border-radius: 3px;
+  position: relative;
+  width: inherit;
+  cursor: default;
+  list-style: none;
+  line-height: 27px;
+}
+.bootstrap-duallistbox-container ul li.grouped {
+  line-height: 36px;
+}
+.sidebar .bootstrap-duallistbox-container {
+  text-align: center;
+}
+.sidebar .bootstrap-duallistbox-container .box1,
+.sidebar .bootstrap-duallistbox-container .box2 {
+  float: none;
+  width: 100%;
+}
+.sidebar .bootstrap-duallistbox-container .box1 {
+  padding-bottom: 5px;
+}
+.sidebar .bootstrap-duallistbox-container .box1:after {
+  content: '\e9c9';
+  font-size: 16px;
+  font-family: 'icomoon';
+  display: block;
+  text-align: center;
+  line-height: 1;
+  margin: 10px 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  opacity: 0.5;
+  filter: alpha(opacity=50);
+}
+@media (min-width: 1025px) {
+  .bootstrap-duallistbox-container .box1 {
+    margin-bottom: 0;
+  }
+  .sidebar .bootstrap-duallistbox-container .box1 {
+    margin-bottom: 0;
+  }
+}

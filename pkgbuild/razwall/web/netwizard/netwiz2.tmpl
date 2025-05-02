@@ -1,94 +1,67 @@
-<TMPL_VAR NAME=NW_VAL_title>
-<br>
-<TMPL_IF EXPR="NW_VAL_error_message ne ''">
-  <font color="red"><TMPL_VAR NAME=NW_VAL_error_message></font>
-</TMPL_IF>
-<br>
+<TMPL_VAR NAME="NW_VAL_title">
 
-<!--table border="0">
-  <tr>
-    <td><b><font color="orange"><TMPL_VAR NAME=nw_dmz></font></b>:</td>
-    <td>
-      <font color="#666666"><TMPL_VAR NAME=nw_dmz_descr></font>
-    </td>
-  </tr>
-  <tr>
-    <td><b><font color="blue"><TMPL_VAR NAME=nw_lan2></font></b>:</td>
-    <td>
-      <font color="#666666"><TMPL_VAR NAME=nw_lan2_descr></font>
-    </td>
-  </tr>
-</table-->
+<h2>Step <TMPL_VAR NAME="NW_VAL_step">/8: Create network zones</h2>
 
-<table border="0">
-  <tr>
-    <td><b><font color="green"><TMPL_VAR NAME=nw_lan></font></b>:</td>
-    <td>
-      <font color="#666666"><TMPL_VAR NAME=nw_lan_descr></font>
-    </td>
-  </tr>
-  <tr>
-    <td><b><font color="orange"><TMPL_VAR NAME=nw_dmz></font></b>:</td>
-    <td>
-      <font color="#666666"><TMPL_VAR NAME=nw_dmz_descr></font>
-    </td>
-  </tr>
-  <tr>
-    <td><b><font color="blue"><TMPL_VAR NAME=nw_lan2></font></b>:</td>
-    <td>
-      <font color="#666666"><TMPL_VAR NAME=nw_lan2_descr></font>
-    </td>
-  </tr>
-  <tr>
-    <td><b><font color="purple"><TMPL_VAR NAME=nw_other></font></b>:</td>
-    <td>
-      <font color="#666666"><TMPL_VAR NAME=nw_other_descr></font>
-    </td>
-  </tr>
-</table>
+<section class="current-zones">
+  <h3>Current Zones</h3>
+  <div class="zones-header">
+    <span class="zone-col header">Zone</span>
+    <span class="desc-col header">Description</span>
+    <span class="type-col header">Type</span>
+    <span class="iface-col header">Interface</span>
+	<span class="iface-col header">Delete</span>
+  </div>
+  <TMPL_LOOP NAME="zones">
+    <div class="zones-row">
+      <span class="zone-col">
+        <span id="zoneLabel_<TMPL_VAR NAME='name' ESCAPE='HTML'>"
+              class="zone-name"
+              style="color:<TMPL_VAR NAME='color' ESCAPE='HTML'>">
+          <b><TMPL_VAR NAME='name' ESCAPE='HTML'></b>
+        </span>
+      </span>
+      <span class="desc-col"><TMPL_VAR NAME='desc' ESCAPE='HTML'></span>
+      <span class="type-col"><TMPL_VAR NAME='type' ESCAPE='HTML'></span>
+      <span class="iface-col"><TMPL_VAR NAME='iface' ESCAPE='HTML'></span>
+	  <span class="iface-col"><img src="/images/close_16.png" onClick="alert('<TMPL_VAR NAME='name' ESCAPE='HTML'>');"></span>
+    </div>
+  </TMPL_LOOP>
 
-<form action="<TMPL_VAR NAME=NW_VAL_self>" method="post">
-  <input type="hidden" name="session_id" value="<TMPL_VAR NAME=NW_VAL_session_id>">
-  <input type="hidden" name="step" value="<TMPL_VAR NAME=NW_VAL_step>">
-  <input type="hidden" name="ifaceCount" value="<TMPL_VAR NAME=NW_VAL_if_count>">
   <hr>
-  <table border="0">
+  <div class="ifaces-summary">Physical Interfaces: <TMPL_VAR NAME='NW_VAL_if_count'></div>
+  <hr>
+</section>
 
-<script language="javascript">
-// autoInc = Auto increment counter for dynamic zone creation inputs
-var ethCount = <TMPL_VAR NAME=NW_VAL_if_count>;	// Network interface count
-var avaCount = 0;	// Interface availability counter (starting at zero)
-var minUsed = 1;	// Minimum used interfaces to begin with starts at 1 (LAN)
+<form action="/cgi-bin/razwall-addZone.pl" method="post" id="zonesForm">
+  <section class="new-zones">
+    <h3>New Zone:</h3>
+    <div id="newZonesContainer">
+      <div class="zone-input-row" data-index="0">
+        <input type="text" name="ZSTRING" placeholder="zone name" required>
+        <input type="text" name="ZDESC" placeholder="zone description">
+        <select name="ZTYPE">
+          <option>LAN</option>
+          <option>WAN</option>
+          <option>VPN</option>
+          <option value="">unassigned</option>
+        </select>
+        <input type="color" name="ZCOLOR" id="zoneColor" class="zone-color-picker" value="#ffffff">
+      </div>
+    </div>
+    <button type="button" id="addZoneBtn" class="btn add-zone">+ Add Zone</button>
+  </section>
+  </form>
 
-if(ethCount > minUsed) {	// if the Interface count is greater than minimum setup requirement
-	avaCount = ethCount-minUsed;	//	Calculate the avaialable interfaces (interfaces minus minimum allocated)
-}
-
-document.writeln('<tr><td>Available Interface for zone assignment: </td><td>' + avaCount + '</td></tr></table><hr>');	// print availalbe interfaces
-
-document.writeln('<table border="0" width="400px">');
-if(avaCount > 0) { // if the avaialble is greater than zero, print inputs to add more zones!
-	for(var autoInc=0; autoInc < avaCount; autoInc++) {
-		document.writeln('<tr><td><input type="checkbox" name="nw_zone_' + autoInc + '_enable"></td>');	// print new zone checkbox	
-		document.writeln('<td>Add zone ' + autoInc + ': </td><td><input type="text" name="nw_zone_' + autoInc + '_name" placeholder="zone ' + autoInc + ' name"></td>');	// print new zone input	
-		document.writeln('<td>Zone ' + autoInc + ' type: </td><td><select name="nw_zone_' + autoInc + '_type">');
-		document.writeln('<option><TMPL_VAR NAME=nw_lan></option>');
-		document.writeln('<option><TMPL_VAR NAME=nw_dmz></option>');
-		document.writeln('<option><TMPL_VAR NAME=nw_lan2></option>');
-		document.writeln('<option><TMPL_VAR NAME=nw_other></option>');
-		document.writeln('</select></td></tr>');	// print new zone input	
-	}
-}
-</script>
-   
-  </table>
-  <br>
-  <br>
-
-  <input type="submit" name="prev" value="<TMPL_VAR NAME=nw_prev>">
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <input type="submit" name="cancel" value="<TMPL_VAR NAME=nw_cancel>">
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <input type="submit" name="next" value="<TMPL_VAR NAME=nw_next>">
-
+<form action="" method="post">
+  <div class="form-actions">
+	<input type="hidden" name="session_id" value="<TMPL_VAR NAME=NW_VAL_session_id>">
+	<input type="hidden" name="step" value="<TMPL_VAR NAME=NW_VAL_step>">
+    <button type="submit" name="prev" class="btn"><< Prev</button>
+    <button type="submit" name="cancel" class="btn">Cancel</button>
+    <button type="submit" name="next" class="btn">Next >></button>
+  </div>
 </form>
+
+
+
+

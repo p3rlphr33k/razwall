@@ -1,0 +1,36 @@
+.editoradd {
+    line-height: 16px;
+    background: url(/images/editoradd.png) no-repeat;
+    margin-bottom: 10px;
+    padding-left: 20px;
+}
+
+.editorhide {
+    margin-bottom: 10px;
+}
+
+.k-grid td {
+    border-width: 0;
+}
+
+.k-grid .k-detail-cell {
+    padding: 0;
+}
+
+.k-grid .k-detail-cell .k-grid {
+    margin-left: -1px;
+    border-right-width: 0;
+    border-top-width: 0;
+}
+
+.k-grid .k-detail-cell .k-grid td {
+    border-width: 0;
+}
+
+.k-grid .k-detail-row .k-hierarchy-cell {
+    border-bottom-width: 1px;
+}
+
+.k-grid a.gridaction {
+    text-decoration: none;
+}

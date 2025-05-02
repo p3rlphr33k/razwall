@@ -1,0 +1,11 @@
+.draganddropsort-column-0 {
+    width: 36%;
+}
+
+.draganddropsort-column-1 {
+    width: 64%;
+}
+
+.draganddropsort-column-1 .draganddropsort-item {
+    margin-right: 0;
+}

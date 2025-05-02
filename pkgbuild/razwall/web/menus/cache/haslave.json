@@ -1,1 +1,1 @@
-{"00.haslave":{"subMenu":{"04.console":{"enabled":1,"helpuri":"system.html#web-console","uri":"/manage/webshell","caption":"Web Console","title":"Web Console"},"05.adjoin":{"caption":"AD join","title":"AD join","enabled":1,"helpuri":"proxy.html#ad-join","uri":"/manage/proxy/adjoin"}}}}
+{"00.haslave":{"subMenu":{"04.console":{"caption":"Web Console","uri":"/manage/webshell","enabled":1,"title":"Web Console","helpuri":"system.html#web-console"},"05.adjoin":{"enabled":1,"title":"AD join","helpuri":"proxy.html#ad-join","uri":"/manage/proxy/adjoin","caption":"AD join"}}}}

@@ -1,0 +1,76 @@
+.notification-fancy,
+.important-fancy,
+.error-fancy {
+    width: 504px;
+    display: block;
+}
+
+.notification-fancy.hidden,
+.important-fancy.hidden,
+.error-fancy.hidden {
+    display: none;
+}
+
+.notification-fancy .content,
+.important-fancy .content,
+.error-fancy .content{
+    text-align: left;
+    width: 468px;
+    padding-top: 19px;
+    padding-bottom: 14px;
+    padding-left: 18px;
+    padding-right: 18px;
+}
+.notification-fancy .content {
+    background: url(/images/bubble_yellow_content.png);
+}
+.important-fancy .content {
+    background: url(/images/bubble_green_content.png);
+}
+.error-fancy .content {
+    background: url(/images/bubble_red_content.png);
+}
+
+.notification-fancy .content .text,
+.important-fancy .content .text,
+.error-fancy .content .text {
+    padding-left: 30px;
+    line-height: 15px;
+}
+
+.important-fancy .content input {
+    margin-top: 2px;
+    margin-left: 30px;
+}
+.important-fancy .content .wait {
+    background: url(/images/wait-small.gif);
+    background-repeat: no-repeat;
+    background-position: center center;
+    margin-left: 30px;
+    padding: 2px;
+    line-height: 16px;
+    height: 16px;
+    width: 16px;
+}
+
+.notification-fancy .content .sign,
+.important-fancy .content .sign,
+.error-fancy .content .sign {
+}
+
+.notification-fancy .bottom,
+.important-fancy .bottom,
+.error-fancy .bottom {
+    height: 20px;
+    width: 504px;
+    margin-bottom: 5px
+}
+.notification-fancy .bottom {
+    background: url(/images/bubble_yellow_bottom.png);
+}
+.important-fancy .bottom {
+    background: url(/images/bubble_green_bottom.png);
+}
+.error-fancy .bottom {
+    background: url(/images/bubble_red_bottom.png);
+}

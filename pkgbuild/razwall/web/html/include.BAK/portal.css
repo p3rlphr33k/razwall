@@ -1,0 +1,636 @@
+html, body {
+    height: 100%;
+    
+    margin: 0px;
+    padding: 0px;
+}
+
+/* remove lock-icon.png icons from Social Enabler. */
+.onp-sl-strong:before, .onp-sl-strong:after {
+    display: none !important;
+}
+
+body {
+    background-color: grey;
+    text-align: center;
+    
+    font-family: verdana, arial, sans-serif;
+    font-size: 11px;
+    
+    color: grey;
+}
+body.overflow-x {
+    overflow-x: visible;
+}
+body.overflow-y {
+    overflow-y: visible;
+}
+body.no-overflow-x {
+    overflow-x: hidden;
+}
+body.no-overflow-y {
+    overflow-y: hidden;
+}
+
+a, a:hover, a:visited {
+    text-decoration: none;
+}
+
+p.title {
+    text-align: center;
+
+    font-weight: bold;
+    font-size: 16px;
+    
+    margin: 0 0 18px 0;
+    padding: 0;
+}
+
+.box-container p {
+    margin: 5px 0 0 0;
+    padding: 0;
+}
+.box-container p.title {
+    text-align: center;
+    
+    margin: 0 6px;
+    padding: 0;
+}
+
+label {
+    display: block;
+    font-size: 12px;
+    font-weight: normal;
+    
+    text-align: center;
+    
+    margin: 2px 0 0 0;
+    padding: 0 0 4px 0;
+}
+
+.overlay {
+    background-image: url(/images/background-hotspot.png);
+    background-repeat: repeat;
+    
+    position: absolute;
+    
+    width: 100%;
+    height: 100%;
+    
+    top: 0;
+    left: 0;
+    
+    margin: 0;
+    padding: 0;
+}
+
+.background-portal {
+    width: 100%;
+    height: 100%;
+    
+    top: 0;
+    left: 0;
+    
+    margin: 0;
+    padding: 0;
+}
+
+.iframe {
+    height: 100%;
+    width: 100%;
+    
+    margin: 0;
+    padding: 0;
+}
+
+iframe {
+    border: none;
+    
+    height: 100%;
+    width: 100%;
+}
+
+.show {
+    background-color: #9CC861;
+    color: white;
+    
+    top: 0;
+    left: 0;
+    
+    height: 30px;
+    width: 100%;
+    
+    cursor: pointer;
+    
+    font-size: 14px;
+    
+    margin: 0;
+    margin: 0;
+}
+
+div.show:hover {
+    background-color: #DFEDC6;
+    color: black;
+}
+
+.show-left {
+    background-image: url(/images/maximize.png);
+    background-repeat: no-repeat;
+    background-position: center right;
+    
+    float: left;
+    
+    width: 42px;
+    height: 100%;
+}
+.show-text {
+    float: left;
+    
+    width: auto;
+    height: 100%;
+    line-height: 28px;
+    
+    margin: 0px;
+    padding: 0 10px 0 5px;
+}
+.show-right {
+    float: right;
+    
+    height: 100%;
+    
+    padding: 2px 5px 0px 10px;
+}
+
+.spinner {
+    background-image: url(/images/wait.gif);
+    background-repeat: no-repeat;
+    background-position: center center;
+    
+    height: 200px;
+    
+    margin: 0;
+    padding: 0;
+}
+
+.or {
+    float: right;
+    
+    height: inherit;
+    line-height: 18px;
+    
+    margin: 4px 0 4px 0;
+    padding: 0 10px;
+}
+.box-container .or {
+    float: none;
+    width: 190px;
+    text-align: center;
+    padding: 0;
+}
+
+.button {
+    background-color: black;
+    
+    cursor: pointer;
+    
+    height: auto;
+    line-height: 18px;
+    
+    font-size: 11px;
+    font-weight: normal;
+    color: white;
+    
+    text-align: center;
+    float: right;
+    
+    border-radius: 18px;
+    -webkit-border-radius: 18px;
+    -moz-border-radius: 18px;
+    -opera-border-radius: 18px;
+    -khtml-border-radius: 18px;
+    
+    margin: 4px 0 0 0;
+    padding: 0 6px;
+}
+.button.right {
+    margin-left: 4px;
+    
+    float: right;
+}
+.button.left {
+    margin-right: 4px;
+    
+    float: left;
+}
+
+.button:hover {
+    background-color: grey;
+}
+
+.box-container .button {
+    width: 182px;
+    
+    float: none;
+}
+
+.link {
+    cursor: pointer;
+    
+    height: inherit;
+    line-height: 18px;
+    
+    font-size: 11px;
+    font-weight: normal;
+    color: #77b005;
+    
+    text-align: center;
+    float: right;
+    
+    margin: 4px 0 0 0;
+    padding: 0;
+    
+    text-decoration: underline;
+}
+.link:hover {
+    color: grey;
+    text-decoration: underline;
+}
+.link:visited {
+    color: #77b005;
+    text-decoration: underline;
+}
+
+.home-link {
+    
+    margin: 4px 10px 0 0px;
+    padding: 8px 0 0 0;
+}
+
+.form-element {
+    width: 221px;
+    
+    margin: 0;
+    padding: 0 0 6px 0;
+    
+    float: left;
+}
+.form-element-first {
+    padding-right: 26px;
+}
+.form-element-full {
+    width: 470px;
+}
+.form-element input.form-element-checkbox {
+    width: auto;
+    
+    margin: 7px 7px 7px 0;
+    padding: 0 0 6px 0;
+    
+    float: left;
+}
+.form-element input, .form-element select {
+    width: 100%;
+    font-size: 12px;
+    
+    margin: 0;
+    padding: 0;
+}
+.form-element input {
+    height: 18px;
+}
+.form-element select {
+    height: 22px;
+}
+.form-element .error {
+    border: red;
+}
+
+.box-container .form-element input.form-element-checkbox {
+    width: auto;
+    
+    margin: 6px 6px 0 0;
+    padding: 0 0 6px 0;
+    
+    float: left;
+}
+
+.box-container .form-element {
+    width: 190px;
+    
+    float: none;
+}
+
+.box-container a {
+    color: black;
+    cursor: pointer;
+    
+    height: inherit;
+    line-height: 18px;
+    
+    font-size: 11px;
+    font-weight: normal;
+    
+    text-decoration: underline;
+}
+
+.box-container a:visited {
+    color: black;
+    text-decoration: underline;
+}
+
+.box-container a:hover {
+    color: grey;
+    text-decoration: underline;
+}
+
+.box-container a.termswithcheckbox {
+    width: 164px;
+    text-align: left;
+}
+
+.thumbs {
+    height: 134px;
+    
+    margin: 0;
+    padding: 0;
+}
+.thumb {
+    width: 125px;
+    height: 134px;
+    
+    margin: -2px 0 0 0;
+    padding: 0;
+    
+    float: left;
+}
+.thumb1.active {
+    background-image: url(/images/step_1_active.png);
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.thumb2.active {
+    background-image: url(/images/step_2_active.png);
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.thumb3.active {
+    background-image: url(/images/step_3_active.png);
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.thumb4.active {
+    background-image: url(/images/step_4_active.png);
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.thumb1.inactive {
+    background-image: url(/images/step_1.png);
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.thumb2.inactive {
+    background-image: url(/images/step_2.png);
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.thumb3.inactive {
+    background-image: url(/images/step_3.png);
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.thumb4.inactive {
+    background-image: url(/images/step_4.png);
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.focusField {
+    background: #DFEDC6;
+    border: solid 2px #75AC3C;
+}
+.idleField {
+    background: #FFFFFF;
+    border: solid 2px #DFDFDF;
+}
+.errorField {
+    border: solid 2px red;
+}
+.hidden {
+    display: none;
+}
+.left {
+    float: left;
+}
+.right {
+    float: right;
+}
+br.cb {
+    line-height: 0;
+    margin: 0;
+    padding: 0;
+    display: block;
+}
+.cb {
+    clear: both;
+}
+
+.portal {
+    margin: 0;
+    padding: 0;
+    
+    margin-left: -367px;
+    
+    position: absolute;
+    top: 0;
+    left: 50%;
+}
+
+.main-header {
+    background-image: url(/images/main-header.png);
+    background-repeat: no-repeat;
+    background-position: left top;
+    
+    width: 500px;
+    height: 50px;
+    
+    margin: 0;
+    padding: 0;
+}
+.main-content {
+    background-image: url(/images/main-content.png);
+    background-repeat: repeat-y;
+    background-position: left center;
+    
+    width: 500px;
+    
+    margin: 0;
+    padding: 0;
+}
+.main-footer{
+    background-image: url(/images/main-footer.png);
+    background-repeat: no-repeat;
+    background-position: left bottom;
+    
+    width: 500px;
+    height: 10px;
+    
+    margin: 0;
+    padding: 0;
+}
+
+.main {
+    margin: 0;
+    padding: 0;
+    
+    position: absolute;
+    
+    overflow: hidden;
+}
+
+.main-container {    
+    width: 10000em;
+    
+    margin: 0;
+    padding: 0;
+    
+    position: absolute;
+}
+
+.infocontainer {
+    padding: 15px;
+    padding-top: 5px;
+    
+    text-align: center;
+}
+
+.container {
+    margin: 10px 0px 5px 0px;
+    padding: 5px 15px 0px 15px;
+    
+    text-align: center;
+    
+    width: 470px;
+    
+    float: left;
+}
+
+.container.welcome {
+    text-align: left;
+}
+
+.container .header {
+    width: 470px;
+    
+    margin: 0 0 10px 0;
+    padding: 5px 0 10px 0;
+}
+.logo {
+    margin: 5px 10px 0 0;
+    padding: 4px 0 0 15px;
+    
+    float: left;
+    
+    height: 25px;
+}
+
+.language {
+    float: right;
+    
+    margin: 4px 10px 0 0;
+    padding: 8px 0 0 10px;
+}
+
+.language select {
+    width: 200px;
+    height: 20px;
+    text-align: center;
+}
+.hide {
+    cursor: pointer;
+    
+    background-image: url(/images/minimize.png);
+    background-repeat: no-repeat;
+    background-position: left bottom;
+    
+    margin: 4px 10px 0 0px;
+    padding: 8px 0 0 0;
+    
+    width: 20px;
+    height: 20px;
+    
+    float: right;
+}
+.hide:hover {
+    background-image: url(/images/minimize-hover.png);
+}
+
+.container strong {
+    color: black;
+}
+
+.box {
+    margin-top: 47px;
+    margin-left: 500px;
+    padding: 0;
+}
+.box-header {
+    background-image: url(/images/box-header.png);
+    background-repeat: no-repeat;
+    background-position: left center;
+    
+    height: 15px;
+    
+    margin: 0;
+    padding: 0;
+}
+
+.box-container {
+    background-image: url(/images/box-content.png);
+    background-repeat: repeat-y;
+    background-position: left center;
+    
+    text-align: left;
+    
+    margin: 0;
+    padding: 0;
+    
+    color: black;
+}
+
+.box-container input {
+    text-align: center;
+}
+
+.box-footer {
+    background-image: url(/images/box-footer.png);
+    background-repeat: no-repeat;
+    background-position: left center;
+    
+    height: 15px;
+    
+    margin: 0;
+    padding: 0;
+}
+
+.section {
+    border-top: 1px dotted white;
+    
+    width: 194px;
+    
+    margin: 10px 0 0 0;
+    padding: 5px 10px 0 10px;
+}
+
+.response {
+    color: red;
+    
+    width: 182px;
+    
+    margin: 0 0 5px 0;
+    padding: 5px;
+}
+
+.wait {
+    margin: 0;
+    padding: 5px 0 0 0;
+}

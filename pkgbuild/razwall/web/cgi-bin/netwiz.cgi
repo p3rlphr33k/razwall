@@ -89,35 +89,34 @@ if ($0 =~ /step2\/*(netwiz|wizard).cgi/) {
 
 
 ###
+my @zones = &get_zones;
 
+my @eth_keys=('CONFIG_TYPE');
 
-my @eth_keys=('CONFIG_TYPE',
+foreach my $zone (@zones) {
+	next if $zone eq 'LOCAL';
+	
+	open(my $FH, "< $swroot/zone/$zone") or die "Error opening $zone: $!\n";
+	my @kv = <$FH>;
+	close($FH);
+	
+	foreach my $kv (@kv) {
+		my ($k, $v) =  split(/=/, $kv);
+		my ${$k} = $v;
+	}
+	
+	next if($ZTYPE eq 'WAN');
+	next if($ZTYPE eq 'VPN');
+	next if($ZTYPE eq 'LOOPBACK');
 
-	      'LAN_ADDRESS',
-	      'LAN_NETMASK',
-	      'LAN_NETADDRESS',
-	      'LAN_BROADCAST',
-	      'LAN_CIDR',
-	      'LAN_DEV',
-	      'LAN_IPS',
-
-	      'DMZ_ADDRESS',
-	      'DMZ_NETMASK',
-	      'DMZ_NETADDRESS',
-	      'DMZ_BROADCAST',
-	      'DMZ_CIDR',
-	      'DMZ_DEV',
-	      'DMZ_IPS',
-
-	      'LAN2_ADDRESS',
-	      'LAN2_NETMASK',
-	      'LAN2_NETADDRESS',
-	      'LAN2_BROADCAST',
-	      'LAN2_CIDR',
-	      'LAN2_DEV',
-	      'LAN2_IPS',
-
-	      );
+	push(@eth_keys,"$zone_ADDRESS");
+	push(@eth_keys,"$zone_NETMASK");
+	push(@eth_keys,"$zone_NETADDRESS");
+	push(@eth_keys,"$zone_BROADCAST");
+	push(@eth_keys,"$zone_CIDR");
+	push(@eth_keys,"$zone_DEV");
+	push(@eth_keys,"$zone_IPS");
+}
 
 my @main_keys=('LANGUAGE',
 	       'KEYMAP',
@@ -137,16 +136,16 @@ my @dhcp_keys=('ENABLE_LAN');
 my @hotspot_keys=('HOTSPOT_ENABLED');
 
 #wan  lan2 dmz
-my %type_config=(
-		 '000' => 0,
-		 '001' => 1,
-		 '100' => 2,
-		 '101' => 3,
-		 '010' => 4,
-		 '011' => 5,
-		 '110' => 6,
-		 '111' => 7
-		 );
+#my %type_config=(
+#		 '000' => 0,
+#		 '001' => 1,
+#		 '100' => 2,
+#		 '101' => 3,
+#		 '010' => 4,
+#		 '011' => 5,
+#		 '110' => 6,
+#		 '111' => 7
+#		 );
 
 my @dns_caption=(_('automatic'),
 		 _('manual')

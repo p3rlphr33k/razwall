@@ -1,0 +1,19 @@
+.sortable li {
+	position: relative;
+}
+
+.boxy {
+	list-style-type: none;
+	padding: 4px 4px 0 4px;
+	margin: 0px;
+	width: 10em;
+	font-size: 13px;
+	font-family: Arial, sans-serif;
+}
+.boxy li {
+	cursor:move;
+	margin-bottom: 4px;
+	padding: 2px 2px;
+	border: 1px solid #ccc;
+	background-color: #eee;
+}

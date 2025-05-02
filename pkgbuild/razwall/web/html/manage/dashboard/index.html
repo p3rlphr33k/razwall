@@ -44,7 +44,7 @@
 	<script language="javascript" src="/js/smoothie.js"></script>
 	
 	
-        <title>endian.grand-forks.lib.nd.us - Endian Community (64 bit) - Dashboard</title>
+        <title>RazWall Firewall</title>
         
         <script type="text/javascript" src="/include/jquery.stalker.js"></script>
         <script language="javascript" type="text/javascript">
@@ -181,17 +181,14 @@ $(document).ready(function() {
         </div>
         <div id="header-background"></div>
         <div id="header">
-            <img id="logo" alt="Logo" src="/images/logo_endian.png" />
+            <img src="" alt="RazWall" id="socketStatus" class="socketGreen" onclick="RazConnectWS(); return false;">
             <div id="header-icons">
                 <ul>
                     <li id="logout-icon" onclick="window.location.href='/cgi-bin/logout.cgi';">
 						<a href="/cgi-bin/logout.cgi" onclick="return false;" id="main_header_logout">Logout</a>
 					</li>
-                    <li id="help-icon" onclick="javascript:window.open('http://docs.endian.com/3.3/en/system.html#dashboard','_blank','height=700,width=1000,location=no,menubar=no,scrollbars=yes');">
+                    <li id="help-icon" onclick="javascript:window.open('https://razwall.com/forum','_blank','height=700,width=1000,location=no,menubar=no,scrollbars=yes');">
 						<a href="#" onclick="return false;">Help</a>
-					</li>
-					<li>
-						<div id="socketStatus" class="socketGreen" onclick="RazConnectWS(); return false;"></div>
 					</li>
                 </ul>
             </div><!-- header-icons -->
@@ -200,7 +197,7 @@ $(document).ready(function() {
         <div id="menu-top">
             <ul>
                 <li class="selected">
-                    <a href="/manage/dashboard">System</a>
+                    <a href="/cgi-bin/dashboard.cgi">System</a>
                 </li>
                 <li class="">
                     <a href="/cgi-bin/status.cgi">Status</a>
@@ -214,15 +211,15 @@ $(document).ready(function() {
                 <li class="">
                     <a href="/cgi-bin/dnat.cgi">Firewall</a>
                 </li>
-                <li class="">
+                <!--li class="">
                     <a href="/cgi-bin/proxyconfig.cgi">Proxy</a>
-                </li>
+                </li-->
                 <li class="">
                     <a href="/manage/openvpn">VPN</a>
                 </li>
-                <li class="">
+                <!--li class="">
                     <a href="/cgi-bin/logs_live_list.cgi">Logs and Reports</a>
-                </li>
+                </li-->
             </ul>
         </div>
         <!-- header -->

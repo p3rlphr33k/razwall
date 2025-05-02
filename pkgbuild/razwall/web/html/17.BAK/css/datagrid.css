@@ -1,0 +1,173 @@
+.editoradd {
+    line-height: 16px;
+    background: url(/images/editoradd.png) no-repeat;
+    margin-bottom: 10px;
+    padding-left: 20px;
+}
+
+.editorhide {
+    margin-bottom: 10px;
+}
+
+.datagrid table {
+    width: 100%;
+}
+
+.datagrid table tr.odd {
+}
+
+.datagrid table tr.even {
+}
+ 
+.datagrid table tr.selected {
+}
+
+.datagrid table td.dataTables_empty {
+    text-align: center;
+}
+
+
+.datagrid table td.empty {
+    font-style: italic;
+    text-align: center;
+    padding: 5px;
+}
+
+.datagrid table th {
+    font-weight: bold;
+    text-align: left;
+    height: 18px;
+    padding: 2px 2px 2px 5px;
+}
+
+.datagrid table td {
+    border-right: 1px solid;
+    padding: 2px 2px 2px 5px;
+}
+
+.datagrid table th,
+.datagrid table td {
+    text-align: left;
+    border-bottom: 1px solid;
+}
+
+.datagrid table th:first-child,
+.datagrid table td:first-child {
+    border-left: 1px solid;
+}
+
+.datagrid table td:last-child {
+    border-right: 1px solid;
+}
+
+.datagrid table td.hidden,
+.datagrid table th.hidden {
+    border: 0;
+    padding: 0px;
+}
+
+.datagrid table td.checkbox,
+.datagrid table th.checkbox {
+    width: 28px;
+    padding: 0px;
+    cursor: auto;
+}
+
+.datagrid table td.actions {
+}
+
+.datagrid table input[type=checkbox] {
+    margin: 0;
+    margin-left: 8px;
+}
+
+.datagrid table td.actions input {
+    float: left;
+    height: 16px;
+    width: 16px;
+    margin: 0px;
+    padding: 0px;
+    padding-left: 4px;
+}
+
+.datagrid table td.actions a {
+    float: left;
+    height: 16px;
+    width: 16px;
+    margin : 0;
+    padding : 0;
+    padding-left: 4px;
+}
+
+a.gridaction {
+    text-decoration: none;
+}
+
+.datagrid .search {
+    float: right;
+    margin-right: 12px;
+}
+
+.datagrid .gridcontrol {
+    margin-bottom: 12px;
+}
+
+.pagination {
+    border: 0px;
+    margin: 0px;
+    padding: 0px;
+}
+
+.pagination li {
+    list-style: none;
+    border: 0px;
+    margin: 0px;
+    padding: 0px;
+}
+
+.pagination a {
+    text-decoration: none;
+    border: solid 1px;
+    margin-right: 2px;
+    margin-bottom: 2px;
+}
+
+.pagination a:hover{
+    border: solid 1px;
+    text-decoration: none;
+}
+
+.pagination .next_off a,
+.pagination .previous_off a {
+    font-weight: bold;
+    border: solid 1px;
+    text-decoration: none;
+}
+
+.pagination .next_off a:hover,
+.pagination .previous_off a:hover {
+    border: solid 1px;
+}
+
+.pagination .next a,
+.pagination .previous a {
+    font-weight: bold;
+    border: solid 1px;
+    text-decoration: none;
+}
+
+.pagination .active{
+    display: block;
+    font-weight: bold;
+    float: left;
+    padding: 4px 7px;
+    margin-right: 2px;
+}
+
+.pagination a:link,
+.pagination a:visited {
+    display: block;
+    float: left;
+    padding: 3px 6px;
+    text-decoration: none;
+}

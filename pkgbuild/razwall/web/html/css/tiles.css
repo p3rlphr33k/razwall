@@ -1,0 +1,135 @@
+/*--------- DARK THEME ICONS (LIGHT ICONS)----------------*/
+system_dark {
+	background-image: url('/images/2025/system_light.png');
+}
+
+snat_dark {
+	background-image: url('/images/2025/snat_light.png');
+}
+
+dnat_dark {
+	background-image: url('/images/2025/dnat_light.png');
+}
+
+routing_dark {
+	background-image: url('/images/2025/routing_light.png');
+}
+
+
+hosts_dark {
+	background-image: url('/images/2025/hosts_light.png');
+}
+
+users_dark {
+	background-image: url('/images/2025/users_light.png');
+}
+
+network_dark {
+	background-image: url('/images/2025/network_light.png');
+}
+
+dhcp_dark {
+	background-image: url('/images/2025/dhcp_light.png');
+}
+
+
+vpn_dark {
+	background-image: url('/images/2025/vpn_light.png');
+}
+
+zones_dark {
+	background-image: url('/images/2025/zones_light.png');
+}
+
+zonefw_dark {
+	background-image: url('/images/2025/zonefw_light.png');
+}
+
+outfw_dark {
+	background-image: url('/images/2025/outfw_light.png');
+}
+
+
+vpnfw_dark {
+	background-image: url('/images/2025/vpnfw_light.png');
+}
+
+sysfw_dark {
+	background-image: url('/images/2025/sysfw_light.png');
+}
+
+theme_dark {
+	background-image: url('/images/2025/theme_light.png');
+}
+
+logoff_dark {
+	background-image: url('/images/2025/logoff_light.png');
+}
+
+/*--------- LIGHT THEME ICONS (DARK ICONS) ----------------*/
+system_light {
+	background-image: url('/images/2025/system_dark.png');
+}
+
+snat_light {
+	background-image: url('/images/2025/snat_dark.png');
+}
+
+dnat_light {
+	background-image: url('/images/2025/dnat_dark.png');
+}
+
+routing_light {
+	background-image: url('/images/2025/routing_dark.png');
+}
+
+
+hosts_light {
+	background-image: url('/images/2025/hosts_dark.png');
+}
+
+users_light {
+	background-image: url('/images/2025/users_dark.png');
+}
+
+network_light {
+	background-image: url('/images/2025/network_dark.png');
+}
+
+dhcp_light {
+	background-image: url('/images/2025/dhcp_dark.png');
+}
+
+
+vpn_light {
+	background-image: url('/images/2025/vpn_dark.png');
+}
+
+zones_light {
+	background-image: url('/images/2025/zones_dark.png');
+}
+
+zonefw_light {
+	background-image: url('/images/2025/zonefw_dark.png');
+}
+
+outfw_light {
+	background-image: url('/images/2025/outfw_dark.png');
+}
+
+
+vpnfw_light {
+	background-image: url('/images/2025/vpnfw_dark.png');
+}
+
+sysfw_light {
+	background-image: url('/images/2025/sysfw_dark.png');
+}
+
+theme_light {
+	background-image: url('/images/2025/theme_dark.png');
+}
+
+logoff_light {
+	background-image: url('/images/2025/logoff_dark.png');
+}

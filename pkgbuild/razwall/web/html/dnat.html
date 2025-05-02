@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DNAT View</title>
+  <style>
+    :root {
+      --bg-color: #111;
+      --text-color: #fff;
+      --tile-bg: #222;
+      --tile-hover: #333;
+      --accent: #09f;
+    }
+    .light-theme {
+      --bg-color: #f5f5f5;
+      --text-color: #111;
+      --tile-bg: #ddd;
+      --tile-hover: #ccc;
+      --accent: #06c;
+    }
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    header {
+      flex-shrink: 0;
+      padding: 1rem;
+      border-bottom: 1px solid #333;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    .version {
+      font-size: 0.75rem;
+      margin-top: 0.2rem;
+      color: #888;
+    }
+    .status-bar {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+    .graphs {
+      display: flex;
+      justify-content: space-around;
+      padding: 1rem;
+      flex-wrap: wrap;
+      border-bottom: 1px solid #333;
+      gap: 1rem;
+    }
+    .graph {
+      flex: 1 1 300px;
+      height: 150px;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #888;
+      margin: 0.5rem;
+    }
+    main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+    }
+    /* DNAT Rule Styles */
+    .rule {
+      background: var(--tile-bg);
+      padding: 0.5rem;
+      margin-bottom: 0.5rem;
+      border-radius: 0.4rem;
+      transition: background 0.3s;
+    }
+    .rule:hover {
+      background: var(--tile-hover);
+    }
+    .rule-header {
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .rule-details {
+      display: none;
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      background-color: var(--tile-bg);
+      border-radius: 0.4rem;
+    }
+    .rule.expanded .rule-details {
+      display: block;
+    }
+    /* Desktop: labels and fields in one row */
+    .rule-details form label {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+    .rule-details form label span.label-text {
+      width: 120px;
+      display: inline-block;
+    }
+    .rule-details select,
+    .rule-details input,
+    .rule-details textarea {
+      width: 100%;
+      max-width: 300px;
+      box-sizing: border-box;
+      vertical-align: top;
+    }
+    /* Mobile: stack label above field */
+    @media (max-width: 600px) {
+      .rule-details form label {
+        display: block;
+      }
+      .rule-details form label span.label-text {
+        width: auto;
+        display: block;
+        margin-bottom: 0.3rem;
+      }
+    }
+    .rule-actions {
+      margin-top: 0.5rem;
+    }
+    .rule-actions button {
+      margin-right: 0.5rem;
+      padding: 0.3rem 0.6rem;
+      border: none;
+      border-radius: 0.3rem;
+      cursor: pointer;
+    }
+    /* Navigation Tiles Footer */
+    footer.navigation {
+      flex-shrink: 0;
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      padding: 0.5rem;
+      border-top: 1px solid #333;
+      background: var(--tile-bg);
+    }
+    .tile {
+      background-color: var(--tile-bg);
+      color: var(--text-color);
+      text-align: center;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      width: 60px;
+      font-size: 0.75rem;
+    }
+    .tile:hover {
+      background-color: var(--tile-hover);
+    }
+    .tile-icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.3rem;
+    }
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    /* Mobile Drawer Toggle */
+    .drawer-toggle {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: var(--tile-bg);
+      color: var(--text-color);
+      text-align: center;
+      padding: 0.5rem;
+      cursor: pointer;
+      border-top: 1px solid #333;
+      z-index: 1001;
+      display: none; /* Only visible on mobile */
+    }
+    /* Mobile styles */
+    @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .graphs {
+        flex-direction: row;
+        flex-wrap: nowrap; /* Prevent wrapping */
+        justify-content: space-evenly;
+        gap: 1rem;
+      }
+      .graph {
+        flex: 1 1 50%;  /* Each graph takes up 50% of available width */
+        min-width: 0;
+      }
+      /* Hide navigation footer by default on mobile */
+      footer.navigation {
+        display: none;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        transition: bottom 0.3s ease;
+        z-index: 1000;
+      }
+      /* When open, position the tray above the drawer toggle */
+      footer.navigation.open {
+        display: flex;
+        bottom: 2.5rem;
+      }
+      .drawer-toggle {
+        display: block;
+      }
+      main {
+        padding-bottom: 3rem; /* Make room for drawer toggle */
+      }
+    }
+    /* Desktop: Always show navigation footer */
+    @media (min-width: 601px) {
+      footer.navigation {
+        display: flex;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <div class="logo">FIREWALL</div>
+      <div class="version">Version 1.0</div>
+    </div>
+    <div class="status-bar">
+      <span>Uplink: Online</span>
+      <a href="#" style="color: var(--accent); text-decoration: none;">Log Off</a>
+    </div>
+  </header>
+
+  <div class="graphs">
+    <div class="graph">[Traffic In]</div>
+    <div class="graph">[Traffic Out]</div>
+  </div>
+
+  <main>
+    <h2>Destination NAT Rules</h2>
+    
+    <!-- Rule 1 -->
+    <div class="rule">
+      <div class="rule-header" onclick="toggleRule(this.parentElement)">Rule 1: TCP 80 → 192.168.1.10</div>
+      <div class="rule-details">
+        <form>
+          <label>
+            <span class="label-text">Source:</span>
+            <select multiple>
+              <option value="192.168.1.1">192.168.1.1</option>
+              <option value="192.168.1.2">192.168.1.2</option>
+              <option value="192.168.1.3">192.168.1.3</option>
+            </select>
+          </label>
+          <label>
+            <span class="label-text">Source Port:</span>
+            <input type="number" value="80" />
+          </label>
+          <label>
+            <span class="label-text">Destination:</span>
+            <select multiple>
+              <option value="192.168.1.10">192.168.1.10</option>
+              <option value="192.168.1.20">192.168.1.20</option>
+            </select>
+          </label>
+          <label>
+            <span class="label-text">Destination Port:</span>
+            <input type="number" value="80" />
+          </label>
+          <label>
+            <span class="label-text">Rule Number:</span>
+            <input type="text" value="1" readonly />
+          </label>
+          <label>
+            <span class="label-text">Notes:</span>
+            <textarea rows="2" cols="20">Sample note</textarea>
+          </label>
+          <label>
+            <span class="label-text">Enabled:</span>
+            <input type="checkbox" checked />
+          </label>
+          <div class="rule-actions">
+            <button type="button" onclick="saveRule(1)">Save</button>
+            <button type="button" onclick="cancelRule(1)">Cancel</button>
+            <button type="button" onclick="deleteRule(1)">Delete</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    
+    <!-- Rule 2 -->
+    <div class="rule">
+      <div class="rule-header" onclick="toggleRule(this.parentElement)">Rule 2: TCP 443 → 192.168.1.20</div>
+      <div class="rule-details">
+        <form>
+          <label>
+            <span class="label-text">Source:</span>
+            <select multiple>
+              <option value="192.168.1.4">192.168.1.4</option>
+              <option value="192.168.1.5">192.168.1.5</option>
+              <option value="192.168.1.6">192.168.1.6</option>
+            </select>
+          </label>
+          <label>
+            <span class="label-text">Source Port:</span>
+            <input type="number" value="443" />
+          </label>
+          <label>
+            <span class="label-text">Destination:</span>
+            <select multiple>
+              <option value="192.168.1.20">192.168.1.20</option>
+              <option value="192.168.1.30">192.168.1.30</option>
+            </select>
+          </label>
+          <label>
+            <span class="label-text">Destination Port:</span>
+            <input type="number" value="443" />
+          </label>
+          <label>
+            <span class="label-text">Rule Number:</span>
+            <input type="text" value="2" readonly />
+          </label>
+          <label>
+            <span class="label-text">Notes:</span>
+            <textarea rows="2" cols="20">Another sample note</textarea>
+          </label>
+          <label>
+            <span class="label-text">Enabled:</span>
+            <input type="checkbox" checked />
+          </label>
+          <div class="rule-actions">
+            <button type="button" onclick="saveRule(2)">Save</button>
+            <button type="button" onclick="cancelRule(2)">Cancel</button>
+            <button type="button" onclick="deleteRule(2)">Delete</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <!-- Additional rules can follow the same pattern -->
+    
+  </main>
+
+  <!-- Navigation Tiles Footer (Desktop: always visible, Mobile: toggled) -->
+  <footer class="navigation" id="tileNav">
+    <div class="tile" onclick="toggleTheme()">
+      <div class="tile-icon">🌓</div>
+      Theme
+    </div>
+    <div class="tile"><div class="tile-icon">⇆</div>SNAT</div>
+    <div class="tile"><div class="tile-icon">⇄</div>DNAT</div>
+    <div class="tile"><div class="tile-icon">⤴</div>Routing</div>
+    <div class="tile"><div class="tile-icon">🖧</div>Hosts</div>
+    <div class="tile"><div class="tile-icon">🔒</div>VPN</div>
+    <div class="tile"><div class="tile-icon">📡</div>DHCP</div>
+    <div class="tile"><div class="tile-icon">👥</div>Users</div>
+    <div class="tile"><div class="tile-icon">🌐</div>Network</div>
+    <!-- New Tiles -->
+    <div class="tile"><div class="tile-icon">🏘</div>Zone FW</div>
+    <div class="tile"><div class="tile-icon">🖥</div>System FW</div>
+    <div class="tile"><div class="tile-icon">🔐</div>VPN FW</div>
+    <div class="tile"><div class="tile-icon">⟶</div>Outgoing FW</div>
+  </footer>
+
+  <!-- Mobile Drawer Toggle -->
+  <div class="drawer-toggle" onclick="toggleDrawer()">
+    <span id="drawer-arrow">▲</span>
+  </div>
+
+  <script>
+    function toggleTheme() {
+      document.body.classList.toggle('light-theme');
+      localStorage.setItem('theme', document.body.classList.contains('light-theme') ? 'light' : 'dark');
+    }
+    
+    function toggleRule(ruleElement) {
+      // Collapse any other expanded rule
+      document.querySelectorAll('.rule.expanded').forEach(function(el) {
+        if (el !== ruleElement) {
+          el.classList.remove('expanded');
+        }
+      });
+      // Toggle the clicked rule's expansion
+      ruleElement.classList.toggle('expanded');
+    }
+    
+    function toggleDrawer() {
+      const nav = document.getElementById('tileNav');
+      const arrow = document.getElementById('drawer-arrow');
+      if(nav.classList.contains('open')) {
+        nav.classList.remove('open');
+        arrow.textContent = '▲';
+      } else {
+        nav.classList.add('open');
+        arrow.textContent = '▼';
+      }
+    }
+    
+    // Placeholder functions for Save/Cancel/Delete actions
+    function saveRule(ruleId) {
+      alert("Save rule " + ruleId);
+    }
+    function cancelRule(ruleId) {
+      alert("Cancel changes for rule " + ruleId);
+    }
+    function deleteRule(ruleId) {
+      alert("Delete rule " + ruleId);
+    }
+    
+    window.onload = () => {
+      const saved = localStorage.getItem('theme');
+      if (saved === 'light') {
+        document.body.classList.add('light-theme');
+      }
+    };
+  </script>
+</body>
+</html>

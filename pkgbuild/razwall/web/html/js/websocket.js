@@ -24,26 +24,26 @@ RazConnectWS = function(){
 	
 	
 	///////// NEW SOCKET CODE FOR RazWall
-	if( msgData.match(/::CPU::/) ) {
-		//console.log('CPU DATA');
+	if( msgData.match(/::NETIN::/) ) {
+		//console.log('RX DATA: '+msgData);
 		//if($_('dashboard')) {
-			msgData = msgData.replace("::CPU::","");
-			cpu=parseFloat(msgData);
-			cleanCPU = cpu.toFixed(2);
-			if(cpuseries) {
-				cpuseries.append(new Date().getTime(), parseFloat(cleanCPU));
+			msgData = msgData.replace("::NETIN::","");
+			net_rx=parseFloat(msgData);
+			cleanRX = net_rx.toFixed(2);
+			if(netRXseries) {
+				netRXseries.append(new Date().getTime(), parseFloat(cleanRX));
 			}
 		//}
 	}
 	
-	if( msgData.match(/::MEM::/) ) {
-		//console.log('MEM DATA');
+	if( msgData.match(/::NETOUT::/) ) {
+		//console.log('TX DATA: '+msgData);
 		//if($_('dashboard')) {
-			msgData = msgData.replace("::MEM::","");
-			mem=parseFloat(msgData);
-			cleanMEM = mem.toFixed(2);
-			if(memseries) {
-				memseries.append(new Date().getTime(), parseFloat(cleanMEM));
+			msgData = msgData.replace("::NETOUT::","");
+			net_tx=parseFloat(msgData);
+			cleanTX = net_tx.toFixed(2);
+			if(netTXseries) {
+				netTXseries.append(new Date().getTime(), parseFloat(cleanTX));
 			}
 		//}
 	}

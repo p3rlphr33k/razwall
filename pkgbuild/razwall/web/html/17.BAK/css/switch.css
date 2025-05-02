@@ -1,0 +1,53 @@
+.switch-spacer {
+    margin: 12px -12px;
+}
+
+.switch-divider {
+    margin: 12px -12px;
+    border-top: 1px solid #ccc;
+}
+
+.service-switch {
+    padding: 0px;
+    margin: 0px;
+    width: 300px;
+}
+
+.service-switch .title {
+    line-height: 17px;
+    font-size: 14px;
+}
+
+.service-switch .switch {
+    padding-right: 65px;
+    cursor: pointer;
+}
+
+.service-switch .True {
+    background-image: url(/toscawidgets/resources/endian.emi/static/images/switch_on.png);
+    background-repeat: no-repeat;
+    background-position: center right;
+}
+
+.service-switch .False {
+    background-image: url(/toscawidgets/resources/endian.emi/static/images/switch_off.png);
+    background-repeat: no-repeat;
+    background-position: center right;
+}
+
+/* Spinner layout styles */
+.service-switch .wait {
+    background: url(/toscawidgets/resources/endian.emi/static/images/wait-small.gif);
+    background-repeat: no-repeat;
+    background-position: center right;
+    line-height: 16px;
+}
+
+.switch-controller .description {
+    border: 1px solid;
+    margin-top: 12px;
+    padding: 4px;
+}
+
+.switch-controller .content {
+}

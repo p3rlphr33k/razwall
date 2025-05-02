@@ -1,0 +1,8 @@
+hr.separator {
+    border: 0px;
+    border-bottom: 1px;
+    border-style: solid;
+    display:block;
+    height: 1px;
+    margin: 0px;
+}

@@ -1,0 +1,26 @@
+[
+  {
+    "interface": "br0",
+    "rules": [
+      {
+        "enable": true,
+        "source": "ANY",
+        "destination": "ANY",
+        "proto": "tcp",
+        "port": 443,
+        "state": "NEW,ESTABLISHED",
+        "action": "ACCEPT",
+        "log": true,
+        "ip_version": "both"
+      },
+      {
+        "enable": true,
+        "proto": "udp",
+        "port": 53,
+        "action": "ACCEPT",
+        "log": false,
+        "ip_version": "4"
+      }
+    ]
+  }
+]

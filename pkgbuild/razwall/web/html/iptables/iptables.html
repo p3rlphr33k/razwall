@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Firewall Rule Editor</title>
+  <style>
+    body { font-family: sans-serif; background: #f8f8f8; margin: 0; padding: 1em; }
+    h1 { font-size: 1.5em; }
+    .rule { background: #fff; border: 1px solid #ccc; padding: 1em; margin-bottom: 1em; }
+    label { display: block; margin-top: 0.5em; }
+    textarea { width: 100%; height: 6em; }
+    input[type="text"], select { width: 100%; padding: 0.4em; }
+    button { padding: 0.5em 1em; margin-top: 1em; }
+    .row { display: flex; gap: 1em; }
+    .row > div { flex: 1; }
+    .error { color: red; font-size: 0.9em; }
+    .flexrow { display: flex; gap: 0.5em; }
+    .flexrow > * { flex: 1; }
+  </style>
+</head>
+<body>
+
+<h1>Firewall Rule Editor</h1>
+
+<div>
+  <label>Rule Set:
+    <select id="ruleSet">
+      <option value="snat">SNAT</option>
+      <option value="dnat">DNAT</option>
+      <option value="outbound">Outbound</option>
+      <option value="vpn">VPN</option>
+      <option value="zones">Zones</option>
+      <option value="routing">Routing</option>
+    </select>
+  </label>
+  <button onclick="addRule()">Add Rule</button>
+  <button onclick="downloadRules()">Download JSON</button>
+  <button onclick="copyRules()">Copy to Clipboard</button>
+  <input type="file" accept=".json" onchange="loadRules(event)">
+  <button onclick="validateRules()">Validate</button>
+</div>
+
+<div id="rulesContainer"></div>
+<div id="validationOutput" class="error"></div>
+
+<script>
+let known_ports = [];
+let rules = [];
+
+function loadKnownPorts() {
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", "known_ports.json", true);
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState == 4) {
+      if (xhr.status == 200) {
+        try {
+          known_ports = JSON.parse(xhr.responseText);
+        } catch (e) {
+          alert("Error parsing known_ports.json");
+        }
+      }
+      renderRules();
+    }
+  };
+  xhr.send();
+}
+
+function addRule() {
+  rules.push({
+    enable: true,
+    source: ["ANY"],
+    destination: ["ANY"],
+    proto: "ALL",
+    port: "",
+    sport: "",
+    state: "",
+    action: "ACCEPT",
+    log: true,
+    ip_version: "4"
+  });
+  renderRules();
+}
+
+function renderRules() {
+  const container = document.getElementById("rulesContainer");
+  container.innerHTML = "";
+  rules.forEach((rule, i) => {
+    const div = document.createElement("div");
+    div.className = "rule";
+    div.innerHTML = `
+      <label><input type="checkbox" onchange="rules[${i}].enable=this.checked" ${rule.enable ? "checked" : ""}> Enable</label>
+      <label>Source (comma-separated): <input type="text" value="${(rule.source || []).join(', ')}" onchange="rules[${i}].source=this.value.split(',').map(s=>s.trim())"></label>
+      <label>Destination (comma-separated): <input type="text" value="${(rule.destination || []).join(', ')}" onchange="rules[${i}].destination=this.value.split(',').map(s=>s.trim())"></label>
+      <label>Protocol:
+        <select onchange="rules[${i}].proto=this.value">
+          <option ${rule.proto === "ALL" ? "selected" : ""}>ALL</option>
+          <option ${rule.proto === "tcp" ? "selected" : ""}>tcp</option>
+          <option ${rule.proto === "udp" ? "selected" : ""}>udp</option>
+          <option ${rule.proto === "icmp" ? "selected" : ""}>icmp</option>
+        </select>
+      </label>
+      <div class="row">
+        <div>
+          <label>Port:</label>
+          <div class="flexrow">
+            <select onchange="rules[${i}].port=this.value; autoSetProto(${i}, this.value); renderRules()">
+              <option value="">(Custom)</option>
+              ${known_ports.map(p => `<option value="${p.port}" ${String(rule.port) === String(p.port) ? "selected" : ""}>${p.name} (${p.port}/${p.proto})</option>`).join("")}
+            </select>
+            <input type="text" value="${rule.port || ""}" onchange="rules[${i}].port=this.value">
+          </div>
+        </div>
+        <div>
+          <label>Sport:</label>
+          <div class="flexrow">
+            <select onchange="rules[${i}].sport=this.value; renderRules()">
+              <option value="">(Custom)</option>
+              ${known_ports.map(p => `<option value="${p.port}" ${String(rule.sport) === String(p.port) ? "selected" : ""}>${p.name} (${p.port}/${p.proto})</option>`).join("")}
+            </select>
+            <input type="text" value="${rule.sport || ""}" onchange="rules[${i}].sport=this.value">
+          </div>
+        </div>
+      </div>
+      <label>State: <input type="text" value="${rule.state || ""}" onchange="rules[${i}].state=this.value"></label>
+      <label>Action:
+        <select onchange="rules[${i}].action=this.value">
+          <option ${rule.action === "ACCEPT" ? "selected" : ""}>ACCEPT</option>
+          <option ${rule.action === "DROP" ? "selected" : ""}>DROP</option>
+          <option ${rule.action === "REJECT" ? "selected" : ""}>REJECT</option>
+          <option ${rule.action === "DNAT" ? "selected" : ""}>DNAT</option>
+          <option ${rule.action === "MASQUERADE" ? "selected" : ""}>MASQUERADE</option>
+        </select>
+      </label>
+      <label><input type="checkbox" onchange="rules[${i}].log=this.checked" ${rule.log ? "checked" : ""}> Log</label>
+      <label>IP Version:
+        <select onchange="rules[${i}].ip_version=this.value">
+          <option value="4" ${rule.ip_version === "4" ? "selected" : ""}>IPv4</option>
+          <option value="6" ${rule.ip_version === "6" ? "selected" : ""}>IPv6</option>
+          <option value="both" ${rule.ip_version === "both" ? "selected" : ""}>Both</option>
+        </select>
+      </label>
+      <button onclick="rules.splice(${i},1);renderRules()">Delete</button>
+    `;
+    container.appendChild(div);
+  });
+}
+
+function autoSetProto(index, selectedPort) {
+  const found = known_ports.find(p => String(p.port) === String(selectedPort));
+  if (found && found.proto && rules[index].proto === "ALL") {
+    rules[index].proto = found.proto;
+  }
+}
+
+function downloadRules() {
+  const ruleSet = document.getElementById("ruleSet").value;
+  const blob = new Blob([JSON.stringify(rules, null, 2)], {type: 'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = ruleSet + ".json";
+  a.click();
+}
+
+function copyRules() {
+  const jsonStr = JSON.stringify(rules, null, 2);
+  const textarea = document.createElement('textarea');
+  textarea.value = jsonStr;
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand('copy');
+  document.body.removeChild(textarea);
+  alert("Rules copied to clipboard.");
+}
+
+function loadRules(event) {
+  const file = event.target.files[0];
+  const reader = new FileReader();
+  reader.onload = function () {
+    try {
+      let parsed = JSON.parse(reader.result);
+      if (Array.isArray(parsed)) {
+        rules = parsed;
+      } else if (parsed.rules && Array.isArray(parsed.rules)) {
+        rules = parsed.rules;
+      } else {
+        throw new Error("Expected array or object with 'rules' key.");
+      }
+
+      // Normalize source/destination to always be arrays
+      rules.forEach(rule => {
+        if (typeof rule.source === "string") {
+          rule.source = [rule.source];
+        }
+        if (typeof rule.destination === "string") {
+          rule.destination = [rule.destination];
+        }
+      });
+
+      renderRules();
+      document.getElementById("validationOutput").innerText = "";
+    } catch (e) {
+      alert("Invalid JSON: " + e.message);
+      console.error("Parse error:", e);
+      console.log("Raw content:", reader.result);
+    }
+  };
+  reader.readAsText(file);
+}
+
+
+function validateRules() {
+  let errors = [];
+  rules.forEach((rule, index) => {
+    if (rule.port && rule.port !== "ALL" && isNaN(Number(rule.port))) {
+      errors.push(`Rule ${index + 1}: Invalid port.`);
+    }
+    if (rule.sport && rule.sport !== "ALL" && isNaN(Number(rule.sport))) {
+      errors.push(`Rule ${index + 1}: Invalid source port.`);
+    }
+    if (rule.proto && !["ALL", "tcp", "udp", "icmp"].includes(rule.proto)) {
+      errors.push(`Rule ${index + 1}: Invalid protocol.`);
+    }
+    if (rule.ip_version && !["4", "6", "both"].includes(rule.ip_version)) {
+      errors.push(`Rule ${index + 1}: Invalid IP version.`);
+    }
+  });
+
+  const output = document.getElementById("validationOutput");
+  output.innerText = errors.length ? errors.join("\\n") : "All rules are valid.";
+  alert(errors.length ? "Validation errors:\\n" + output.innerText : "All rules passed validation.");
+}
+
+loadKnownPorts();
+</script>
+
+</body>
+</html>
+

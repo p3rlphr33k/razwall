@@ -1,0 +1,85 @@
+.full_size {
+    height: 100%;
+    width: 100%;
+}
+
+body.wizard_standalone {
+    background-image: url("/toscawidgets/resources/endian.emi/static/images/standalone_wizard_bg_grass.png");
+    background-position: left bottom;
+    background-repeat: repeat-x;
+    background-color: black;
+    height: 100%;
+    width: 100%;
+    margin: 0px;
+}
+
+.standalone_wizard {
+    background-image: url("/toscawidgets/resources/endian.emi/static/images/standalone_wizard_bg_tree.png");
+    background-position: left bottom;
+    background-repeat: no-repeat;
+    height: 100%;
+    width: 100%;
+    margin: 0px;
+}
+
+.standalone_wizard .wizard {
+    background-image: url("/toscawidgets/resources/endian.emi/static/images/standalone_wizard_bg.png");
+    background-repeat: no-repeat;
+    height: 430px;
+    width: 610px;
+    left: 50%;
+    top: 50%;
+    margin-left: -305px;
+    margin-top: -215px;
+}
+
+.standalone_wizard .wizard .page {	
+    width:610px;
+    height:430px;
+}
+
+.standalone_wizard .wizard .page .plugin-content {
+    width:610px;
+    height: 369px;
+    min-height: 369px;
+    position: absolute;
+    overflow: visible;
+}
+
+.standalone_wizard .wizard .page .plugin-control {
+    width:610px;
+    height: 61px;
+    top: 369px;
+    position: absolute;
+}
+
+.standalone_wizard .wizard-popup .popup-content {
+    overflow: visible;
+}
+
+.standalone_wizard .wizard-popup .popup-content .standalone_wizard_popup_title {
+    width: 100%-40px;
+    height: 30px;
+    margin: 0px;
+    padding: 20px;
+    color: green;
+    font-size: 30px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.standalone_wizard .wizard-popup .popup-content .standalone_wizard_popup_content {
+    width: 100%-60px;
+    height: 309px;
+    margin: 0px 30px;
+    color: white;
+    overflow: auto;
+}
+
+.standalone_wizard .wizard-menu{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: 304px;
+    margin-top: -170px;
+}

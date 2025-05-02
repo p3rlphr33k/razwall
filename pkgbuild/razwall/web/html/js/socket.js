@@ -2,7 +2,7 @@ if(!window.RazSocket)RazSocket = {};
 
 RazConnectWS = function(){
   try {
-    var websockethost = 'wss://192.168.19.177';
+    var websockethost = 'wss://192.168.55.1';
 	
     webSocket = new WebSocket( websockethost );
 	$("socketStatus").className = 'socketYellow';
@@ -10,8 +10,7 @@ RazConnectWS = function(){
 	
 	webSocket.onopen = function() {
 		$("socketStatus").className = 'socketGreen';
-		RazSocket.playSound('login');
-		//$('loginMessageBox').innerHTML = 'RazDC Socket Connected.';		
+		RazSocket.playSound('login');		
 	}
 	
 	// incomimg message processing
@@ -123,10 +122,10 @@ RazSocket.notify = function(sendUser,newMessage,notifyChannel) {
 // handle socket checks
 RazSocket.isConnectedWsChat = function() {
   if( webSocket && webSocket.readyState==1 ) {
-    $('chatButton' ).value='Disconnect';
+    //$('chatButton' ).value='Disconnect';
     return 1;
   } else {
-    $('chatButton').value='Connect';
+    //$('chatButton').value='Connect';
     return 0;
   }
 }

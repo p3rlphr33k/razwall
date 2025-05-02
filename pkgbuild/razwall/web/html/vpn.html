@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VPN Configuration</title>
+  <link rel="stylesheet" type="text/css" href="/css/razwall-main.css">
+  <link rel="stylesheet" type="text/css" href="/css/razwall-vpn.css">
+
+</head>
+<body>
+  <header>
+    <div>
+      <div class="logo">FIREWALL</div>
+      <div class="version">Version 1.0</div>
+    </div>
+    <div class="status-bar">
+      <span>Uplink: Online</span>
+      <a href="#" style="color: var(--accent); text-decoration: none;">Log Off</a>
+    </div>
+  </header>
+
+  <main>
+    <h2>VPN Configuration</h2>
+    
+    <!-- User VPN Section -->
+    <div class="vpn-section vpn-main-section" id="userVPNSection">
+      <div class="vpn-section-header" onclick="toggleSection(this.parentElement)">
+        <span class="section-title">User VPN</span>
+        <label class="switch" onclick="event.stopPropagation();">
+          <input type="checkbox" id="userVPNSwitch" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="vpn-section-details">
+        <form>
+          <label>
+            <span class="label-text">Authentication Type:</span>
+            <select>
+              <option>PSK (Username/Password)</option>
+              <option>X.509 Certificate</option>
+              <option>Both</option>
+            </select>
+          </label>
+          <label>
+            <span class="label-text">Certificate:</span>
+            <select>
+              <option>Cert 1</option>
+              <option>Cert 2</option>
+              <option>Cert 3</option>
+            </select>
+          </label>
+          <label>
+            <span class="label-text">Bind Interface:</span>
+            <select>
+              <option>eth0</option>
+              <option>eth1</option>
+              <option>eth2</option>
+            </select>
+          </label>
+          <label>
+            <span class="label-text">Bind Port:</span>
+            <input type="number" value="1194" />
+          </label>
+          <label>
+            <span class="label-text">Device Type:</span>
+            <select>
+              <option>TUN</option>
+              <option>TAP</option>
+            </select>
+          </label>
+          <label>
+            <span class="label-text">Protocol:</span>
+            <select>
+              <option>TCP</option>
+              <option>UDP</option>
+            </select>
+          </label>
+          <label>
+            <span class="label-text">Allow Multiple Conns:</span>
+            <label class="switch" style="margin-left: 0;">
+              <input type="checkbox" checked>
+              <span class="slider"></span>
+            </label>
+          </label>
+          <label>
+            <span class="label-text">Block DHCP Resp:</span>
+            <label class="switch" style="margin-left: 0;">
+              <input type="checkbox">
+              <span class="slider"></span>
+            </label>
+          </label>
+          <label>
+            <span class="label-text">Subnet:</span>
+            <input type="text" value="192.168.0.1/24" />
+          </label>
+          
+          <!-- VPN Push Options Sub-Section -->
+          <div style="border: 1px solid var(--tile-hover); margin: 1rem 0; padding: 0.5rem; border-radius: 0.3rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="toggleSection(this.parentElement)">
+              <span style="font-weight: bold;">VPN Push Options</span>
+              <label class="switch" onclick="event.stopPropagation();">
+                <input type="checkbox" id="vpnPushSwitch" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="vpn-section-details" id="vpnPushOptions">
+              <label>
+                <span class="label-text">Nameservers:</span>
+                <textarea rows="4" placeholder="DNS Server IPs (one per line)"></textarea>
+              </label>
+              <label>
+                <span class="label-text">Push Networks:</span>
+                <textarea rows="4" placeholder="CIDR networks (one per line)"></textarea>
+              </label>
+              <label>
+                <span class="label-text">Domain:</span>
+                <input type="text" placeholder="Domain to push" />
+              </label>
+            </div>
+          </div>
+          <div class="vpn-actions">
+            <button type="button" onclick="saveUserVPN()">Save Configuration</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    
+    <!-- Point-To-Point VPN Section -->
+    <div class="vpn-section vpn-main-section" id="ptpVPNSection">
+      <div class="vpn-section-header" onclick="toggleSection(this.parentElement)">
+        <span class="section-title">Point-To-Point VPN</span>
+        <label class="switch" onclick="event.stopPropagation();">
+          <input type="checkbox" id="ptpVPNSwitch" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+      <div class="vpn-section-details">
+        <form>
+          <label>
+            <span class="label-text">Name:</span>
+            <input type="text" placeholder="VPN Name" />
+          </label>
+          <label>
+            <span class="label-text">Remote Gateway:</span>
+            <input type="text" placeholder="Remote Gateway IP" />
+          </label>
+          <label>
+            <span class="label-text">Upload Certificate:</span>
+            <input type="file" />
+          </label>
+          <label>
+            <span class="label-text">PKCS#12 Password:</span>
+            <input type="password" placeholder="Challenge Password" />
+          </label>
+          <label>
+            <span class="label-text">Username:</span>
+            <input type="text" placeholder="Username" />
+          </label>
+          <label>
+            <span class="label-text">Password:</span>
+            <input type="password" placeholder="Password" />
+          </label>
+          <label>
+            <span class="label-text">Device Type:</span>
+            <select>
+              <option>TUN</option>
+              <option>TAP</option>
+            </select>
+          </label>
+          <label>
+            <span class="label-text">Block DHCP Resp:</span>
+            <label class="switch" style="margin-left: 0;">
+              <input type="checkbox">
+              <span class="slider"></span>
+            </label>
+          </label>
+          <label>
+            <span class="label-text">Use LZO Compress:</span>
+            <label class="switch" style="margin-left: 0;">
+              <input type="checkbox">
+              <span class="slider"></span>
+            </label>
+          </label>
+          <label>
+            <span class="label-text">Channel Encrypt:</span>
+            <label class="switch" style="margin-left: 0;">
+              <input type="checkbox">
+              <span class="slider"></span>
+            </label>
+          </label>
+          <label>
+            <span class="label-text">Protocol:</span>
+            <select>
+              <option>TCP</option>
+              <option>UDP</option>
+            </select>
+          </label>
+          <label>
+            <span class="label-text">TLS Key File:</span>
+            <input type="file" />
+          </label>
+          <label>
+            <span class="label-text">MD5 Direction:</span>
+            <select>
+              <option>Omit</option>
+              <option>0</option>
+              <option>1</option>
+            </select>
+          </label>
+          <div class="vpn-actions">
+            <button type="button" onclick="savePTPVPN()">Save Configuration</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    
+  </main>
+
+   <!-- Navigation Tiles Footer -->
+  <footer class="navigation" id="tileNav">
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="home" src="/images/2025/home_light.png"></div>Monitor</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="system" src="/images/2025/system_light.png"></div>Sytem</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="snat" src="/images/2025/snat_light.png"></div>SNAT</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="dnat" src="/images/2025/dnat_light.png"></div>DNAT</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="zonefw" src="/images/2025/zonefw_light.png"></div>Zone FW</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="outfw" src="/images/2025/outfw_light.png"></div>Outboud</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="vpnfw" src="/images/2025/vpnfw_light.png"></div>VPN FW</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="sysfw" src="/images/2025/sysfw_light.png"></div>Access</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="routing" src="/images/2025/routing_light.png"></div>Routing</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="hosts" src="/images/2025/hosts_light.png"></div>Hosts</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="users" src="/images/2025/users_light.png"></div>Users</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="network" src="/images/2025/network_light.png"></div>Network</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="zones" src="/images/2025/zones_light.png"></div>Zones</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="dhcp" src="/images/2025/dhcp_light.png"></div>DHCP</div>
+	 <div class="tile"><div class="tile-icon"><img class="theme-icon" id="vpn" src="/images/2025/vpn_light.png"></div>OpenVPN</div>
+	 <div class="tile" onclick="toggleTheme()"><div class="tile-icon"><img class="theme-icon" id="theme" src="/images/2025/theme_light.png"></div>Theme</div>
+	 <div class="tile" onclick="javascript:window.open('https://razwall.com/forum','_blank','height=700,width=1000,location=no,menubar=no,scrollbars=yes');"><div class="tile-icon"><img class="theme-icon" id="help" src="/images/2025/help_light.png"></div>Help</div>
+	 <div class="tile" onclick="window.location.href='/cgi-bin/logout.cgi';"><div class="tile-icon"><img class="theme-icon" id="logout" src="/images/2025/logout_light.png"></div>Logout</div>
+  </footer>
+
+  <!-- Mobile Drawer Toggle -->
+  <div class="drawer-toggle" onclick="toggleDrawer()">
+    <span id="drawer-arrow">▲</span>
+  </div>
+
+  <script>
+ function toggleTheme() {
+	  document.body.classList.toggle('light-theme');
+	  var isLight = document.body.classList.contains('light-theme');
+	  localStorage.setItem('theme', isLight ? 'dark' : 'light');
+
+	  // Swap icons using ID
+	  document.querySelectorAll('.theme-icon').forEach(icon => {
+		var id = icon.id; 
+		icon.src = `/images/2025/${id}_${isLight ? 'dark' : 'light'}.png`;
+	  });
+	}
+    
+    // Toggle section expansion for main VPN sections only.
+    function toggleSection(sectionElement) {
+      // If the element is a main VPN section, collapse others.
+      if (sectionElement.classList.contains("vpn-main-section")) {
+        document.querySelectorAll('.vpn-main-section.expanded').forEach(function(el) {
+          if (el !== sectionElement) {
+            el.classList.remove('expanded');
+          }
+        });
+      }
+      sectionElement.classList.toggle('expanded');
+    }
+    
+    function toggleDrawer() {
+      const nav = document.getElementById('tileNav');
+      const arrow = document.getElementById('drawer-arrow');
+      if (nav.classList.contains('open')) {
+        nav.classList.remove('open');
+        arrow.textContent = '▲';
+      } else {
+        nav.classList.add('open');
+        arrow.textContent = '▼';
+      }
+    }
+    
+    // Placeholder functions for Save actions
+    function saveUserVPN() {
+      alert("User VPN configuration saved");
+    }
+    function savePTPVPN() {
+      alert("Point-to-Point VPN configuration saved");
+    }
+    
+    window.onload = () => {
+      const saved = localStorage.getItem('theme');
+      if (saved === 'light') {
+        document.body.classList.add('light-theme');
+      }
+    };
+  </script>
+</body>
+</html>

@@ -210,22 +210,12 @@ sub get_gateway {
     return $gw;
 }
 
-sub get_interface_uptime {
-    my $iface = shift;
-    # For simplicity, we use system uptime as a proxy for interface uptime
-    open my $fh, '<', '/proc/uptime' or return "0";
-    my $line = <$fh>;
-    close $fh;
-    my ($uptime) = split ' ', $line;
-    return sprintf("%.0f", $uptime);
-}
-
 sub get_uplinks_data {
     my %data;
     my $time = time();
     $data{'cacheHitAt'} = $time - 10;
-    $data{'cachedOn'} = $time - 11;
-    $data{'time'} = $time;
+    $data{'cachedOn'}   = $time - 11;
+    $data{'time'}       = $time;
     
     my @uplinks;
     # First uplink (assume eth1)
@@ -234,35 +224,55 @@ sub get_uplinks_data {
     $network{'WAN_ADDR'} = get_ip("eth1");
     $network{'WAN_TYPE'} = "DHCP";
     $network{'WAN_GW'}   = get_gateway("eth1");
+    # Get formatted uptime for interface "eth1"
     my $wan_uptime = get_interface_uptime("eth1");
     push @uplinks, {
-        "status" => "ACTIVE",
-        "defaultGatewayTimestamp" => $time - 1000,
-        "managed" => "on",
-        "shouldBeUp" => JSON::true,
-        "canStart" => JSON::true,
-        "isLinkAlive" => JSON::true,
-        "data" => {
-            "name" => $network{'WAN_DEV'},
-            "ip" => $network{'WAN_ADDR'},
+        "status"                    => "ACTIVE",
+        "defaultGatewayTimestamp"   => $time - 1000,
+        "managed"                   => "on",
+        "shouldBeUp"                => JSON::true,
+        "canStart"                  => JSON::true,
+        "isLinkAlive"               => JSON::true,
+        "data"                      => {
+            "name"       => $network{'WAN_DEV'},
+            "ip"         => $network{'WAN_ADDR'},
             "last_retry" => "",
-            "interface" => $network{'WAN_DEV'},
-            "type" => $network{'WAN_TYPE'},
-            "gateway" => $network{'WAN_GW'}
+            "interface"  => $network{'WAN_DEV'},
+            "type"       => $network{'WAN_TYPE'},
+            "gateway"    => $network{'WAN_GW'}
         },
         "defaultGateway" => JSON::true,
-        "uptime" => $wan_uptime,
-        "name" => "main",
-        "isLinkActive" => JSON::true,
-        "enabled" => "on",
-        "autostart" => "on",
-        "hasChanged" => JSON::true
+        "uptime"         => $wan_uptime,  # now formatted as "Xd Yh Zm"
+        "name"           => "main",
+        "isLinkActive"   => JSON::true,
+        "enabled"        => "on",
+        "autostart"      => "on",
+        "hasChanged"     => JSON::true
     };
-    
   
     $data{'uplinks'} = \@uplinks;
-    $data{'cached'} = JSON::false;
+    $data{'cached'}  = JSON::false;
     return \%data;
+}
+
+
+sub get_interface_uptime {
+    my $iface = shift;
+    # For simplicity, we use system uptime as a proxy for interface uptime.
+    open my $fh, '<', '/proc/uptime' or return "0s";
+    my $line = <$fh>;
+    close $fh;
+    my ($uptime) = split ' ', $line;
+    
+    # Convert uptime (in seconds) into days, hours, minutes, and seconds.
+    my $days    = int($uptime / 86400);
+    my $hours   = int(($uptime % 86400) / 3600);
+    my $minutes = int((($uptime % 86400) % 3600) / 60);
+    # Optionally, you can include seconds as well.
+    # my $seconds = int($uptime % 60);
+    
+    # Return a formatted string, for example: "1d 2h 3m"
+    return sprintf("%dd %dh %dm", $days, $hours, $minutes);
 }
 
 # ---------------- Service Plugin ----------------
@@ -345,7 +355,6 @@ sub get_network_data {
         $devices{$iface} = {
             "STATUS"  => $status,
             "BRIDGE"  => ($is_bridge ? JSON::true : JSON::false),
-            "CHECKED" => ($status eq "Up" ? "checked" : ""),
             "CLASS"   => ($status eq "Up" ? "green" : "red"),
             "LINK"    => $status,
             "IN"      => "",
@@ -362,7 +371,6 @@ sub get_network_data {
             foreach my $p (@phys) {
                 push @physical, {
                     "STATUS"  => "Up",
-                    "CHECKED" => "",
                     "LINK"    => "Up",
                     "IN"      => "",
                     "DEVICE"  => $p,
@@ -386,7 +394,7 @@ sub get_system_data {
     $data{'cached'} = JSON::false;
     $data{'time'} = time();
     $data{'appliance'} = "RazWall";
-    $data{'version'} = "1.0.0";
+    $data{'version'} = "1.3.0";
     chomp(my $kernel_value = `uname -r`);
     $data{'kernel_value'} = $kernel_value;
     $data{'kernel'} = 0;

@@ -1,0 +1,183 @@
+.fielderror {
+    padding-left: 5px;
+}
+
+.helptext {
+    float: left;
+    font-size: 10px;
+}
+
+.has_error {
+    border: 2px solid;
+}
+
+.fieldlabel {
+    display: block;
+    margin-bottom: 1px;
+    font-weight: bold;
+}
+
+.container {
+    float: left;
+}
+
+.container.expands {
+    float: none;
+}
+
+.container.columns1 {
+    width: 350px;
+    float: left;
+}
+
+.container span.info {
+    border-bottom: 1px solid;
+    margin-bottom: 10px;
+    padding-bottom: 2px;
+    display: block;
+}
+
+.field {
+    padding-bottom: 10px;
+}
+
+.field input[type=checkbox] {
+    margin: 4px 4px 0 4px;
+}
+
+.field .multipleselectfield,
+.field textarea {
+    height: 100px;
+}
+
+.field.expands,
+.field.expands.columns1,
+.field.expands.columns2,
+.field.expands.columns3,
+.field.expands.columns4,
+.field.expands.columns5 {
+    width: 95.5% ! important;
+    float: none;
+    clear: both;
+}
+
+/* with with 1 column */
+.field.columns1 {
+    width: 350px;
+}
+
+.field.columns1 input[type="text"],
+.field.columns1 select,
+.field.columns1 textarea,
+.field.columns1 .fieldselector {
+    width: 300px;
+}
+
+.field.columns1 input[type="password"],
+.field.columns1 input[type="text"].passwordfield {
+    width: 280px;
+}
+
+/* with with 2 columns */
+.field.columns2 {
+    float: left;
+    width: 350px;
+}
+
+.field.columns2.last {
+    width: 338px;
+}
+
+.field.columns2 input[type="text"],
+.field.columns2 select,
+.field.columns2 textarea,
+.field.columns2 .fieldselector {
+    width: 300px;
+}
+
+.field.columns2 input[type="password"],
+.field.columns2 input[type="text"].passwordfield {
+    width: 280px;
+}
+
+/* with with 3 columns */
+.field.columns3 {
+    float: left;
+    width: 230px;
+}
+
+.field.columns3.last {
+    width: 218px;
+}
+
+.field.columns3 input[type="text"],
+.field.columns3 select,
+.field.columns3 textarea,
+.field.columns3 .fieldselector {
+    width: 180px;
+}
+
+.field.columns3 input[type="password"],
+.field.columns3 input[type="text"].passwordfield {
+    width: 160px;
+}
+
+/* with with 4 columns */
+.field.columns4 {
+    float: left;
+    width: 175px;
+}
+
+.field.columns4.last {
+    width: 163px;
+}
+
+.field.columns4 input[type="text"],
+.field.columns4 select,
+.field.columns4 textarea,
+.field.columns4 .fieldselector {
+    width: 125px;
+}
+
+.field.columns4 input[type="password"],
+.field.columns4 input[type="text"].passwordfield {
+    width: 105px;
+}
+
+/* with with 5 columns */
+.field.columns5 {
+    float: left;
+    width: 145px;
+}
+
+.field.columns5.last {
+    width: 133px;
+}
+
+.field.columns5 input[type="text"],
+.field.columns5 select,
+.field.columns5 textarea,
+.field.columns5 .fieldselector {
+    width: 100px;
+}
+
+.field.columns5 input[type="password"],
+.field.columns5 input[type="text"].passwordfield {
+    width: 80px;
+}
+
+/* columns inside tab */
+div[role=tabpanel] .field.columns2 {
+    width: 330px;
+    padding-left: 10px;
+}
+
+/** edit a table field */
+.field.columns1 table.dataTable input[type="text"],
+.field.columns1 table.dataTable select,
+.field.columns1 table.dataTable textarea,
+.field.columns1 table.dataTable .fieldselector {
+    width: auto;
+}
+
+

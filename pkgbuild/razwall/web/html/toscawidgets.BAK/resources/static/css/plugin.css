@@ -1,0 +1,48 @@
+.plugin .closeablecontainer-content {
+    padding-top: 16px;
+    padding: 10px;
+}
+
+.plugin table {
+    border-spacing: 0;
+}
+
+.plugin table tr.bridge td,table tr.bridge th {
+    border-top: dotted 1px rgb(160,160,160);
+    padding-bottom: 2px;
+}
+
+.plugin table tr.device td, table tr.device th {
+    border-top: dotted 1px rgb(160,160,160);
+    padding-bottom: 2px;
+}
+
+.plugin table tr.uplink td,table tr.uplink th {
+    border-top: dotted 1px rgb(160,160,160);
+    padding-bottom: 2px;
+}
+
+.plugin table td.legend {
+    border-top: solid 1px #cccccc;
+}
+
+.plugin table td {
+    padding-top: 2px;
+    padding-bottom: 3px;
+}
+
+.plugin table th.orange, .plugin table td.orange {
+    color: orange;
+}
+.plugin table th.blue, .plugin table td.blue {
+    color: blue;
+}
+.plugin table th.red, .plugin table td.red {
+    color: red;
+}
+.plugin table th.green, .plugin table td.green {
+    color: green;
+}
+.plugin table th.purple, .plugin table td.purple {
+    color: purple;
+}

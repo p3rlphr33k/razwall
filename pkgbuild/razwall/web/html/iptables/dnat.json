@@ -1,0 +1,12 @@
+[
+  {
+    "enable": true,
+    "source": "ANY",
+    "destination": "ANY",
+    "proto": "tcp",
+    "port": 8080,
+    "action": "DNAT",
+    "log": true,
+    "ip_version": "4"
+  }
+]

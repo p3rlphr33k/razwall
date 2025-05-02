@@ -32,6 +32,7 @@ kernel-modules:REC
 kernel-source:REC
 kmod:REC
 less:REC
+libedit:REC
 libgudev:REC
 libpwquality:REC
 lilo:REC

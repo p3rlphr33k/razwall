@@ -6,6 +6,228 @@ var SERVICEINFORMATION_13 = '">';
 var SERVICEINFORMATION_21 = '<div class="service-desc"><span class="task-count" id="task-';
 var SERVICEINFORMATION_22 = '">0</span>&nbsp;';
 var SERVICEINFORMATION_23 = '</div>';
+var SERVICEINFORMATION_31 = '<table width="100%" cellspacing="0">' +
+    '<tr><td width="60%">&nbsp;</td><th width="20%" align="right">';
+var SERVICEINFORMATION_32 = '</th><th width="20%" align="right">';
+var SERVICEINFORMATION_33 = '</th></tr>';
+var SERVICEINFORMATION_41 = '<tr>' +
+    '<td>';
+var SERVICEINFORMATION_42 = '</td>' +
+    '<td id="task-';
+var SERVICEINFORMATION_43 = '-hour" align="right">0</td>' +
+    '<td id="task-';
+var SERVICEINFORMATION_44 = '-day" align="right">0</td>' +
+    '</tr>';
+var SERVICEINFORMATION_34 = '</table>';
+var SERVICEINFORMATION_14 = '</div>';
+
+function serviceinformationpluginInit(json) {
+    // Note: Fixed typo from 'undefinded' to 'undefined'
+    if (typeof json['services'] !== 'undefined') {
+        for (var serviceID in json['services']) {
+            if (!json['services'].hasOwnProperty(serviceID)) { continue; }
+            var service = json['services'][serviceID];
+            if (typeof service['ID'] === 'undefined') {
+                continue;
+            }
+            var html = SERVICEINFORMATION_11 + service['ID'] + SERVICEINFORMATION_12;
+            html += (service['ON'] ? "block" : "none");
+            html += SERVICEINFORMATION_13;
+            if (typeof service['TASKS']['STATIC'] !== 'undefined') {
+                for (var taskID in service['TASKS']['STATIC']) {
+                    if (service['TASKS']['STATIC'][taskID] && typeof service['TASKS']['STATIC'][taskID]['ID'] !== 'undefined') {
+                        html += SERVICEINFORMATION_21 + service['ID'] + "-" + service['TASKS']['STATIC'][taskID]['ID'] +
+                            SERVICEINFORMATION_22 + service['TASKS']['STATIC'][taskID]['DESC'] + SERVICEINFORMATION_23;
+                    }
+                }
+            }
+            if (typeof service['TASKS']['DYNAMIC'] !== 'undefined') {
+                html += SERVICEINFORMATION_31 + json['HOUR'] + SERVICEINFORMATION_32 + json['DAY'] + SERVICEINFORMATION_33;
+                for (var taskID in service['TASKS']['DYNAMIC']) {
+                    if (service['TASKS']['DYNAMIC'][taskID] && typeof service['TASKS']['DYNAMIC'][taskID]['ID'] !== 'undefined') {
+                        var task = service['TASKS']['DYNAMIC'][taskID];
+                        html += SERVICEINFORMATION_41 + task['DESC'];
+                        html += SERVICEINFORMATION_42 + service['ID'] + "-" + task['ID'];
+                        // Update values with the ones found in COUNT
+                        var hour_info = SERVICEINFORMATION_43;
+                        if (task.COUNT && task.COUNT[0]) {
+                            hour_info = hour_info.replace('>0<', '>' + task.COUNT[0] + '<');
+                        }
+                        html += hour_info;
+                        html += service['ID'] + "-" + task['ID'];
+                        var day_info = SERVICEINFORMATION_44;
+                        if (task.COUNT && task.COUNT[1]) {
+                            day_info = day_info.replace('>0<', '>' + task.COUNT[1] + '<');
+                        }
+                        html += day_info;
+                    }
+                }
+                html += SERVICEINFORMATION_34;
+            }
+            html += SERVICEINFORMATION_14;
+            
+            // Update the specific container with the new HTML
+            var container = document.getElementById("serviceinformationplugin-" + service['ID'] + "-information");
+            if (container) {
+                container.innerHTML = html;
+            }
+            
+            // Remove CSS class for showing/hiding messages
+            if (service['ON']) {
+                var onShowEls = document.querySelectorAll(".serviceInformation-" + service['ID'] + "-on-show");
+                onShowEls.forEach(function(el) {
+                    el.classList.remove("serviceInformation-on-show");
+                });
+            }
+            if (!service['ON']) {
+                var onHideEls = document.querySelectorAll(".serviceInformation-" + service['ID'] + "-on-hide");
+                onHideEls.forEach(function(el) {
+                    el.classList.remove("serviceInformation-on-hide");
+                });
+            }
+        }
+    }
+}
+
+function serviceinformationplugin_openLogs() {
+    window.open(
+        '/cgi-bin/logs_live.cgi?show=single&nosave=on&showfields=dansguardian,openvpn,smtp,snort,squid',
+        '_blank',
+        'height=700,width=1000,location=no,menubar=no,scrollbars=yes'
+    );
+}
+
+function serviceinformationplugin_openLog(field) {
+    window.open(
+        '/cgi-bin/logs_live.cgi?show=single&nosave=on&showfields=' + field,
+        '_blank',
+        'height=700,width=1000,location=no,menubar=no,scrollbars=yes'
+    );
+}
+
+function serviceinformationplugin_swapVisibility(id) {
+    var el = document.getElementById(id);
+    if (el) {
+        el.style.display = (el.style.display !== 'block' ? 'block' : 'none');
+    }
+}
+
+function serviceinformationpluginUpdate(json) {
+    var oldvalues = false;
+    
+    try {
+        var ts = json['memory/memory-used']['timestamp'];
+        if (serviceinformationplugin_cache_timestamp == ts) {
+            // Cache is unchanged from last request
+            oldvalues = true;
+        }
+        serviceinformationplugin_cache_timestamp = ts;
+    } catch (e) {
+        econsole.debug("SERVICEINFORMATIONPLUGIN Error occured, ignore: " + e);
+    }
+    
+    for (var j in json) {
+        if (!json.hasOwnProperty(j)) { continue; }
+        if (oldvalues) {
+            // Skip counters if these are old cached values.
+            continue;
+        }
+        
+        var smtp_regex = /tail\-smtp\/connections\-([a-z]+)/;
+        var pop_regex = /tail\-pop\/connections\-([a-z]+)/;
+        var http_regex = /tail\-http\/connections\-([a-z]+)/;
+        if (j == "filecount-postfix_queue/files") {
+            try {
+                var value = Math.round(json[j]['value']);
+                var elem = document.getElementById('task-postfix-queue');
+                if (elem) {
+                    elem.textContent = value;
+                }
+            } catch (e) {
+                econsole.debug("SERVICEINFORMATIONPLUGIN Error occured, ignore: " + e);
+            }
+        } else if (j.match(smtp_regex)) {
+            var type = RegExp.$1;
+            try {
+                if (!isNaN(json[j]['value'])) {
+                    var value = Math.round(json[j]['value'] * 5);
+                    
+                    var elemHour = document.getElementById('task-postfix-' + type + '-hour');
+                    if (elemHour) {
+                        var currentHour = parseInt(elemHour.textContent, 10) || 0;
+                        elemHour.textContent = currentHour + value;
+                    }
+                    
+                    var elemDay = document.getElementById('task-postfix-' + type + '-day');
+                    if (elemDay) {
+                        var currentDay = parseInt(elemDay.textContent, 10) || 0;
+                        elemDay.textContent = currentDay + value;
+                    }
+                }
+            } catch (e) {
+                econsole.debug("SERVICEINFORMATIONPLUGIN Error occured, ignore: " + e);
+            }
+        } else if (j.match(pop_regex)) {
+            var type = RegExp.$1;
+            try {
+                if (!isNaN(json[j]['value'])) {
+                    var value = Math.round(json[j]['value'] * 5);
+                    
+                    var elemHour = document.getElementById('task-p3scan-' + type + '-hour');
+                    if (elemHour) {
+                        var currentHour = parseInt(elemHour.textContent, 10) || 0;
+                        elemHour.textContent = currentHour + value;
+                    }
+                    
+                    var elemDay = document.getElementById('task-p3scan-' + type + '-day');
+                    if (elemDay) {
+                        var currentDay = parseInt(elemDay.textContent, 10) || 0;
+                        elemDay.textContent = currentDay + value;
+                    }
+                }
+            } catch (e) {
+                econsole.debug("SERVICEINFORMATIONPLUGIN Error occured, ignore: " + e);
+            }
+        } else if (j.match(http_regex)) {
+            var type = RegExp.$1;
+            try {
+                if (!isNaN(json[j]['value'])) {
+                    var value = Math.round(json[j]['value'] * 5);
+                    
+                    var elemHour = document.getElementById('task-squid-' + type + '-hour');
+                    if (elemHour) {
+                        var currentHour = parseInt(elemHour.textContent, 10) || 0;
+                        elemHour.textContent = currentHour + value;
+                    }
+                    
+                    var elemDay = document.getElementById('task-squid-' + type + '-day');
+                    if (elemDay) {
+                        var currentDay = parseInt(elemDay.textContent, 10) || 0;
+                        elemDay.textContent = currentDay + value;
+                    }
+                }
+            } catch (e) {
+                econsole.debug("SERVICEINFORMATIONPLUGIN Error occured, ignore: " + e);
+            }
+        }
+    }
+    if (!oldvalues) {
+        var date = new Date();
+        date.setTime(serviceinformationplugin_cache_timestamp * 1000);
+        // The date object is created here; adjust if further processing is needed.
+    }
+}
+
+
+/* ORIGINAL CODE
+var serviceinformationplugin_cache_timestamp = 0;
+
+var SERVICEINFORMATION_11 = '<div id="';
+var SERVICEINFORMATION_12 = '-information" class="service-messages" style="display:';
+var SERVICEINFORMATION_13 = '">';
+var SERVICEINFORMATION_21 = '<div class="service-desc"><span class="task-count" id="task-';
+var SERVICEINFORMATION_22 = '">0</span>&nbsp;';
+var SERVICEINFORMATION_23 = '</div>';
 var SERVICEINFORMATION_31 = '<table width="100%" cellspacing="0">'+
     '<tr><td width="60%">&nbsp;</td><th width="20%" align="right">';
 var SERVICEINFORMATION_32 = '</th><th width="20%" align="right">';
@@ -50,7 +272,7 @@ function serviceinformationpluginInit(json){
                         var task = service['TASKS']['DYNAMIC'][taskID];
                         html += SERVICEINFORMATION_41+task['DESC'];
                         html += SERVICEINFORMATION_42+service['ID']+"-"+task['ID'];
-                        /* Update values with the ones found in COUNT */
+                        // Update values with the ones found in COUNT
                         hour_info = SERVICEINFORMATION_43;
                         if (task.COUNT && task.COUNT[0]) {
                             hour_info = hour_info.replace('>0<', '>' + task.COUNT[0] + '<');
@@ -178,3 +400,4 @@ function serviceinformationpluginUpdate(json) {
         date.setTime(serviceinformationplugin_cache_timestamp * 1000);
     }
 }
+*/

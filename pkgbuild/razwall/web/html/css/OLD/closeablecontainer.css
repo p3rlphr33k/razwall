@@ -1,0 +1,47 @@
+
+.closeablecontainer-header {
+    border-right: 1px solid;
+    display: block;
+    height: 24px;
+    line-height: 24px;
+    list-style: none outside none;
+    width: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.closeablecontainer-header a {
+    text-decoration: none;
+}
+
+.closeablecontainer-header-opened {
+    background: url(/toscawidgets/resources/endian.emi/static/images/closeablecontainer_header_open.png) no-repeat scroll left bottom transparent;
+}
+
+.closeablecontainer-header-closed {
+    background: url(/toscawidgets/resources/endian.emi/static/images/closeablecontainer_header_close.png) no-repeat scroll left bottom transparent;
+}
+
+.closeablecontainer-header-toggle {
+    height: 100%;
+    width: 26px;
+    margin-right: 4px;
+    display: block;
+    float: left;
+    cursor: pointer;
+}
+
+.closeablecontainer-header-toggle.ui-icon {
+}
+
+.closeablecontainer-content {
+    border-bottom: 1px solid;
+    border-left: 1px solid;
+    border-right: 1px solid;
+    padding: 12px;
+}
+
+.closeablecontainer-content-closed {
+    display: none;
+}

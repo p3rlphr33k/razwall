@@ -1,0 +1,14 @@
+.uplink-row {
+  display: flex;
+  padding: 5px;
+  border-bottom: 1px solid #ccc;
+  align-items: center;
+}
+.interface-name {
+  /*flex: 2;*/
+}
+.uplink-status, .uplink-uptime {
+  /*flex: 1;*/
+  text-align: center;
+  width:90px;
+}

@@ -179,20 +179,43 @@ sub load_to_session($$$$$) {
     }
 }
 ##### IFACETOOLS:
+
+# REWRITE FOR RAZWALL BELOW..
+#sub validzones_OLD() {
+#    my @ret = ();
+
+#    push(@ret, 'LAN');
+#    if (dmz_used()) {
+#	push(@ret, 'DMZ');
+#    }
+#    if (lan2_used()) {
+#	push(@ret, 'LAN2');
+#    }
+#    if (!is_modem()) {
+#	push(@ret, 'WAN');
+#    }
+#    return \@ret;
+#}
+
+##### RAZWALL REPALCEMENT:
 sub validzones() {
-    my @ret = ();
-
-    push(@ret, 'LAN');
-    if (dmz_used()) {
-	push(@ret, 'DMZ');
-    }
-    if (lan2_used()) {
-	push(@ret, 'LAN2');
-    }
-    if (!is_modem()) {
-	push(@ret, 'WAN');
-    }
-
+	my @ret = ();
+    my @zones = get_zones;
+	# %zonecolors = ($zone => "$ZCOLOR");
+	# %strings_zone = ($zone => "$ZSTRING"); 
+	# %zone_ifaces = ($zone => "$ZIFACE");
+	# %zone_type = ($zone => "$ZTYPE");
+	
+	foreach $zone (@zones) {
+		if($zone_type{$zone} eq 'LAN') {
+			push(@ret, $zone);
+			next;
+		}
+		if( (!$zone_type{$zone} eq 'WAN') && (!$zone_type{$zone} eq 'LOCAL')) {
+			push(@ret, $zone);
+			next;
+		}
+	}
     return \@ret;
 }
 
@@ -242,7 +265,7 @@ sub load_ifaces() {
     setdefaultifaces();
 }
 
-sub setdefaultifaces() {
+sub setdefaultifaces() { # SMH... WHY?! ... REPLACE WITH RAZWALL DYNAMIC ZONE IFACE ASSIGNMENT
     my $devices = listdevices(1);
     my $i = 0;
     foreach my $item (@$devices) {
@@ -316,13 +339,17 @@ sub init_ifacetools($$) {
 }
 
 sub get_if_number() {
-    if ($session->{'IF_COUNT'}) {
-	return $session->{'IF_COUNT'};
+
+	if (! -e $ifacesjson) {
+	system("touch $ifacesjson");
+	system("chmod 0777 $ifacesjson");
+	system("perl /razwall/scripts/ethconfig.pl > $ifacesjson");
     }
-    my ($devices) = list_devices_description(3, -1, 0);
-    my @devarr = @$devices;
-    $session->{'IF_COUNT'} = $#devarr + 1;
-    return $session->{'IF_COUNT'};
+    open(J, $ifacesjson);
+    my $jsonobj = JSON::XS->new->utf8->decode(join('', <J>));
+    close J;
+
+	return scalar @{ $jsonobj };
 }
 
 sub pick_device($) {
@@ -525,6 +552,7 @@ sub store_ip($$) {
 sub getPrimaryIP($) {
     my $subnets = shift;
     my @ips = split(/,/, $subnets);
+	warn "IPS: @ips\n";
     my $primary = $ips[0];
     return '' if ($primary eq '');
     my ($ip, $cidr) = ipv4_parse($primary);
@@ -637,27 +665,6 @@ sub loadNetmasks($) {
     return \@arr;
 }
 
-sub is_modem {
-    if ($session->{'CONFIG_TYPE'} =~ /^[0145]$/) {
-	return 1;
-    }
-    return 0;
-}
-
-sub dmz_used () {
-    if ($session->{'CONFIG_TYPE'} =~ /^[1357]$/) {
-	return 1;
-    }
-    return 0;
-}
-
-sub lan2_used () {
-    if ($session->{'CONFIG_TYPE'} =~ /^[4567]$/) {
-	return 1;
-    }
-    return 0;
-}
-
 sub replace_primary_ip($$) {
     my $ips = shift;
     my $primary = shift;
@@ -671,7 +678,7 @@ sub replace_primary_ip($$) {
 
 ##### ETHCONFIG:
 sub init_ethconfig() {
-#    load_ethconfig();
+    load_ethconfig();
 }
 
 sub getifbynum($) {
@@ -751,7 +758,7 @@ sub get_vlan_ids($) {
     return $ret;
 }
 
-sub get_bonds() {
+sub get_bonds() { #  NEED TO ADDRESS THIS IN THE FUTURE OF RAZWALL...
     my %bonds = ();
     my $ret = \%bonds;
     foreach my $bondfile (`ls -1 $bondfiles 2>/dev/null`) {
@@ -841,7 +848,7 @@ sub load_ethconfig($) {
     my $businfo="";
     my $label="";
     my $device="";
-    my $bonds = get_bonds();
+    my $bonds = get_bonds(); #  NEED TO ADDRESS THIS IN THE FUTURE OF RAZWALL...
     my %businfosorted_hash = ();
     my $businfosorted = \%businfosorted_hash;
     my $i = 0;
@@ -850,12 +857,19 @@ sub load_ethconfig($) {
 	#open(TMP, "> /razwall/web/cgi-bin/temp.txt") or die $!;
 	#print TMP "$ifacesjson";
 	#close(TMP);
-	
-	system("perl /razwall/scripts/ethconfig.pl --json --output $ifacesjson");
+	system("touch $ifacesjson");
+	system("chmod 0777 $ifacesjson");
+	system("perl /razwall/scripts/ethconfig.pl > $ifacesjson");
     }
     open(J, $ifacesjson);
-    my $jsonobj = JSON::XS->new->utf8->decode (join('', <J>));
+    my $jsonobj = JSON::XS->new->utf8->decode(join('', <J>));
     close J;
+
+	# ETHERNET SETTINGS FILE CONTENTS:
+	# LAN_IPS=192.168.55.1/24
+	# LAN_NETADDRESS=192.168.55.0
+	# LAN_BROADCAST=192.168.55.255
+	# LAN_ADDRESS=192.168.55.1
 
     readhash($ethernet_settings_file, $ethernetconfig);
 
@@ -1107,7 +1121,7 @@ sub format_description($$) {
     }
 }
 
-sub list_devices_description($$$) {
+sub list_devices_description($$$) { # 3, -1, 0
     my $layer = shift;
     my $showzones = shift;
     my $showlink = shift;

@@ -1,3 +1,0 @@
-CA_FILENAME=cacert.pem
-CERT_FILENAME=cert.pem
-OPENVPN_ENABLED=off

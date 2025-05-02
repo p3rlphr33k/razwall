@@ -1,0 +1,19 @@
+.fieldselector {
+    padding-top: 5px;
+}
+
+.fieldselector label {
+    font-weight: normal;
+}
+
+.fieldselector .subtitle {
+    padding-right: 10px;
+}
+
+.fieldselector .field {
+    padding-top: 8px;
+}
+
+.fieldselector.has_error {
+    border: 0px;
+}

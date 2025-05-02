@@ -1,0 +1,52 @@
+
+.settingsfield {
+    margin-top: 10px;
+}
+
+.settingslabel {
+    float: left;
+    width: 300px;
+}
+
+.settingswidget {
+    float: left;
+    width: 300px;
+    margin-left: 20px;
+}
+
+.settingseditor {
+}
+
+.settingseditor .editortitle {
+    border-bottom: 1px solid;
+    padding: 0px 0px 10px 0px;
+    text-align: left;
+}
+
+.grideditor .formerror {
+    margin-bottom: 12px;
+    padding: 4px;
+}
+
+.grideditor .formerror span {
+    float: left;
+    margin-right: 4px;
+}
+
+.settingsedtior .editorbox {
+    text-align: left;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 1px solid #CCCCCC;
+    background-color: #f0f0f0;
+}
+
+.settingseditor .editorerror {
+    text-align: left;
+}
+
+.settingseditor .editorsubmit {
+    border: none;
+    padding-top: 10px;
+    text-align: left;
+}

@@ -20,4 +20,6 @@ fi
 if -x /etc/rc.d/rc.httpd ]; then
   # Start HTTP server:
   /etc/rc.d/rc.httpd start
- fi
+fi
+
+basename -a /sys/class/net/* > /razwall/config/interfaces/settings

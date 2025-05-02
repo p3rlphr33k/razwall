@@ -1,9 +1,0 @@
-AUTHENTICATION_STACK=ldap,local
-CA_FILENAME=cacert.pem
-CERT_FILENAME=cert.pem
-DAP_BIND_DN=cn=Administrator,cn=Users,dc=dc,dc=domain.local
-LDAP_BIND_PASSWORD=
-LDAP_URI=
-LDAP_USER_BASEDN=cn='Domain Users',dc=dc,dc=domain.local
-LDAP_USER_SEARCHFILTER=(&(objectCategory=person)(objectClass=user)(sAMAccountName=%(u)s))
-OPENVPN_ENABLED=off

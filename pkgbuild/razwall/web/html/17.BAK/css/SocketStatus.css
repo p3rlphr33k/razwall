@@ -1,0 +1,21 @@
+#socketStatus {
+/*	position:absolute;
+	top:15px;
+	left:15px; */
+	width:22px;
+	height:22px;
+	background-image: url('/images/loading-sprite.png');
+	/*z-index:100;*/
+}
+
+.socketGreen {
+	background-position:0px 0px;
+}
+
+.socketYellow {
+	background-position:0px -22px;
+}
+
+.socketRed {
+	background-position:0px -44px;
+}

@@ -1,0 +1,11 @@
+[
+  {
+    "enable": true,
+    "source": ["192.168.1.0/24", "10.0.0.0/24"],
+    "out_interface": "eth1",
+    "action": "MASQUERADE",
+    "proto": "ALL",
+    "log": true,
+    "ip_version": "4"
+  }
+]

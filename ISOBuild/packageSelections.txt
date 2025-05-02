@@ -80,6 +80,7 @@ l/glibc
 l/glibc-i18n
 l/glibc-profile
 l/icu4c
+l/libedit
 l/libnl
 l/libnl3
 l/libproxy

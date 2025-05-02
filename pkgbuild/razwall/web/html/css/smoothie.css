@@ -6,5 +6,4 @@ div.smoothie-chart-tooltip {
   color: white;
   font-size: 10px;
   pointer-events: none;
-  z-index:2000;
 }
