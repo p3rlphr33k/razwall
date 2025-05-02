@@ -11,7 +11,7 @@ User: `admin`
 
 Password: `razwall`
 
-# RazWall Aplha 1.2 ISO Release 3/28/2025
+# RazWall Alpha 1.2 ISO Release 3/28/2025
 
 This ISO release includes the first RazWall Package. This is FAR from stable or usable but its a great test bed for anyone anxious to start working with this project since it contains everything I have worked on so far.
 
