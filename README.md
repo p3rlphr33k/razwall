@@ -1,6 +1,6 @@
-# RazWall Aplha 1.3 ISO Release 4/8/2025
+# RazWall Alpha 1.3 ISO Release 5/2/2025
 
-I have added a new and experimental interface. This is far from complete, but It gives a us a fresh canvas to use Instead of fighting with the old 3ndian stuff slopped on top to pfsense and ipcop code.
+I have added a new and experimental interface. This is far from complete, but It gives a us a fresh canvas to use Instead of fighting with the old stuff slopped on top to pfsense and ipcop.
 
 Bug fix:
 Fixed permissions +x for razi3 causing error on console 
